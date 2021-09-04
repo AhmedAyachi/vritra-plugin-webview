@@ -2,7 +2,7 @@ const proxy=require("cordova/exec/proxy");
 
 
 module.exports={
-    coolAlert:alert,
+    say:alert,
 }
 
-proxy.add("Template",module.exports);
+proxy.add("WebView",module.exports);

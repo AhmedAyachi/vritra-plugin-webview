@@ -5,7 +5,7 @@
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
 >
-    <name>Template</name>
+    <name>WebView</name>
 
     <js-module name="webview" src="www/WebView.js">
         <clobbers target="WebView"/>
@@ -23,7 +23,7 @@
     </platform>
 
     <platform name="browser">
-        <js-module src="src/browser/TemplateProxy.js" name="TemplateProxy">
+        <js-module src="src/browser/WebviewProxy.js" name="WebviewProxy">
             <runs/>
         </js-module>
     </platform>
