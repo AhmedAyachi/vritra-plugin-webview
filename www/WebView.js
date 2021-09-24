@@ -1,9 +1,9 @@
 const exec=require("cordova/exec");
 
 
-module.exports = {
-    say:(message,onFulfilled,onRejected,)=>{
-        exec(onFulfilled,onRejected,"WebView","say",[message]);
+module.exports={
+    create:(url,onFulfilled,onRejected)=>{
+        exec(onFulfilled,onRejected,"WebView","create",[url]);
     },
 }
 

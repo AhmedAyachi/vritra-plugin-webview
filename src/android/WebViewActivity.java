@@ -1,18 +1,18 @@
-package com.ahmedayachi.webviewactivity;
+package com.ahmedayachi.webview;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
 
 
-public class WebViewActivity extends CordovaActivity{
-    static Dialog dialog;
-    static Activity activity2;
 
+public class WebViewActivity extends CordovaActivity{
+    
     @Override
-    public void onCreate(Bundle savedInstanceState,String url){
+    public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
-        
-        loadUrl("file:///android_asset/www/".concat(url));
+        Bundle bundle=this.getIntent().getExtras();
+        String url=bundle.getString("url");
+        super.loadUrl(url);
     }
 }
