@@ -2,8 +2,12 @@ const exec=require("cordova/exec");
 
 
 module.exports={
-    create:(url,onFulfilled,onRejected)=>{
-        exec(onFulfilled,onRejected,"WebView","create",[url]);
+    create:(options)=>{
+        const {onCreated}=options;
+        exec(onCreated,null,"WebView","create",[options]);
     },
+    useMessage:(onFullfilled)=>{
+        exec(null,onFullfilled,"WebView","useMessage",[]);
+    }
 }
 

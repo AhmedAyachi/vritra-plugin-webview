@@ -21,33 +21,43 @@ public class WebView extends CordovaPlugin{
         final WebView plugin=this;
         WebView.callback=callbackContext;
         if(action.equals("create")){
-            String url=args.getString(0);
-            this.create(url,callbackContext);
+            JSONObject options=args.getJSONObject(0);
+            this.create(options,callbackContext);
+            return true;
+        }
+        else if(action.equals("useMessage")){
+            WebViewActivity wvact=(WebViewActivity)this.cordova.getActivity();
+            callbackContext.error(wvact.getMessage());
             return true;
         }
         return false;
     }
 
-    private void create(String url,CallbackContext callbackContext){
+    private void create(JSONObject options,CallbackContext callbackContext){
         final Activity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
-                Intent intent=new Intent(activity,WebViewActivity.class);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("url",url);
-                plugin.cordova.startActivityForResult(plugin,intent,resultCode);
-                callbackContext.success();
+                try{
+                    Intent intent=new Intent(activity,WebViewActivity.class);
+                    final String url=options.getString("url");
+                    String message="";
+                    try{
+                        message=options.getString("message"); 
+                    }
+                    catch(JSONException exception){};
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("url",url);
+                    intent.putExtra("message",message);
+                    plugin.cordova.startActivityForResult(plugin,intent,resultCode);
+                }
+                catch(JSONException exception){};
             }
         });
     }
 
-    public void onActivityResult(int requestCode,int code,Intent intent){
+    /*public void onActivityResult(int requestCode,int code,Intent intent){
         super.onActivityResult(requestCode,code,intent);
-        callback.error("");
+        callback.error("message");
         //if(requestCode==WebView.resultCode){}
-    }
-
-    /*public Boolean shouldAllowBridgeAccess(String url) {
-        return true;
     }*/
 }
