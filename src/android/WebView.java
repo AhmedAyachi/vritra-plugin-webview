@@ -13,7 +13,7 @@ import java.lang.Runnable;
 
 public class WebView extends CordovaPlugin{
     public static CallbackContext callback;
-    //public static final int resultCode=47;
+    public static final int resultCode=47;
     private final CordovaPlugin plugin=this;
 
     @Override
