@@ -3,7 +3,6 @@ package com.ahmedayachi.webview;
 import android.os.Bundle;
 import com.ahmedayachi.webview.WebView;
 import org.apache.cordova.*;
-import android.app.ActionBar;
 import android.view.Window;
 import android.view.View;
 import android.graphics.Color;
