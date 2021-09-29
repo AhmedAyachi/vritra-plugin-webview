@@ -6,7 +6,7 @@ import org.apache.cordova.*;
 import android.view.Window;
 import android.view.View;
 import android.graphics.Color;
-
+import android.content.Intent;
 
 
 public class WebViewActivity extends CordovaActivity{
@@ -34,5 +34,19 @@ public class WebViewActivity extends CordovaActivity{
 
     public String getMessage(){
         return message;
+    }
+
+    @Override
+    /*protected void onNewIntent(Intent intent){
+        //super.onNewIntent(intent);
+        this.startActivityForResult(intent,)
+    }*/
+    /*public void onActivityResult(){
+        this.moveTaskToBack(true);
+    }*/
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        this.finish();
     }
 }
