@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import netscape.javascript.JSObject;
+
 import com.ahmedayachi.webview.WebViewActivity;
 import org.apache.cordova.*;
 import org.json.JSONArray;
@@ -17,90 +18,76 @@ public class WebView extends CordovaPlugin{
     public static CallbackContext callback;
     public static final int resultCode=47;
     private final CordovaPlugin plugin=this;
-    static ArrayList<Intent> intents=new ArrayList<Intent>();
+    static ArrayList<JSONObject> webviews=new ArrayList<JSONObject>();
     JSONObject options=null;
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
         final WebView plugin=this;
         WebView.callback=callbackContext;
-        if(action.equals("show")){
+        if(action.equals("create")){
             JSONObject options=args.getJSONObject(0);
             this.options=options;
-            this.show(callbackContext);
+            this.create(callbackContext);
             return true;
         }
         else if(action.equals("useMessage")){
-            WebViewActivity webviewactivity=(WebViewActivity)this.cordova.getActivity();
-            callbackContext.error(webviewactivity.getMessage());
-            return true;
-        }
-        else if(action.equals("back")){
-            this.back();
+            WebViewActivity wvact=(WebViewActivity)this.cordova.getActivity();
+            callbackContext.error(wvact.getMessage());
             return true;
         }
         return false;
     }
 
-    private void show(CallbackContext callbackContext){
+    private void create(CallbackContext callbackContext){
         final Activity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 try{
                     final int id=options.getInt("id");
-                    Intent intent=this.findById(id);
-                    //Intent intent=null;
-                    if(intent!=null){
-                        //intent=(Intent)webview.get("intent");
-                        /*final Activity wvact=(Activity)webview.get("activity");
-                        intent=wvact.getIntent();*/
-                        //plugin.cordova.startActivityForResult(plugin,intent,id);
+                    JSONObject webview=this.findById(id);
+                    Intent intent=null;
+                    if(webview!=null){
+                        intent=(Intent)webview.get("intent");
                     }
                     else{
-                        //webview=new JSONObject();
+                        webview=new JSONObject();
                         intent=new Intent(activity,WebViewActivity.class);
-                        /*webview.put("id",id);
-                        webview.put("intent",intent);*/
-                        WebView.intents.add(webview);
+                        webview.put("id",id);
+                        webview.put("intent",intent);
+                        WebView.webviews.add(webview);
                         final String url=options.getString("url");
                         String message="";
                         try{
                             message=options.getString("message"); 
                         }
                         catch(JSONException exception){};
-                        intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+                        intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK|
+                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        );
                         intent.putExtra("url",url);
                         intent.putExtra("message",message);
-                        intent.putExtra("id",id);
-                        //plugin.cordova.startActivityForResult(plugin,intent,id);
-                        //webview.put("activity",plugin.cordova.getActivity());
                     }
-
                     plugin.cordova.startActivityForResult(plugin,intent,id);
-                    
                 }
                 catch(JSONException exception){};
             }
 
-            private Intent findById(int id) throws JSONException{
-                JSONObject intent=null;
-                final int length=WebView.intents.size();
+            private JSONObject findById(int id) throws JSONException{
+                JSONObject webview=null;
+                final int length=WebView.webviews.size();
                 int i=0;
-                while((intent==null)&&(i<length)){
-                    final Intent item=WebView.intents.get(i);
-                    if(item.getExtras().getInt("id")==id){
-                        intent=item;
+                while((webview==null)&&(i<length)){
+                    final JSONObject item=WebView.webviews.get(i);
+                    if(item.getInt("id")==id){
+                        webview=item;
                     }
                     i++;
                 }
-                return intent;
+                return webview;
             }
         });
-    }
-
-    private void back(){
-        final Activity activity=this.cordova.getActivity();
-        activity.moveTaskToBack(true);
     }
 
     /*public void onActivityResult(int id,int code,Intent intent){
