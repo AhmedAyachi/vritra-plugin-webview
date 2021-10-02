@@ -2,6 +2,7 @@ package com.ahmedayachi.webview;
 
 import android.app.Activity;
 import android.content.Intent;
+import 	android.content.Context;
 import android.os.Bundle;
 import netscape.javascript.JSObject;
 import com.ahmedayachi.webview.WebViewActivity;
@@ -17,8 +18,16 @@ public class WebView extends CordovaPlugin{
     public static CallbackContext callback;
     public static final int resultCode=47;
     private final CordovaPlugin plugin=this;
-    static ArrayList<Intent> intents=new ArrayList<Intent>();
-    JSONObject options=null;
+    static final ArrayList<Activity> activities=new ArrayList<Activity>();
+
+    public void initialize(CordovaInterface cordova,CordovaWebView webView){
+        final Activity activity=cordova.getActivity();
+        Intent intent=activity.getIntent();
+        intent.putExtra("url","index.html");
+        intent.putExtra("message","");
+        intent.putExtra("id",0);
+        activities.add(activity);
+    }
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
@@ -26,8 +35,7 @@ public class WebView extends CordovaPlugin{
         WebView.callback=callbackContext;
         if(action.equals("show")){
             JSONObject options=args.getJSONObject(0);
-            this.options=options;
-            this.show(callbackContext);
+            this.show(options);
             return true;
         }
         else if(action.equals("useMessage")){
@@ -42,26 +50,16 @@ public class WebView extends CordovaPlugin{
         return false;
     }
 
-    private void show(CallbackContext callbackContext){
-        final Activity activity=this.cordova.getActivity();
+    private void show(JSONObject options){
+        final Context context=this.cordova.getContext();
+        
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 try{
                     final int id=options.getInt("id");
-                    Intent intent=this.findById(id);
-                    //Intent intent=null;
-                    if(intent!=null){
-                        //intent=(Intent)webview.get("intent");
-                        /*final Activity wvact=(Activity)webview.get("activity");
-                        intent=wvact.getIntent();*/
-                        //plugin.cordova.startActivityForResult(plugin,intent,id);
-                    }
-                    else{
-                        //webview=new JSONObject();
-                        intent=new Intent(activity,WebViewActivity.class);
-                        /*webview.put("id",id);
-                        webview.put("intent",intent);*/
-                        WebView.intents.add(webview);
+                    final Activity activity=this.findActivityById(id);
+                    if(activity==null){
+                        final Intent intent=new Intent(context,WebViewActivity.class);
                         final String url=options.getString("url");
                         String message="";
                         try{
@@ -71,36 +69,41 @@ public class WebView extends CordovaPlugin{
                         intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
                         intent.putExtra("url",url);
                         intent.putExtra("message",message);
-                        intent.putExtra("id",id);
-                        //plugin.cordova.startActivityForResult(plugin,intent,id);
-                        //webview.put("activity",plugin.cordova.getActivity());
+                        intent.putExtra("com.ahmedayachi.webview.id",id);
+                        plugin.cordova.startActivityForResult(plugin,intent,id);
+                        WebView.callback.success(activities.size());
                     }
-
-                    plugin.cordova.startActivityForResult(plugin,intent,id);
+                    else{
+                        activity.finish();
+                        //activities.remove(activity);
+                        activity.startActivity(activity.getIntent());
+                        WebView.callback.success(activities.size());
+                    }
                     
                 }
                 catch(JSONException exception){};
             }
 
-            private Intent findById(int id) throws JSONException{
-                JSONObject intent=null;
-                final int length=WebView.intents.size();
+            private Activity findActivityById(int id){
+                Activity activity=null;
+                final int length=activities.size();
                 int i=0;
-                while((intent==null)&&(i<length)){
-                    final Intent item=WebView.intents.get(i);
-                    if(item.getExtras().getInt("id")==id){
-                        intent=item;
+                while((activity==null)&&(i<length)){
+                    final Activity item=activities.get(i);
+                    final Intent intent=item.getIntent();
+                    if(intent.getIntExtra("com.ahmedayachi.webview.id",-1)==id){
+                        activity=item;
                     }
                     i++;
                 }
-                return intent;
+                return activity;
             }
         });
     }
 
     private void back(){
         final Activity activity=this.cordova.getActivity();
-        activity.moveTaskToBack(true);
+        activity.finish();
     }
 
     /*public void onActivityResult(int id,int code,Intent intent){

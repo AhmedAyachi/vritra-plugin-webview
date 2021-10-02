@@ -29,15 +29,20 @@ public class WebViewActivity extends CordovaActivity{
 
     public void onStart(){
         super.onStart();
-        WebView.callback.success();
+        //WebView.callback.success();
+        WebView.activities.add(this);
+    }
+    public void onDestroy(){
+        super.onDestroy();
+        WebView.activities.remove(this);
     }
 
     public String getMessage(){
         return message;
     }
 
-    @Override
-    /*protected void onNewIntent(Intent intent){
+    /*@Override
+    protected void onNewIntent(Intent intent){
         //super.onNewIntent(intent);
         this.startActivityForResult(intent,)
     }*/
