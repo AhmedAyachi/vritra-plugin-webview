@@ -1,6 +1,6 @@
 package com.ahmedayachi.webview;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import netscape.javascript.JSObject;
@@ -36,11 +36,14 @@ public class WebView extends CordovaPlugin{
             callbackContext.error(wvact.getMessage());
             return true;
         }
+        else if(action.equals("close")){
+            this.close();
+        }
         return false;
     }
 
     private void create(CallbackContext callbackContext){
-        final Activity activity=this.cordova.getActivity();
+        final AppCompatActivity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 try{
@@ -88,6 +91,11 @@ public class WebView extends CordovaPlugin{
                 return webview;
             }
         });
+    }
+
+    private void close(){
+        final AppCompatActivity activity=this.cordova.getActivity();
+        activity.finish();
     }
 
     /*public void onActivityResult(int id,int code,Intent intent){
