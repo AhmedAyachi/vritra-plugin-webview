@@ -29,8 +29,8 @@
     </platform>
 
     <platform name="browser">
-        <js-module src="src/browser/WebviewProxy.js" name="WebviewProxy">
-            <runs/>
+        <js-module src="src/browser/WebviewProxy.js" name="browserwebview">
+            <clobbers target="WebView"/>
         </js-module>
     </platform>
     
