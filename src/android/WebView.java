@@ -25,10 +25,10 @@ public class WebView extends CordovaPlugin{
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
         final WebView plugin=this;
         WebView.callback=callbackContext;
-        if(action.equals("create")){
+        if(action.equals("show")){
             JSONObject options=args.getJSONObject(0);
             this.options=options;
-            this.create(callbackContext);
+            this.show(callbackContext);
             return true;
         }
         else if(action.equals("useMessage")){
@@ -42,7 +42,7 @@ public class WebView extends CordovaPlugin{
         return false;
     }
 
-    private void create(CallbackContext callbackContext){
+    private void show(CallbackContext callbackContext){
         final AppCompatActivity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
