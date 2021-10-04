@@ -7,7 +7,7 @@
 >
     <name>WebView</name>
 
-    <js-module name="webview" src="www/WebView.js">
+    <js-module name="webview" src="www/index.js">
         <clobbers target="WebView"/>
     </js-module>
 
@@ -29,7 +29,7 @@
     </platform>
 
     <platform name="browser">
-        <js-module src="src/browser/WebviewProxy.js" name="browserwebview">
+        <js-module src="src/browser/WebView.js" name="browserwebview">
             <clobbers target="WebView"/>
         </js-module>
     </platform>

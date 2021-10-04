@@ -7,7 +7,7 @@ module.exports={
         exec(onCreated,null,"WebView","show",[options]);
     },
     useMessage:(onFullfilled)=>{
-        exec(null,onFullfilled,"WebView","useMessage",null);
+        exec(null,onFullfilled,"WebView","useMessage",[onFullfilled]);
     },
     close:()=>{
         exec(null,null,"WebView","close",null);
