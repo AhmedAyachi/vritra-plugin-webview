@@ -1,40 +1,28 @@
 
 
-const views=[];
-const styles={
-    iframe:`
-        width:100%;
-        height:100%;
-        border:none;
-    `,
-}
-let message;
-
 module.exports={
     show:(options)=>{
         const {url}=options;
         if(url){
-            const view=document.createElement("div");
-            views.push(view);
-            message=options.message;
-            view.innerHTML=`
-                <iframe style="${styles.iframe}" src="${url}"/>
-            `;
-            Object.assign(view.style,{
+            const iframe=document.createElement("iframe");
+            iframe.src=url;
+            localStorage.setItem("message",options.message);
+            Object.assign(iframe.style,{
                 position:"fixed",
                 width:"100%",
                 height:"100%",
                 inset:0,
                 margin:"auto",
+                border:"none",
             });
-            document.body.appendChild(view);
+            document.body.appendChild(iframe);
         }
     },
     useMessage:(onFullfilled)=>{
+        const message=localStorage.getItem("message");
         onFullfilled&&onFullfilled(message);
     },
     close:()=>{
-        views.pop().remove();
+        frameElement.parentNode.querySelector("iframe").remove();
     },
-    //close
 }
