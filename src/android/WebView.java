@@ -51,13 +51,10 @@ public class WebView extends CordovaPlugin{
                         message=options.getString("message"); 
                     }
                     catch(JSONException exception){};
-                    intent.setFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK|
-                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    );
+                    final Intent intent=new Intent(activity,WebView.class);
                     intent.putExtra("url",url);
                     intent.putExtra("message",message);
-                    plugin.cordova.startActivityForResult(plugin,intent,id);
+                    plugin.cordova.startActivityForResult(plugin,intent,0);
                 }
                 catch(JSONException exception){};
             }
