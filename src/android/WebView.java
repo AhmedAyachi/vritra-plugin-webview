@@ -51,7 +51,7 @@ public class WebView extends CordovaPlugin{
                         message=options.getString("message"); 
                     }
                     catch(JSONException exception){};
-                    final Intent intent=new Intent(activity,WebView.class);
+                    final Intent intent=new Intent(activity,WebViewActivity.class);
                     intent.putExtra("url",url);
                     intent.putExtra("message",message);
                     plugin.cordova.startActivityForResult(plugin,intent,0);
