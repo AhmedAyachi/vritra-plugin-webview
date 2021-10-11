@@ -1,23 +1,20 @@
 package com.ahmedayachi.webview;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Intent;
-import android.os.Bundle;
 import com.ahmedayachi.webview.WebViewActivity;
+import android.content.Intent;
 import org.apache.cordova.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 
-import javax.management.JMException;
-
 
 public class WebView extends CordovaPlugin{
 
     public static CallbackContext callbackContext;
     private final CordovaPlugin plugin=this;
-    private int index=-1;
+    private static int index=-1;
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
@@ -68,8 +65,8 @@ public class WebView extends CordovaPlugin{
                         intent.putExtra("url",url);
                     }
                     intent.putExtra("message",message);
-                    plugin.index++;
-                    plugin.cordova.startActivityForResult(plugin,intent,plugin.index);
+                    WebView.index++;
+                    plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
                 }
                 catch(JSONException exception){};
             }
@@ -78,10 +75,15 @@ public class WebView extends CordovaPlugin{
 
     @Override
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
-        if(requestCode==plugin.index){
-            Bundle bundle=intent.getExtras();
-            String message=bundle.getString("message");
-            plugin.index--;
+        if(requestCode==WebView.index){
+            String message=Integer.toString(resultCode);
+            if(resultCode==WebViewActivity.RESULT_OK){
+                if(intent!=null){
+                    message=intent.getStringExtra("message");   
+                }
+                WebView.index--;
+                
+            }
             callbackContext.success(message);
         }
     }
@@ -98,6 +100,6 @@ public class WebView extends CordovaPlugin{
 
     private void useMessage(){
         final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        callbackContext.succes(wvactivity.getMessage());
+        callbackContext.success(wvactivity.getMessage());
     }
 }

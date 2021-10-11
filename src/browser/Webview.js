@@ -2,10 +2,11 @@
 
 module.exports={
     show:(options)=>{
-        const {url}=options;
-        if(url){
+        const {file=options.url,onClose}=options;
+        if(file){
             const iframe=document.createElement("iframe");
-            iframe.src=url;
+            iframe.onClose=onClose;
+            iframe.src=file;
             localStorage.setItem("message",options.message);
             Object.assign(iframe.style,{
                 position:"fixed",
@@ -22,7 +23,16 @@ module.exports={
         const message=localStorage.getItem("message");
         onFullfilled&&onFullfilled(message);
     },
+    setMessage:(message="")=>{
+        localStorage.setItem("message",message);
+    },
     close:()=>{
-        frameElement.parentNode.querySelector("iframe").remove();
+        const iframe=frameElement.parentNode.querySelector("iframe");
+        const {onClose}=iframe;
+        if(onClose){
+            const message=localStorage.getItem("message");
+            onClose(message);
+        }
+        iframe.remove();
     },
 }
