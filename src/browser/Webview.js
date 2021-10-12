@@ -2,12 +2,12 @@
 
 module.exports={
     show:(options)=>{
-        const {file=options.url,onClose}=options;
+        const {file=options.url,message,onClose}=options;
         if(file){
             const iframe=document.createElement("iframe");
-            iframe.onClose=onClose;
             iframe.src=file;
-            localStorage.setItem("message",options.message);
+            iframe.onClose=onClose;
+            iframe.message=message;
             Object.assign(iframe.style,{
                 position:"fixed",
                 width:"100%",
@@ -19,20 +19,27 @@ module.exports={
             document.body.appendChild(iframe);
         }
     },
-    useMessage:(onFullfilled)=>{
-        const message=localStorage.getItem("message");
-        onFullfilled&&onFullfilled(message);
+    useStore:(onFullfilled)=>{
+        if(typeof(onFullfilled)==="function"){
+            const store=JSON.parse(localStorage.getItem("store"));
+            onFullfilled(store);
+        }
+    },
+    setStore:(key,value)=>{
+        const store=JSON.parse(localStorage.getItem("store"));
+        store[key]=value;
+        localStorage.setItem("store",JSON.stringify(store));
     },
     setMessage:(message="")=>{
-        localStorage.setItem("message",message);
+        const iframe=frameElement.parentNode.querySelector("iframe");
+        iframe.message=message;
     },
-    close:(message)=>{
+    close:function(message=""){
         const iframe=frameElement.parentNode.querySelector("iframe");
         const {onClose}=iframe;
-        if(onClose){
-            const message=message||localStorage.getItem("message");
-            onClose(message);
-        }
+        onClose&&this.useStore(store=>{
+            onClose({message:message||iframe.message,store});
+        });
         iframe.remove();
     },
 }
