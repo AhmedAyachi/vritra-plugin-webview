@@ -8,24 +8,30 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
+import java.util.ArrayList;
 
 
 public class WebView extends CordovaPlugin{
 
-    public static CallbackContext callbackContext;
-    private final CordovaPlugin plugin=this;
+    private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
     private static int index=-1;
+    private static JSONObject store=new JSONObject();
+    private final CordovaPlugin plugin=this;
+   
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
-        WebView.callbackContext=callbackContext;
         if(action.equals("show")){
             JSONObject options=args.getJSONObject(0);
-            this.show(options);
+            this.show(options,callbackContext);
             return true;
         }
-        else if(action.equals("useMessage")){
-            this.useMessage();
+        else if(action.equals("useStore")){
+            this.useStore(callbackContext);
+            return true;
+        }
+        else if(action.equals("setStore")){
+            this.setStore(args);
             return true;
         }
         else if(action.equals("setMessage")){
@@ -34,13 +40,14 @@ public class WebView extends CordovaPlugin{
             return true;
         }
         else if(action.equals("close")){
-            this.close();
+            String message=args.getString(0);
+            this.close(message);
             return true;
         }
         return false;
     }
 
-    private void show(JSONObject options){
+    private void show(JSONObject options,CallbackContext callbackContext){
         final AppCompatActivity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
@@ -65,6 +72,7 @@ public class WebView extends CordovaPlugin{
                         intent.putExtra("url",url);
                     }
                     intent.putExtra("message",message);
+                    WebView.wvcallbacks.add(callbackContext);
                     WebView.index++;
                     plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
                 }
@@ -76,30 +84,45 @@ public class WebView extends CordovaPlugin{
     @Override
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
         if(requestCode==WebView.index){
-            String message=Integer.toString(resultCode);
+            final CallbackContext callback=WebView.wvcallbacks.get(WebView.index);
+            WebView.wvcallbacks.remove(WebView.index);
+            WebView.index--; 
+            String message=Integer.toString(WebViewActivity.RESULT_OK);
             if(resultCode==WebViewActivity.RESULT_OK){
                 if(intent!=null){
-                    message=intent.getStringExtra("message");   
+                    message=intent.getStringExtra("message");
                 }
-                WebView.index--;
-                
             }
-            callbackContext.success(message);
+            JSONObject data=new JSONObject();
+            try{
+                data.put("message",message);
+                data.put("store",store);
+            }
+            catch(JSONException exception){};
+            callback.success(data);
         }
     }
 
-    private void close(){
-        final AppCompatActivity activity=this.cordova.getActivity();
-        activity.finish();
+    private void useStore(CallbackContext callbackContext){
+        callbackContext.success(store);
+    }
+
+    private void setStore(JSONArray args) throws JSONException{
+        final String key=args.getString(0);
+        final Object value=args.get(1);
+        store.put(key,value);
+    }
+
+    private void close(String message){
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        if(!message.isEmpty()){
+            wvactivity.setMessage(message);
+        }
+        wvactivity.finish();
     }
 
     private void setMessage(String message){
         final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
         wvactivity.setMessage(message);
-    }
-
-    private void useMessage(){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        callbackContext.success(wvactivity.getMessage());
     }
 }

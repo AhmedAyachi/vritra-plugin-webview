@@ -6,14 +6,17 @@ module.exports={
         const {onClose}=options;
         exec(onClose,null,"WebView","show",[options]);
     },
-    useMessage:(onFullfilled)=>{
-        exec(onFullfilled,null,"WebView","useMessage",[onFullfilled]);
+    useStore:(onFullfilled)=>{
+        exec(onFullfilled,null,"WebView","useStore",[onFullfilled]);
+    },
+    setStore:(key,value)=>{
+        exec(null,null,"WebView","setStore",[key,value]);
     },
     setMessage:(message)=>{
-        exec(null,null,"WebView","setMessage",[message]);
+        exec(null,null,"WebView","setMessage",[message||""]);
     },
-    close:()=>{
-        exec(null,null,"WebView","close",null);
+    close:(message="")=>{
+        exec(null,null,"WebView","close",[message]);
     }
 }
 

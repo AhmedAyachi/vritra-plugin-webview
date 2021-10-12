@@ -8,41 +8,40 @@ import android.view.View;
 import android.graphics.Color;
 import android.content.Intent;
 import android.app.Activity;
-
+import android.content.Intent;
 
 
 public class WebViewActivity extends CordovaActivity{
     
     private String message="";
+    private Intent intent=null;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
-        Bundle bundle=this.getIntent().getExtras();
+        this.intent=this.getIntent();
+
+        Bundle bundle=intent.getExtras();
         String url;
         url=bundle.getString("file");
         if(url==null||url.isEmpty()){
             url=bundle.getString("url");
         }
-        if((url!=null)&&(url.length()>0)){
-            message=bundle.getString("message");
-            super.loadUrl(url);
-        }
+        message=bundle.getString("message");
+        super.loadUrl(url);
+
         final Window window=getWindow();
         window.setStatusBarColor(Color.TRANSPARENT);
         View decorview=getWindow().getDecorView();
         decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
 
-    public String getMessage(){
-        return message;
+        this.setResult(WebViewActivity.RESULT_OK,intent);
     }
 
     public void setMessage(String str){
         this.message=str;
+        intent.putExtra("message",str);
     }
-
-    
 
 }

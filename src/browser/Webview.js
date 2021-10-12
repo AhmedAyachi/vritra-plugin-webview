@@ -26,11 +26,11 @@ module.exports={
     setMessage:(message="")=>{
         localStorage.setItem("message",message);
     },
-    close:()=>{
+    close:(message)=>{
         const iframe=frameElement.parentNode.querySelector("iframe");
         const {onClose}=iframe;
         if(onClose){
-            const message=localStorage.getItem("message");
+            const message=message||localStorage.getItem("message");
             onClose(message);
         }
         iframe.remove();
