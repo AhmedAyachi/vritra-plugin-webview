@@ -12,6 +12,9 @@ module.exports={
     setStore:(key,value)=>{
         exec(null,null,"WebView","setStore",[key,value]);
     },
+    useMessage:(onFullfilled)=>{
+        exec(onFullfilled,null,"WebView","useMessage",[onFullfilled]);
+    },
     setMessage:(message)=>{
         exec(null,null,"WebView","setMessage",[message||""]);
     },

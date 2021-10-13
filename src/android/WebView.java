@@ -34,6 +34,10 @@ public class WebView extends CordovaPlugin{
             this.setStore(args);
             return true;
         }
+        else if(action.equals("useMessage")){
+            this.useMessage(callbackContext);
+            return true;
+        }
         else if(action.equals("setMessage")){
             String message=args.getString(0);
             this.setMessage(message);
@@ -112,6 +116,15 @@ public class WebView extends CordovaPlugin{
         final Object value=args.get(1);
         store.put(key,value);
     }
+    
+    private void useMessage(CallbackContext callbackContext){
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        callbackContext.success(wvactivity.getMessage());
+    }
+    private void setMessage(String message){
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        wvactivity.setMessage(message);
+    }
 
     private void close(String message){
         final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
@@ -119,10 +132,5 @@ public class WebView extends CordovaPlugin{
             wvactivity.setMessage(message);
         }
         wvactivity.finish();
-    }
-
-    private void setMessage(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        wvactivity.setMessage(message);
     }
 }

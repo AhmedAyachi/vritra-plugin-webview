@@ -30,6 +30,12 @@ module.exports={
         store[key]=value;
         localStorage.setItem("store",JSON.stringify(store));
     },
+    useMessage:(onFullfilled)=>{
+        if(typeof(onFullfilled)==="function"){
+            const iframe=frameElement.parentNode.querySelector("iframe");
+            onFullfilled(iframe.message);
+        }
+    },
     setMessage:(message="")=>{
         const iframe=frameElement.parentNode.querySelector("iframe");
         iframe.message=message;
