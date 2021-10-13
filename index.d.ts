@@ -8,7 +8,8 @@ interface WebView{
         onClose:(data:{message:string,store:object})=>void,
     })=>void,
     close:(message:string)=>void,
+    useMessage:(handler:(message:string)=>void)=>void,
     setMessage:(message:string)=>void,
+    useStore:(handler:(store:object)=>void)=>void,
     setStore:(key:string,value:any)=>void,
-    useStore:(store:object)=>void,
 }
