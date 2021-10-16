@@ -1,6 +1,5 @@
 
 
-localStorage.setItem("store","{}");
 module.exports={
     show:(options)=>{
         const {file=options.url,message,onClose}=options;
@@ -22,7 +21,14 @@ module.exports={
     },
     useStore:(onFullfilled)=>{
         if(typeof(onFullfilled)==="function"){
-            const store=JSON.parse(localStorage.getItem("store"));
+            let store=localStorage.getItem("store");
+            if(store){
+                store=JSON.parse(localStorage.getItem("store"));
+            }
+            else{
+                localStorage.setItem("store","{}");
+                store={};
+            } 
             onFullfilled(store);
         }
     },
