@@ -1,5 +1,6 @@
 
 
+localStorage.setItem("store","{}");
 module.exports={
     show:(options)=>{
         const {file=options.url,message,onClose}=options;
@@ -26,7 +27,7 @@ module.exports={
         }
     },
     setStore:(key,value)=>{
-        const store=JSON.parse(localStorage.getItem("store"));
+        const store=JSON.parse(localStorage.getItem("store"))||{};
         store[key]=value;
         localStorage.setItem("store",JSON.stringify(store));
     },
