@@ -1,7 +1,8 @@
 package com.ahmedayachi.webview;
 
-import androidx.appcompat.app.AppCompatActivity;
 import com.ahmedayachi.webview.WebViewActivity;
+import com.ahmedayachi.webview.Store;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import org.apache.cordova.*;
 import org.json.JSONArray;
@@ -15,7 +16,7 @@ public class WebView extends CordovaPlugin{
 
     private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
     private static int index=-1;
-    private static JSONObject store=new JSONObject();
+    private static Store store=new Store();
     private final CordovaPlugin plugin=this;
    
 
@@ -26,12 +27,17 @@ public class WebView extends CordovaPlugin{
             this.show(options,callbackContext);
             return true;
         }
+        else if(action.equals("initiateStore")){
+            JSONObject state=args.getJSONObject(0);
+            this.initiateStore(state);
+            return true;
+        }
         else if(action.equals("useStore")){
             this.useStore(callbackContext);
             return true;
         }
         else if(action.equals("setStore")){
-            this.setStore(args);
+            this.setStore(args,callbackContext);
             return true;
         }
         else if(action.equals("useMessage")){
@@ -100,21 +106,25 @@ public class WebView extends CordovaPlugin{
             JSONObject data=new JSONObject();
             try{
                 data.put("message",message);
-                data.put("store",store);
+                data.put("store",store.get());
             }
             catch(JSONException exception){};
             callback.success(data);
         }
     }
 
+    private void initiateStore(JSONObject state){
+        store.initiate(state);
+    }
     private void useStore(CallbackContext callbackContext){
-        callbackContext.success(store);
+        callbackContext.success(store.toJSONObject());
     }
 
-    private void setStore(JSONArray args) throws JSONException{
+    private void setStore(JSONArray args,CallbackContext callbackContext) throws JSONException{
         final String key=args.getString(0);
         final Object value=args.get(1);
-        store.put(key,value);
+        store.set(key,value);
+        callbackContext.success();
     }
     
     private void useMessage(CallbackContext callbackContext){

@@ -27,6 +27,7 @@
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/Store"/>
     </platform>
 
     <platform name="browser">
