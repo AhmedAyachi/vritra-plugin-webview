@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import java.util.StringTokenizer;
 import java.lang.NumberFormatException;
+import java.util.ArrayList;
 
 
 public class Store{
@@ -40,7 +41,10 @@ public class Store{
 
         final String lasttoken=tokens.get(last);
         properties.forEach(property->{
-            setProperty(lasttoken,value,property);
+            try{
+                setProperty(lasttoken,value,property);
+            }
+            catch(JSONException exception){}
         });
     }
 
@@ -68,13 +72,34 @@ public class Store{
         return properties;
     }
 
-    static private void setProperty(String token,Object value,JSONObject source){
+    static private void setProperty(String token,Object value,JSONObject source) throws JSONException{
         int bracketindex=token.indexOf("[");
         if(token.endsWith("]")&&(bracketindex>0)){
             String arraytoken=token.substring(0,bracketindex);
-            int index=Integer.parseInt(token.subSequence(bracketindex+1,token.length()-1).toString());//NumberFormatException
+            String indexStr=token.subSequence(bracketindex+1,token.length()-1).toString();
             JSONArray array=source.getJSONArray(arraytoken);
-            array.put(index,value);
+            if(indexStr.equals("push")){
+                array.put(value);
+            }
+            else if(indexStr.equals("pop")){
+                array.remove(array.length()-1);
+            }
+            else if(indexStr.equals("unshift")){
+                final JSONArray newarray=new JSONArray();
+                final int length=array.length();
+                newarray.put(value);
+                for(int i=0;i<length;i++){
+                    newarray.put(array.get(i));
+                }
+                source.put(arraytoken,newarray);
+            }
+            else if(indexStr.equals("shift")){
+                array.remove(0);
+            }
+            else{
+                int index=Integer.parseInt(indexStr);
+                array.put(index,value);
+            }
         }
         else{
             source.put(token,value);

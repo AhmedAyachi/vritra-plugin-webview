@@ -10,6 +10,7 @@ interface WebView{
     close(message:string):void,
     useMessage(handler:(message:string)=>void):void,
     setMessage(message:string):void,
+    initiateStore(state:object,onFullfilled:(store:object)=>void):void,
     useStore(handler:(store:object)=>void):void,
-    setStore(key:string,value:any):void,
+    setStore(key:string,value:any,onFullfilled:(store:object)=>void):void,
 }

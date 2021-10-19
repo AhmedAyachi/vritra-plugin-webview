@@ -29,7 +29,7 @@ public class WebView extends CordovaPlugin{
         }
         else if(action.equals("initiateStore")){
             JSONObject state=args.getJSONObject(0);
-            this.initiateStore(state);
+            this.initiateStore(state,callbackContext);
             return true;
         }
         else if(action.equals("useStore")){
@@ -106,15 +106,16 @@ public class WebView extends CordovaPlugin{
             JSONObject data=new JSONObject();
             try{
                 data.put("message",message);
-                data.put("store",store.get());
+                data.put("store",store.toJSONObject());
             }
             catch(JSONException exception){};
             callback.success(data);
         }
     }
 
-    private void initiateStore(JSONObject state){
+    private void initiateStore(JSONObject state,CallbackContext callbackContext){
         store.initiate(state);
+        callbackContext.success(store.toJSONObject());
     }
     private void useStore(CallbackContext callbackContext){
         callbackContext.success(store.toJSONObject());
@@ -124,7 +125,7 @@ public class WebView extends CordovaPlugin{
         final String key=args.getString(0);
         final Object value=args.get(1);
         store.set(key,value);
-        callbackContext.success();
+        callbackContext.success(store.toJSONObject());
     }
     
     private void useMessage(CallbackContext callbackContext){
