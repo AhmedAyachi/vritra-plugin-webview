@@ -1,6 +1,7 @@
 package com.ahmedayachi.webview;
 
 import com.ahmedayachi.webview.WebViewActivity;
+import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -69,12 +70,9 @@ public class WebView extends CordovaPlugin{
                     catch(JSONException exception){
                         url=options.getString("url");
                     };
-                    String message="";
-                    try{
-                        message=options.getString("message"); 
-                    }
-                    catch(JSONException exception){};
-                    final Intent intent=new Intent(activity,WebViewActivity.class);
+                    String message=options.optString("message");
+                    Boolean asModal=options.optBoolean("asModal");
+                    final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                     if(!file.isEmpty()){
                         intent.putExtra("file",file);
                     }

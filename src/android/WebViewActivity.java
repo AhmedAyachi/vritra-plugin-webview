@@ -13,26 +13,27 @@ public class WebViewActivity extends CordovaActivity{
     
     private String message="";
     private Intent intent=null;
+    protected Boolean isModel=false;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
+        
         this.intent=this.getIntent();
-
-        Bundle bundle=intent.getExtras();
-        String url;
-        url=bundle.getString("file");
+        String url=intent.getStringExtra("file");
         if(url==null||url.isEmpty()){
-            url=bundle.getString("url");
+            url=intent.getStringExtra("url");
         }
-        message=bundle.getString("message");
+        message=intent.getStringExtra("message");
         super.loadUrl(url);
 
-        final Window window=getWindow();
-        window.setStatusBarColor(Color.TRANSPARENT);
-        View decorview=getWindow().getDecorView();
-        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if(!isModel){
+            final Window window=getWindow();
+            window.setStatusBarColor(Color.TRANSPARENT);
+            View decorview=getWindow().getDecorView();
+            decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
 
         this.setResult(WebViewActivity.RESULT_OK,intent);
     }

@@ -5,6 +5,7 @@ interface WebView{
         url:string,
         file:string,
         message:string,
+        asModal:boolean,
         onClose(data:{message:string,store:object}):void,
     }):void,
     close(message:string):void,
