@@ -7,7 +7,7 @@
 >
     <name>WebView</name>
 
-    <js-module name="webview" src="www/WebView.js">
+    <js-module name="webview" src="www/index.js">
         <clobbers target="WebView"/>
     </js-module>
 
@@ -21,16 +21,29 @@
             <activity 
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
                 android:label="WebView"
+                android:launchMode="singleTask"
                 android:theme="@style/Theme.AppCompat.NoActionBar"
+            />
+            <activity 
+                android:name="com.ahmedayachi.webview.ModalActivity" 
+                android:label="Modal"
+                android:launchMode="singleTask"
+                android:theme="@style/Modal"
             />
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/ModalActivity"/>
+        <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="Xml/Modal.xml" target-dir="res/values"/>
+        <source-file src="Xml/slide_up.xml" target-dir="res/animator"/>
+        <source-file src="Xml/slide_down.xml" target-dir="res/animator"/>
+        <source-file src="Xml/modal_shape.xml" target-dir="res/drawable"/>
     </platform>
 
     <platform name="browser">
-        <js-module src="src/browser/WebviewProxy.js" name="WebviewProxy">
-            <runs/>
+        <js-module src="src/browser/WebView.js" name="browserwebview">
+            <clobbers target="WebView"/>
         </js-module>
     </platform>
     

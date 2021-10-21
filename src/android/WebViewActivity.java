@@ -12,46 +12,38 @@ import android.content.Intent;
 public class WebViewActivity extends CordovaActivity{
     
     private String message="";
+    private Intent intent=null;
+    protected Boolean isModel=false;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
-        Bundle bundle=this.getIntent().getExtras();
-        String url="file:///android_asset/www/"+bundle.getString("url");
-        message=bundle.getString("message");
+        
+        this.intent=this.getIntent();
+        String url=intent.getStringExtra("file");
+        if(url==null||url.isEmpty()){
+            url=intent.getStringExtra("url");
+        }
+        message=intent.getStringExtra("message");
         super.loadUrl(url);
-        final Window window=getWindow();
-        window.setStatusBarColor(Color.TRANSPARENT);
-        View decorview=getWindow().getDecorView();
-        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
 
-    public void onStart(){
-        super.onStart();
-        //WebView.callback.success();
-        WebView.activities.add(this);
-    }
-    public void onDestroy(){
-        super.onDestroy();
-        WebView.activities.remove(this);
+        if(!isModel){
+            final Window window=getWindow();
+            window.setStatusBarColor(Color.TRANSPARENT);
+            View decorview=getWindow().getDecorView();
+            decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+
+        this.setResult(WebViewActivity.RESULT_OK,intent);
     }
 
     public String getMessage(){
-        return message;
+        return this.message;
+    }
+    public void setMessage(String str){
+        this.message=str;
+        intent.putExtra("message",str);
     }
 
-    /*@Override
-    protected void onNewIntent(Intent intent){
-        //super.onNewIntent(intent);
-        this.startActivityForResult(intent,)
-    }*/
-    /*public void onActivityResult(){
-        this.moveTaskToBack(true);
-    }*/
-    @Override
-    public void onBackPressed(){
-        super.onBackPressed();
-        this.finish();
-    }
 }
