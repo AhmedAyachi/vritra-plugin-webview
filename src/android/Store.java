@@ -78,27 +78,34 @@ public class Store{
             String arraytoken=token.substring(0,bracketindex);
             String indexStr=token.subSequence(bracketindex+1,token.length()-1).toString();
             JSONArray array=source.getJSONArray(arraytoken);
-            if(indexStr.equals("push")){
-                array.put(value);
-            }
-            else if(indexStr.equals("pop")){
-                array.remove(array.length()-1);
-            }
-            else if(indexStr.equals("unshift")){
-                final JSONArray newarray=new JSONArray();
-                final int length=array.length();
-                newarray.put(value);
-                for(int i=0;i<length;i++){
-                    newarray.put(array.get(i));
-                }
-                source.put(arraytoken,newarray);
-            }
-            else if(indexStr.equals("shift")){
-                array.remove(0);
-            }
-            else{
+
+            try{
                 int index=Integer.parseInt(indexStr);
                 array.put(index,value);
+            }
+            catch(NumberFormatException exception){
+                if(indexStr.equals("push")){
+                    array.put(value);
+                }
+                else if(indexStr.equals("unshift")){
+                    final JSONArray newarray=new JSONArray();
+                    final int length=array.length();
+                    newarray.put(value);
+                    for(int i=0;i<length;i++){
+                        newarray.put(array.get(i));
+                    }
+                    source.put(arraytoken,newarray);
+                }
+                else if(indexStr.equals("pop")){
+                    array.remove(array.length()-1);
+                }
+                else if(indexStr.equals("shift")){
+                    array.remove(0);
+                }
+                else if(indexStr.equals("last")){
+                    final int length=array.length();
+                    array.put(length-1,value);
+                }
             }
         }
         else{

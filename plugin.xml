@@ -39,6 +39,8 @@
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/slide_up.xml" target-dir="res/animator"/>
         <source-file src="Xml/slide_down.xml" target-dir="res/animator"/>
+        <source-file src="Xml/fade_in.xml" target-dir="res/animator"/>
+        <source-file src="Xml/fade_out.xml" target-dir="res/animator"/>
         <source-file src="Xml/modal_shape.xml" target-dir="res/drawable"/>
     </platform>
 
