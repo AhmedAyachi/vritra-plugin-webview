@@ -31,6 +31,13 @@
                 android:theme="@style/Modal"
             />
         </config-file>
+        <edit-config 
+            file="AndroidManifest.xml"
+            target="/manifest/application/activity[@android:name='MainActivity']"
+            mode="merge"
+        >
+            <activity android:theme="@style/WebView"/>
+        </edit-config>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/ModalActivity"/>
