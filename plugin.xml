@@ -22,7 +22,7 @@
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
                 android:label="WebView"
                 android:launchMode="singleTask"
-                android:theme="@style/Theme.AppCompat.NoActionBar"
+                android:theme="@style/WebView"
             />
             <activity 
                 android:name="com.ahmedayachi.webview.ModalActivity" 
@@ -36,6 +36,7 @@
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/ModalActivity"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>
+        <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/slide_up.xml" target-dir="res/animator"/>
         <source-file src="Xml/slide_down.xml" target-dir="res/animator"/>
         <source-file src="Xml/modal_shape.xml" target-dir="res/drawable"/>

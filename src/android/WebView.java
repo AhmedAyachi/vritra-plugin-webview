@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
+import android.content.Context;
 
 
 public class WebView extends CordovaPlugin{
