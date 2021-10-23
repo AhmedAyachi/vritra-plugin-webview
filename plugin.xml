@@ -22,7 +22,7 @@
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
                 android:label="WebView"
                 android:launchMode="singleTask"
-                android:theme="@style/WebView"
+                android:theme="@style/Theme.AppCompat.NoActionBar"
             />
             <activity 
                 android:name="com.ahmedayachi.webview.ModalActivity" 
