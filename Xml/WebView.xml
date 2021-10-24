@@ -5,7 +5,7 @@
         <item name="android:windowAnimationStyle">@style/WebViewAnimation</item>
     </style>
     <style name="WebViewAnimation"> 
-        <item name="android:activityOpenEnterAnimation">@animator/fade_in</item>
+        <item name="android:activityOpenEnterAnimation">@null</item>
         <item name="android:activityCloseExitAnimation">@animator/fade_out</item>
     </style> 
 </resources>

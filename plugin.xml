@@ -22,7 +22,7 @@
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
                 android:label="WebView"
                 android:launchMode="singleTask"
-                android:theme="@style/Theme.AppCompat.NoActionBar"
+                android:theme="@style/WebView"
             />
             <activity 
                 android:name="com.ahmedayachi.webview.ModalActivity" 
@@ -31,12 +31,15 @@
                 android:theme="@style/Modal"
             />
         </config-file>
+        <config-file target="config.xml" parent=".">
+            <preference name="loadUrlTimeoutValue" value="600000"/>
+        </config-file>
         <edit-config 
             file="AndroidManifest.xml"
             target="/manifest/application/activity[@android:name='MainActivity']"
             mode="merge"
         >
-            <activity android:theme="@style/MainActivtiy"/>
+            <activity android:theme="@style/MainActivity"/>
         </edit-config>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
