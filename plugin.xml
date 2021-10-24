@@ -31,9 +31,7 @@
                 android:theme="@style/Modal"
             />
         </config-file>
-        <config-file target="config.xml" parent=".">
-            <preference name="loadUrlTimeoutValue" value="600000"/>
-        </config-file>
+        
         <edit-config 
             file="AndroidManifest.xml"
             target="/manifest/application/activity[@android:name='MainActivity']"
