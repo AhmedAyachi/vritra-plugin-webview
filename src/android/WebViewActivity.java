@@ -27,7 +27,6 @@ public class WebViewActivity extends CordovaActivity{
             url=intent.getStringExtra("url");
         }
         message=intent.getStringExtra("message");
-        //this.loadWebPage();
 
         this.setResult(WebViewActivity.RESULT_OK,intent);
     }
