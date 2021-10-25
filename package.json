@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-webview",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "types": "index.d.ts",
   "description": "cordova custom plugin template",
   "cordova": {
