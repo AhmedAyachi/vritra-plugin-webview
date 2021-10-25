@@ -11,10 +11,11 @@ import android.content.Intent;
 
 public class WebViewActivity extends CordovaActivity{
     
-    private String url=null;
-    private String message="";
-    private Intent intent=null;
+    protected String url=null;
+    protected String message="";
+    protected Intent intent=null;
     protected Boolean isModel=false;
+    protected Boolean isLoaded=false;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -34,17 +35,18 @@ public class WebViewActivity extends CordovaActivity{
     @Override
     protected void onStart(){
         super.onStart();
-        this.loadWebPage();
+        if(!isLoaded){
+            this.loadWebPage();
+            isLoaded=true;
+        }
     }
 
     protected void loadWebPage(){
         appView.loadUrl(url);
-        if(!isModel){
-            final Window window=getWindow();
-            window.setStatusBarColor(Color.TRANSPARENT);
-            View decorview=getWindow().getDecorView();
-            decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
+        final Window window=getWindow();
+        window.setStatusBarColor(Color.TRANSPARENT);
+        View decorview=getWindow().getDecorView();
+        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     public String getMessage(){

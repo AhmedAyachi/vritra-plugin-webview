@@ -4,6 +4,6 @@
         <item name="android:windowAnimationStyle">@style/MainActivtiyAnimation</item>
     </style>
     <style name="MainActivtiyAnimation"> 
-        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@animator/fade_out</item>
     </style> 
 </resources>
