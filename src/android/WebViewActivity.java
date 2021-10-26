@@ -7,6 +7,7 @@ import android.view.Window;
 import android.view.View;
 import android.graphics.Color;
 import android.content.Intent;
+import java.lang.Runnable;
 
 
 public class WebViewActivity extends CordovaActivity{
@@ -15,7 +16,7 @@ public class WebViewActivity extends CordovaActivity{
     protected String message="";
     protected Intent intent=null;
     protected Boolean isModel=false;
-    protected Boolean isLoaded=false;
+    private final WebViewActivity webview=this;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -28,17 +29,12 @@ public class WebViewActivity extends CordovaActivity{
             url=intent.getStringExtra("url");
         }
         message=intent.getStringExtra("message");
-
+        this.cordovaInterface.getThreadPool().execute(new Runnable(){
+            public void run(){
+                webview.loadWebPage();
+            }
+        });
         this.setResult(WebViewActivity.RESULT_OK,intent);
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if(!isLoaded){
-            this.loadWebPage();
-            isLoaded=true;
-        }
     }
 
     protected void loadWebPage(){
