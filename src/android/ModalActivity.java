@@ -89,7 +89,7 @@ public class ModalActivity extends WebViewActivity{
     }
 
     private int getX(){
-        double x=style.optDouble("left",0);
+        double x=style.optDouble("horizontalMargin",0);
         if((x>-1)&&(x<1)){
             x=x*metrics.widthPixels;
         }
@@ -97,7 +97,7 @@ public class ModalActivity extends WebViewActivity{
     }
 
     private int getY(){
-        double y=style.optDouble("top",0);
+        double y=style.optDouble("verticalMargin",0);
         if((y>-1)&&(y<1)){
             y=y*metrics.heightPixels;
         }

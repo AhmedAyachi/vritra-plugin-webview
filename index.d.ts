@@ -9,8 +9,8 @@ interface WebView{
         style:{
             width:number,
             height:number,
-            top:number,
-            left:number,
+            verticalMargin:number,
+            horizontalMargin:number,
             alignSelf:"end"|"start"|"center",
             opacity:number,
         },
