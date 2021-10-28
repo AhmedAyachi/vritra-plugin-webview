@@ -81,6 +81,12 @@ public class WebView extends CordovaPlugin{
                         intent.putExtra("url",url);
                     }
                     intent.putExtra("message",message);
+                    if(asModal){
+                        JSONObject style=options.optJSONObject("style");
+                        if(style!=null){
+                            intent.putExtra("style",style.toString());
+                        }
+                    }
                     WebView.wvcallbacks.add(callbackContext);
                     WebView.index++;
                     plugin.cordova.startActivityForResult(plugin,intent,WebView.index);

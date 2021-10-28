@@ -15,8 +15,7 @@ public class WebViewActivity extends CordovaActivity{
     protected String url=null;
     protected String message="";
     protected Intent intent=null;
-    protected Boolean isModel=false;
-    private final WebViewActivity webview=this;
+    private final WebViewActivity webviewActivity=this;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -29,9 +28,10 @@ public class WebViewActivity extends CordovaActivity{
             url=intent.getStringExtra("url");
         }
         message=intent.getStringExtra("message");
+        
         this.cordovaInterface.getThreadPool().execute(new Runnable(){
             public void run(){
-                webview.loadWebPage();
+                webviewActivity.loadWebPage();
             }
         });
         this.setResult(WebViewActivity.RESULT_OK,intent);
