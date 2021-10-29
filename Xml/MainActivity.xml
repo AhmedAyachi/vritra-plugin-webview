@@ -2,6 +2,7 @@
 <resources>
     <style name="MainActivity" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@style/MainActivtiyAnimation</item>
     </style>
     <style name="MainActivtiyAnimation"> 

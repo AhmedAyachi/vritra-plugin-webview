@@ -21,8 +21,8 @@ public class WebViewActivity extends CordovaActivity{
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
-        
         this.intent=this.getIntent();
+        
         url=intent.getStringExtra("file");
         if(url==null||url.isEmpty()){
             url=intent.getStringExtra("url");
@@ -31,18 +31,21 @@ public class WebViewActivity extends CordovaActivity{
         
         this.cordovaInterface.getThreadPool().execute(new Runnable(){
             public void run(){
-                webviewActivity.loadWebPage();
+                webviewActivity.loadHTML();
             }
         });
         this.setResult(WebViewActivity.RESULT_OK,intent);
     }
 
-    protected void loadWebPage(){
+    protected void loadHTML(){
         appView.loadUrl(url);
-        final Window window=getWindow();
-        window.setStatusBarColor(Color.TRANSPARENT);
-        View decorview=getWindow().getDecorView();
-        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",true);
+        if(statusBarTranslucent){
+            final Window window=getWindow();
+            window.setStatusBarColor(Color.TRANSPARENT);
+            View decorview=getWindow().getDecorView();
+            decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
     }
 
     public String getMessage(){

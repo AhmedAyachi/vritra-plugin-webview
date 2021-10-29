@@ -63,35 +63,12 @@ public class WebView extends CordovaPlugin{
         final AppCompatActivity activity=this.cordova.getActivity();
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
-                try{
-                    String file="",url="";
-                    try{
-                        file="file:///android_asset/www/"+options.getString("file");
-                    }
-                    catch(JSONException exception){
-                        url=options.getString("url");
-                    };
-                    String message=options.optString("message");
-                    Boolean asModal=options.optBoolean("asModal");
-                    final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
-                    if(!file.isEmpty()){
-                        intent.putExtra("file",file);
-                    }
-                    else{
-                        intent.putExtra("url",url);
-                    }
-                    intent.putExtra("message",message);
-                    if(asModal){
-                        JSONObject style=options.optJSONObject("style");
-                        if(style!=null){
-                            intent.putExtra("style",style.toString());
-                        }
-                    }
-                    WebView.wvcallbacks.add(callbackContext);
-                    WebView.index++;
-                    plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
-                }
-                catch(JSONException exception){};
+                Boolean asModal=options.optBoolean("asModal");
+                final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
+                WebView.setIntentExtras(options,intent);
+                WebView.wvcallbacks.add(callbackContext);
+                WebView.index++;
+                plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
             }
         });
     }
@@ -148,5 +125,33 @@ public class WebView extends CordovaPlugin{
             wvactivity.setMessage(message);
         }
         wvactivity.finish();
+    }
+
+    private static void setIntentExtras(JSONObject options,Intent intent){
+        String file=options.optString("file");
+        if((file!=null)&&(!file.isEmpty())){
+            intent.putExtra("file","file:///android_asset/www/"+file);
+        }
+        else{
+            String url=options.optString("url");
+            intent.putExtra("url",url);
+        }
+        String message=options.optString("message");
+        if(message!=null){
+            intent.putExtra("message",message);
+        }
+        
+        Boolean asModal=options.optBoolean("asModal");
+        if(asModal){
+            JSONObject style=options.optJSONObject("style");
+            if(style!=null){
+                intent.putExtra("style",style.toString());
+            }
+        }
+
+        Boolean statusBarTranslucent=options.optBoolean("statusBarTranslucent",true);
+        if(statusBarTranslucent!=null){
+            intent.putExtra("statusBarTranslucent",statusBarTranslucent);
+        }
     }
 }
