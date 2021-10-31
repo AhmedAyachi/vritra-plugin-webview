@@ -1,4 +1,4 @@
-declare var WebView:WebView;
+declare const WebView:WebView;
 
 interface WebView{
     show(options:{
