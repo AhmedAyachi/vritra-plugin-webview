@@ -21,7 +21,7 @@ module.exports={
     },
     initiateStore:function(store,onFullfilled){
         if(store&&(typeof(store)==="object")&&(!Array.isArray(store))){
-            localStorage.setItem("store",store);
+            localStorage.setItem("store",JSON.stringify(store));
         }
         else{
             localStorage.setItem("store","{}");
