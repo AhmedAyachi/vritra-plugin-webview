@@ -19,6 +19,17 @@ module.exports={
             document.body.appendChild(iframe);
         }
     },
+    initiateStore:function(store,onFullfilled){
+        if(store&&(typeof(store)==="object")&&(!Array.isArray(store))){
+            localStorage.setItem("store",store);
+        }
+        else{
+            localStorage.setItem("store","{}");
+        }
+        this.useStore(store=>{
+            onFullfilled&&onFullfilled(store);
+        });
+    },
     useStore:(onFullfilled)=>{
         if(typeof(onFullfilled)==="function"){
             let store=localStorage.getItem("store");
