@@ -15,6 +15,8 @@ module.exports={
                 inset:0,
                 margin:"auto",
                 border:"none",
+                backgroundColor:"white",
+                zIndex:2147483647,
             });
             document.body.appendChild(iframe);
         }
