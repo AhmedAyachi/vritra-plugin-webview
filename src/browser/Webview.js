@@ -60,11 +60,11 @@ module.exports={
         const iframe=frameElement.parentNode.querySelector("iframe");
         iframe.message=message;
     },
-    close:function(message=""){
+    close:function(message){
         const iframe=frameElement.parentNode.querySelector("iframe");
         const {onClose}=iframe;
         onClose&&this.useStore(store=>{
-            onClose({message:message||iframe.message,store});
+            onClose({message:message===undefined?iframe.message:message,store});
         });
         iframe.remove();
     },
