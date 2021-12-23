@@ -45,10 +45,11 @@ module.exports={
             onFullfilled(store);
         }
     },
-    setStore:(key,value)=>{
+    setStore:(key,value,onFullfilled)=>{
         const store=JSON.parse(localStorage.getItem("store"))||{};
         store[key]=value;
         localStorage.setItem("store",JSON.stringify(store));
+        onFullfilled&&onFullfilled(store);
     },
     useMessage:(onFullfilled)=>{
         if(typeof(onFullfilled)==="function"){
