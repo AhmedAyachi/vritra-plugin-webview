@@ -54,7 +54,8 @@ module.exports={
     useMessage:(onFullfilled)=>{
         if(typeof(onFullfilled)==="function"){
             const iframe=frameElement.parentNode.querySelector("iframe");
-            onFullfilled(JSON.stringify(iframe.message));
+            const {message}=iframe;
+            onFullfilled(typeof(message)==="string"?message:JSON.stringify(message));
         }
     },
     setMessage:(message="")=>{
