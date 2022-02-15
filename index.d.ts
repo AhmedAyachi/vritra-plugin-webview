@@ -17,10 +17,11 @@ interface WebView{
         },
         onClose(data:{message:String,store:Object}):void,
     }):void,
-    close(message:String):void,
     useMessage(handler:(message:String)=>void):void,
     setMessage(message:String):void,
     initiateStore(store:Object,onFullfilled:(store:Object)=>void):void,
     useStore(handler:(store:Object)=>void):void,
     setStore(key:String,value:any,onFullfilled:(store:Object)=>void):void,
+    close(message:String):void,
+    useBackgroundService(executor:()=>void,onFail:()=>void):void;
 }

@@ -23,6 +23,8 @@ module.exports={
     },
     close:(message)=>{
         exec(null,null,"WebView","close",[message||""]);
+    },
+    useBackgroundService:(executor,onFail)=>{
+        exec(executor,onFail,"WebView","useBackgroundService",null);
     }
 }
-
