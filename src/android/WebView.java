@@ -3,6 +3,7 @@ package com.ahmedayachi.webview;
 import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
+import com.ahmedayachi.webview.BackgroundService;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import org.apache.cordova.*;
@@ -11,16 +12,24 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
+import java.util.Random;
 import android.content.Context;
 
 
 public class WebView extends CordovaPlugin{
 
     private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
+    protected static final JSONObject backgroundCalls=new JSONObject();
     private static int index=-1;
     private static Store store=new Store();
     private final CordovaPlugin plugin=this;
-   
+
+    static Context context;
+
+    @Override
+    public void initialize(CordovaInterface cordova,CordovaWebView webView){
+        WebView.context=cordova.getContext();
+    }
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
@@ -54,6 +63,10 @@ public class WebView extends CordovaPlugin{
         else if(action.equals("close")){
             String message=args.getString(0);
             this.close(message);
+            return true;
+        }
+        else if(action.equals("useBackgroundService")){
+            this.useBackgroundService(callbackContext);
             return true;
         }
         return false;
@@ -125,6 +138,17 @@ public class WebView extends CordovaPlugin{
             wvactivity.setMessage(message);
         }
         wvactivity.finish();
+    }
+    private void useBackgroundService(CallbackContext callbackContext){
+        final AppCompatActivity activity=this.cordova.getActivity();
+        final Intent intent=new Intent(activity,BackgroundService.class);
+        final String ref=Integer.toString(new Random().nextInt());
+        try{
+            backgroundCalls.put(ref,callbackContext);
+        }
+        catch(JSONException exception){}
+        intent.putExtra("callbackRef",ref);
+        activity.startForegroundService(intent);
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){

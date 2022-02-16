@@ -37,11 +37,19 @@
                 android:launchMode="standard"
                 android:theme="@style/Modal"
             />
+            <service
+                android:name="com.ahmedayachi.webview.BackgroundService"
+                android:exported="false"
+            />
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent=".">
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/ModalActivity"/>
+        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/BackgroundService.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>

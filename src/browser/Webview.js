@@ -70,4 +70,13 @@ module.exports={
         });
         iframe.remove();
     },
+    useBackgroundService:(executor,onFail)=>{
+        try{
+            executor&&executor();
+        }
+        catch{
+            onFail&&onFail();
+        }
+        
+    }
 }
