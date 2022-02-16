@@ -1,33 +1,28 @@
 package com.ahmedayachi.webview;
 
 import com.ahmedayachi.webview.WebView;
-import android.app.Service;
-import android.content.Intent;
 import org.apache.cordova.CallbackContext;
-import java.lang.Exception;
-import java.lang.Runnable;
-import android.os.IBinder;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.Notification;
-import android.R;
+import android.content.Intent;
+import android.content.Context;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+import androidx.work.ListenableWorker.Result;
+import android.widget.Toast;
 
+public class BackgroundService extends Worker{
 
-public class BackgroundService extends Service{
-
-    private static final String channelId="BackgroundServiceChannel";
-    //private final NotificationCompat.Builder builder=new NotificationCompat.Builder(this,channelId);
-    private static final NotificationChannel channel=new NotificationChannel(channelId,channelId,NotificationManager.IMPORTANCE_DEFAULT);
-
-    @Override
-    public IBinder onBind(Intent intent){
-        return null;
+    public BackgroundService(Context context,WorkerParameters params){
+        super(context,params);
     }
-  
-    public int onStartCommand(Intent intent,int flags,int startId){
-        final String callbackRef=intent.getStringExtra("callbackRef");
-        new Thread(new Runnable(){
-            public void run(){
+    
+   @Override
+    public Result doWork(){
+        //final String callbackRef=intent.getStringExtra("callbackRef");
+        //new Thread(new Runnable(){
+            //public void run(){
+                Toast.makeText(WebView.context,"callbackRef",Toast.LENGTH_SHORT).show();
+                /* final String callbackRef=getInputData().getString("callbackRef");
+                
                 if(callbackRef!=null){
                     final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
                     try{
@@ -35,21 +30,13 @@ public class BackgroundService extends Service{
                     }
                     catch(Exception exception){
                         callback.error(exception.getMessage());
+                        return Result.failure();
                     }
                     WebView.backgroundCalls.remove(callbackRef);
-                } 
-            }
-        }).start();
-        
-        this.getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        final Notification.Builder builder=new Notification.Builder(this,channelId);
-        builder.setContentText("using BackgroundService");
-        builder.setContentTitle("BackgroundService");
-        builder.setSmallIcon(R.drawable.alert_dark_frame);
-
-        this.startForeground(Integer.parseInt(callbackRef),builder.build());
-        return super.onStartCommand(intent,flags,startId);
+                } */ 
+            //}
+        //}).start();
+        return Result.success();
     }
-
     
 }

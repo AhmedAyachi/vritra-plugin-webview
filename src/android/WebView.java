@@ -4,16 +4,21 @@ import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
 import com.ahmedayachi.webview.BackgroundService;
+import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import org.apache.cordova.*;
+import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.Random;
-import android.content.Context;
+import androidx.work.WorkRequest;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.Data;
+import android.widget.Toast;
 
 
 public class WebView extends CordovaPlugin{
@@ -140,15 +145,12 @@ public class WebView extends CordovaPlugin{
         wvactivity.finish();
     }
     private void useBackgroundService(CallbackContext callbackContext){
-        final AppCompatActivity activity=this.cordova.getActivity();
-        final Intent intent=new Intent(activity,BackgroundService.class);
         final String ref=Integer.toString(new Random().nextInt());
-        try{
-            backgroundCalls.put(ref,callbackContext);
-        }
-        catch(JSONException exception){}
-        intent.putExtra("callbackRef",ref);
-        activity.startForegroundService(intent);
+        final Data.Builder data=new Data.Builder();
+        data.putString("callbackRef",ref);
+        final WorkRequest request=new OneTimeWorkRequest.Builder(BackgroundService.class).setInputData(data.build()).build();
+        WorkManager.getInstance(WebView.context).enqueue(request);
+        //Toast.makeText(WebView.context,ref,Toast.LENGTH_SHORT).show();
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){
