@@ -40,14 +40,13 @@ public class BackgroundService extends Service{
                 } 
             }
         }).start();
-        
-        this.getSystemService(NotificationManager.class).createNotificationChannel(channel);
+        /* this.getSystemService(NotificationManager.class).createNotificationChannel(channel);
         final Notification.Builder builder=new Notification.Builder(this,channelId);
         builder.setContentText("using BackgroundService");
         builder.setContentTitle("BackgroundService");
         builder.setSmallIcon(R.drawable.alert_dark_frame);
 
-        this.startForeground(Integer.parseInt(callbackRef),builder.build());
+        this.startForeground(Integer.parseInt(callbackRef),builder.build()); */
         return super.onStartCommand(intent,flags,startId);
     }
 
