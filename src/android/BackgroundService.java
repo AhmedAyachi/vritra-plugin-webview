@@ -15,20 +15,20 @@ public class BackgroundService extends CordovaActivity{
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         super.init();
-        this.moveTaskToBack(true);
+        appView.loadUrl("");
         final Intent intent=this.getIntent();
         final String callbackRef=intent.getStringExtra("callbackRef");
         if(callbackRef!=null){
             final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
             if(callback!=null){
-                WebView.cordova.getActivity().runOnUiThread(new Runnable(){
+                this.runOnUiThread(new Runnable(){
                     public void run(){
                         Toast.makeText(WebView.context,callbackRef,Toast.LENGTH_SHORT).show();
                     }
                 });
                 try{
                     callback.success();
-                    this.finish();
+                    //this.finish();
                 }
                 catch(Exception exception){
                     callback.error(exception.getMessage());

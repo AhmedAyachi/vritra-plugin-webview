@@ -41,7 +41,7 @@
                 android:name="com.ahmedayachi.webview.BackgroundService" 
                 android:label="Background"
                 android:launchMode="standard"
-                android:theme="@style/Modal"
+                android:theme="@style/WebView"
             />
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
