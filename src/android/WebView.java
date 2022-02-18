@@ -27,12 +27,13 @@ public class WebView extends CordovaPlugin{
     protected static final JSONObject backgroundCalls=new JSONObject();
     private static int index=-1;
     private static Store store=new Store();
-    private final CordovaPlugin plugin=this;
 
     static Context context;
+    static CordovaInterface cordova;
 
     @Override
     public void initialize(CordovaInterface cordova,CordovaWebView webView){
+        WebView.cordova=cordova;
         WebView.context=cordova.getContext();
     }
 
@@ -78,8 +79,9 @@ public class WebView extends CordovaPlugin{
     }
 
     private void show(JSONObject options,CallbackContext callbackContext){
-        final AppCompatActivity activity=this.cordova.getActivity();
-        this.cordova.getThreadPool().execute(new Runnable(){
+        final AppCompatActivity activity=WebView.cordova.getActivity();
+        final CordovaPlugin plugin=this;
+        WebView.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
@@ -129,16 +131,16 @@ public class WebView extends CordovaPlugin{
     }
     
     private void useMessage(CallbackContext callbackContext){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         callbackContext.success(wvactivity.getMessage());
     }
     private void setMessage(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         wvactivity.setMessage(message);
     }
 
     private void close(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         if(!message.isEmpty()){
             wvactivity.setMessage(message);
         }
@@ -148,9 +150,12 @@ public class WebView extends CordovaPlugin{
         final String ref=Integer.toString(new Random().nextInt());
         final Data.Builder data=new Data.Builder();
         data.putString("callbackRef",ref);
+        try{
+            WebView.backgroundCalls.put(ref,callbackContext);
+        }
+        catch(JSONException exception){}
         final WorkRequest request=new OneTimeWorkRequest.Builder(BackgroundService.class).setInputData(data.build()).build();
         WorkManager.getInstance(WebView.context).enqueue(request);
-        //Toast.makeText(WebView.context,ref,Toast.LENGTH_SHORT).show();
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){

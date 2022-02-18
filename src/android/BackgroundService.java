@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters;
 import androidx.work.ListenableWorker.Result;
 import android.widget.Toast;
 
+
 public class BackgroundService extends Worker{
 
     public BackgroundService(Context context,WorkerParameters params){
@@ -17,26 +18,27 @@ public class BackgroundService extends Worker{
     
    @Override
     public Result doWork(){
-        //final String callbackRef=intent.getStringExtra("callbackRef");
-        //new Thread(new Runnable(){
-            //public void run(){
-                Toast.makeText(WebView.context,"callbackRef",Toast.LENGTH_SHORT).show();
-                /* final String callbackRef=getInputData().getString("callbackRef");
-                
-                if(callbackRef!=null){
-                    final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
-                    try{
-                        callback.success();
+        Boolean isFulfilled=false;
+        final String callbackRef=getInputData().getString("callbackRef");
+        if(callbackRef!=null){
+            final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
+            if(callback!=null){
+                WebView.cordova.getActivity().runOnUiThread(new Runnable(){
+                    public void run(){
+                        Toast.makeText(WebView.context,callbackRef,Toast.LENGTH_SHORT).show();
                     }
-                    catch(Exception exception){
-                        callback.error(exception.getMessage());
-                        return Result.failure();
-                    }
-                    WebView.backgroundCalls.remove(callbackRef);
-                } */ 
-            //}
-        //}).start();
-        return Result.success();
+                });
+                try{
+                    callback.success();
+                    isFulfilled=true;
+                }
+                catch(Exception exception){
+                    callback.error(exception.getMessage());
+                }
+            }
+            WebView.backgroundCalls.remove(callbackRef);
+        }
+
+        return isFulfilled?Result.success():Result.failure();
     }
-    
 }
