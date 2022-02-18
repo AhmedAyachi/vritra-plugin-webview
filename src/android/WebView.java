@@ -148,14 +148,12 @@ public class WebView extends CordovaPlugin{
     }
     private void useBackgroundService(CallbackContext callbackContext){
         final String ref=Integer.toString(new Random().nextInt());
-        final Data.Builder data=new Data.Builder();
-        data.putString("callbackRef",ref);
         try{
             WebView.backgroundCalls.put(ref,callbackContext);
         }
         catch(JSONException exception){}
-        final WorkRequest request=new OneTimeWorkRequest.Builder(BackgroundService.class).setInputData(data.build()).build();
-        WorkManager.getInstance(WebView.context).enqueue(request);
+        final Intent intent=new Intent(WebView.context,BackgroundService.class);
+        WebView.cordova.startActivityForResult(this,intent,-1);
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){

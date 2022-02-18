@@ -2,24 +2,22 @@ package com.ahmedayachi.webview;
 
 import com.ahmedayachi.webview.WebView;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaActivity;
 import android.content.Intent;
 import android.content.Context;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
-import androidx.work.ListenableWorker.Result;
+import android.os.Bundle;
 import android.widget.Toast;
 
 
-public class BackgroundService extends Worker{
+public class BackgroundService extends CordovaActivity{
 
-    public BackgroundService(Context context,WorkerParameters params){
-        super(context,params);
-    }
-    
-   @Override
-    public Result doWork(){
-        Boolean isFulfilled=false;
-        final String callbackRef=getInputData().getString("callbackRef");
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        super.init();
+        this.moveTaskToBack(true);
+        final Intent intent=this.getIntent();
+        final String callbackRef=intent.getStringExtra("callbackRef");
         if(callbackRef!=null){
             final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
             if(callback!=null){
@@ -30,7 +28,7 @@ public class BackgroundService extends Worker{
                 });
                 try{
                     callback.success();
-                    isFulfilled=true;
+                    this.finish();
                 }
                 catch(Exception exception){
                     callback.error(exception.getMessage());
@@ -38,7 +36,5 @@ public class BackgroundService extends Worker{
             }
             WebView.backgroundCalls.remove(callbackRef);
         }
-
-        return isFulfilled?Result.success():Result.failure();
     }
 }
