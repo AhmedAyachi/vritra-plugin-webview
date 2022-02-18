@@ -23,12 +23,13 @@ public class BackgroundService extends Worker{
         if(callbackRef!=null){
             final CallbackContext callback=(CallbackContext)WebView.backgroundCalls.opt(callbackRef);
             if(callback!=null){
-                WebView.cordova.getActivity().runOnUiThread(new Runnable(){
-                    public void run(){
-                        Toast.makeText(WebView.context,callbackRef,Toast.LENGTH_SHORT).show();
-                    }
-                });
                 try{
+                    WebView.cordova.getActivity().runOnUiThread(new Runnable(){
+                        public void run(){
+                            
+                            Toast.makeText(WebView.context,callbackRef,Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     callback.success();
                     isFulfilled=true;
                 }
