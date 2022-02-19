@@ -23,5 +23,4 @@ interface WebView{
     useStore(handler:(store:Object)=>void):void,
     setStore(key:String,value:any,onFullfilled:(store:Object)=>void):void,
     close(message:String):void,
-    useBackgroundService(executor:()=>void,onFail:()=>void):void;
 }
