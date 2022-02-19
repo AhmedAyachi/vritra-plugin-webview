@@ -3,31 +3,36 @@ package com.ahmedayachi.webview;
 import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
-import com.ahmedayachi.webview.BackgroundService;
+import com.ahmedayachi.webview.Fetcher;
+import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import org.apache.cordova.*;
+import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.Random;
-import android.content.Context;
+import androidx.work.WorkRequest;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.Data;
 
 
 public class WebView extends CordovaPlugin{
 
     private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
-    protected static final JSONObject backgroundCalls=new JSONObject();
+    protected static final JSONObject fetchCalls=new JSONObject();
     private static int index=-1;
     private static Store store=new Store();
-    private final CordovaPlugin plugin=this;
 
     static Context context;
+    static CordovaInterface cordova;
 
     @Override
     public void initialize(CordovaInterface cordova,CordovaWebView webView){
+        WebView.cordova=cordova;
         WebView.context=cordova.getContext();
     }
 
@@ -65,16 +70,19 @@ public class WebView extends CordovaPlugin{
             this.close(message);
             return true;
         }
-        else if(action.equals("useBackgroundService")){
-            this.useBackgroundService(callbackContext);
+        else if(action.equals("fetch")){
+            String url=args.getString(0);
+            JSONObject params=args.getJSONObject(1);
+            this.fetch(url,params,callbackContext);
             return true;
         }
         return false;
     }
 
     private void show(JSONObject options,CallbackContext callbackContext){
-        final AppCompatActivity activity=this.cordova.getActivity();
-        this.cordova.getThreadPool().execute(new Runnable(){
+        final AppCompatActivity activity=WebView.cordova.getActivity();
+        final CordovaPlugin plugin=this;
+        WebView.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
@@ -124,31 +132,33 @@ public class WebView extends CordovaPlugin{
     }
     
     private void useMessage(CallbackContext callbackContext){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         callbackContext.success(wvactivity.getMessage());
     }
     private void setMessage(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         wvactivity.setMessage(message);
     }
 
     private void close(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
         if(!message.isEmpty()){
             wvactivity.setMessage(message);
         }
         wvactivity.finish();
     }
-    private void useBackgroundService(CallbackContext callbackContext){
-        final AppCompatActivity activity=this.cordova.getActivity();
-        final Intent intent=new Intent(activity,BackgroundService.class);
+    private void fetch(String url,JSONObject params,CallbackContext callbackContext){
         final String ref=Integer.toString(new Random().nextInt());
+        final Data.Builder data=new Data.Builder();
+        data.putString("fetchRef",ref);
+        data.putString("url",url);
+        data.putString("params",params.toString());
         try{
-            backgroundCalls.put(ref,callbackContext);
+            WebView.fetchCalls.put(ref,callbackContext);
         }
         catch(JSONException exception){}
-        intent.putExtra("callbackRef",ref);
-        activity.startForegroundService(intent);
+        final WorkRequest request=new OneTimeWorkRequest.Builder(Fetcher.class).setInputData(data.build()).build();
+        WorkManager.getInstance(WebView.context).enqueue(request);
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){

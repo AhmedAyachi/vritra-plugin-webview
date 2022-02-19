@@ -70,13 +70,7 @@ module.exports={
         });
         iframe.remove();
     },
-    useBackgroundService:(executor,onFail)=>{
-        try{
-            executor&&executor();
-        }
-        catch{
-            onFail&&onFail();
-        }
-        
+    fetch:(url,props={})=>{
+        console.log("fetch not supported");
     }
 }
