@@ -26,7 +26,6 @@ public class BackgroundService extends Worker{
                 try{
                     WebView.cordova.getActivity().runOnUiThread(new Runnable(){
                         public void run(){
-                            
                             Toast.makeText(WebView.context,callbackRef,Toast.LENGTH_SHORT).show();
                         }
                     });
