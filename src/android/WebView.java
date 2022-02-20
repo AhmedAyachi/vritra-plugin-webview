@@ -87,7 +87,10 @@ public class WebView extends CordovaPlugin{
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(options,intent);
-                WebView.callbacks.put(Integer.toString(ref),callbackContext)
+                try{
+                    WebView.callbacks.put(Integer.toString(ref),callbackContext);
+                }
+                catch(JSONException exception){}
                 plugin.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
