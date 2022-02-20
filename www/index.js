@@ -24,8 +24,8 @@ module.exports={
     close:(message)=>{
         exec(null,null,"WebView","close",[message||""]);
     },
-    fetch:(url,props={})=>{
-        const {onProgress,onFail}=props;
-        exec(onProgress,onFail,"WebView","fetch",[url,props]);
+    download:(params)=>{
+        const {onProgress,onFail}=params;
+        exec(onProgress,onFail,"WebView","download",[params]);
     }
 }

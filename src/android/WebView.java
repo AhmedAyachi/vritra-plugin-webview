@@ -3,7 +3,7 @@ package com.ahmedayachi.webview;
 import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
-import com.ahmedayachi.webview.Fetcher;
+import com.ahmedayachi.webview.Downloader;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -23,7 +23,6 @@ import androidx.work.Data;
 public class WebView extends CordovaPlugin{
 
     protected static final JSONObject callbacks=new JSONObject();
-    private static int index=-1;
     private static Store store=new Store();
 
     static Context context;
@@ -70,9 +69,8 @@ public class WebView extends CordovaPlugin{
             return true;
         }
         else if(action.equals("download")){
-            String url=args.getString(0);
-            JSONObject params=args.getJSONObject(1);
-            this.download(url,params,callbackContext);
+            JSONObject params=args.getJSONObject(0);
+            this.download(params,callbackContext);
             return true;
         }
         return false;
@@ -83,7 +81,7 @@ public class WebView extends CordovaPlugin{
         final CordovaPlugin plugin=this;
         WebView.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
-                final int ref=new Random().nextInt();
+                final int ref=new Random().nextInt(9999);
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(options,intent);
@@ -102,11 +100,9 @@ public class WebView extends CordovaPlugin{
         final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(key);
         if(callback!=null){
             WebView.callbacks.remove(key);
-            String message=Integer.toString(WebViewActivity.RESULT_OK);
-            if(resultCode==WebViewActivity.RESULT_OK){
-                if(intent!=null){
-                    message=intent.getStringExtra("message");
-                }
+            String message="";
+            if((resultCode==WebViewActivity.RESULT_OK)&&(intent!=null)){
+                message=intent.getStringExtra("message");
             }
             JSONObject data=new JSONObject();
             try{
@@ -149,18 +145,20 @@ public class WebView extends CordovaPlugin{
         }
         wvactivity.finish();
     }
-    private void download(String url,JSONObject params,CallbackContext callbackContext){
-        final String ref=Integer.toString(new Random().nextInt());
-        final Data.Builder data=new Data.Builder();
-        data.putString("downloadRef",ref);
-        data.putString("url",url);
-        data.putString("params",params.toString());
-        try{
-            WebView.callbacks.put(ref,callbackContext);
+    private void download(JSONObject params,CallbackContext callbackContext){
+        final String url=params.optString("url");
+        if(url!=null){
+            final String ref=Integer.toString(new Random().nextInt());
+            final Data.Builder data=new Data.Builder();
+            data.putString("callbackRef",ref);
+            data.putString("params",params.toString());
+            try{
+                WebView.callbacks.put(ref,callbackContext);
+            }
+            catch(JSONException exception){}
+            final WorkRequest request=new OneTimeWorkRequest.Builder(Downloader.class).setInputData(data.build()).build();
+            WorkManager.getInstance(WebView.context).enqueue(request);   
         }
-        catch(JSONException exception){}
-        final WorkRequest request=new OneTimeWorkRequest.Builder(Fetcher.class).setInputData(data.build()).build();
-        WorkManager.getInstance(WebView.context).enqueue(request);
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){
@@ -189,5 +187,16 @@ public class WebView extends CordovaPlugin{
         if(statusBarTranslucent!=null){
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
+    }
+
+    static String getAppName(){
+        String name=null;
+        try{
+            name=context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
+        }
+        catch(Exception exception){
+            name="appname";
+        }
+        return name;
     }
 }
