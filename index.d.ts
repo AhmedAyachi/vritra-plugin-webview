@@ -23,15 +23,12 @@ interface WebView{
     useStore(handler:(store:Object)=>void):void,
     setStore(key:String,value:any,onFullfilled:(store:Object)=>void):void,
     close(message:String):void,
-    fetch(url:String,props:{
-        method:"DOWNLOAD"|"UPLOAD",
-        onProgress:(info:{
+    download(url:String,props?:{
+        //type?:"image"|"text"|"video",
+        onProgress?:(info:{
             progress:Number,
             isFinished:Boolean,
         })=>void,
-        onFail:(error:{
-            message:String,
-        })=>void,
-        filePaths:String[],
+        onFail?:(message:String)=>void,
     }):void;
 }

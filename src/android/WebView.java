@@ -22,8 +22,7 @@ import androidx.work.Data;
 
 public class WebView extends CordovaPlugin{
 
-    private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
-    protected static final JSONObject fetchCalls=new JSONObject();
+    protected static final JSONObject callbacks=new JSONObject();
     private static int index=-1;
     private static Store store=new Store();
 
@@ -70,10 +69,10 @@ public class WebView extends CordovaPlugin{
             this.close(message);
             return true;
         }
-        else if(action.equals("fetch")){
+        else if(action.equals("download")){
             String url=args.getString(0);
             JSONObject params=args.getJSONObject(1);
-            this.fetch(url,params,callbackContext);
+            this.download(url,params,callbackContext);
             return true;
         }
         return false;
@@ -84,22 +83,22 @@ public class WebView extends CordovaPlugin{
         final CordovaPlugin plugin=this;
         WebView.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
+                final int ref=new Random().nextInt();
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(options,intent);
-                WebView.wvcallbacks.add(callbackContext);
-                WebView.index++;
-                plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
+                WebView.callbacks.put(Integer.toString(ref),callbackContext)
+                plugin.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
     }
 
     @Override
-    public void onActivityResult(int requestCode,int resultCode,Intent intent){
-        if(requestCode==WebView.index){
-            final CallbackContext callback=WebView.wvcallbacks.get(WebView.index);
-            WebView.wvcallbacks.remove(WebView.index);
-            WebView.index--; 
+    public void onActivityResult(int ref,int resultCode,Intent intent){
+        final String key=Integer.toString(ref);
+        final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(key);
+        if(callback!=null){
+            WebView.callbacks.remove(key);
             String message=Integer.toString(WebViewActivity.RESULT_OK);
             if(resultCode==WebViewActivity.RESULT_OK){
                 if(intent!=null){
@@ -147,14 +146,14 @@ public class WebView extends CordovaPlugin{
         }
         wvactivity.finish();
     }
-    private void fetch(String url,JSONObject params,CallbackContext callbackContext){
+    private void download(String url,JSONObject params,CallbackContext callbackContext){
         final String ref=Integer.toString(new Random().nextInt());
         final Data.Builder data=new Data.Builder();
-        data.putString("fetchRef",ref);
+        data.putString("downloadRef",ref);
         data.putString("url",url);
         data.putString("params",params.toString());
         try{
-            WebView.fetchCalls.put(ref,callbackContext);
+            WebView.callbacks.put(ref,callbackContext);
         }
         catch(JSONException exception){}
         final WorkRequest request=new OneTimeWorkRequest.Builder(Fetcher.class).setInputData(data.build()).build();

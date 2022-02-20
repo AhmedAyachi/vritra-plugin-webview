@@ -38,11 +38,15 @@
                 android:theme="@style/Modal"
             />
         </config-file>
+        <config-file target="AndroidManifest.xml" parent=".">
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Fetcher.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/Downloader.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>
@@ -50,6 +54,7 @@
         <source-file src="Xml/slide_down.xml" target-dir="res/animator"/>
         <source-file src="Xml/slide_left.xml" target-dir="res/animator"/>
         <source-file src="Xml/fade_out.xml" target-dir="res/animator"/>
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
     </platform>
 
     <platform name="browser">

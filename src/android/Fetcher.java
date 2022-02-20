@@ -2,6 +2,7 @@ package com.ahmedayachi.webview;
 
 import com.ahmedayachi.webview.WebView;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
 import android.content.Intent;
 import android.content.Context;
 import androidx.work.Worker;
@@ -33,44 +34,54 @@ public class Fetcher extends Worker{
     public Result doWork(){
         Boolean isFulfilled=false;
         final Data data=this.getInputData();
-        final String uploadRef=data.getString("uploadRef");
-        if(uploadRef!=null){
-            final CallbackContext callback=(CallbackContext)WebView.fetchCalls.opt(uploadRef);
-            if(callback!=null){
-                try{
-                    final String url=data.getString("url");
-                    final JSONObject params=new JSONObject(data.getString("params"));
-                    //callback.success();
-                    this.setProgressNotification();
-                    isFulfilled=true;
-                }
-                catch(Exception exception){
-                    callback.error(exception.getMessage());
-                }
+        final String fetchRef=data.getString("fetchRef");
+        if(fetchRef!=null){
+            try{
+                final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(fetchRef);
+                final String url=data.getString("url");
+                final JSONObject params=new JSONObject(data.getString("params"));
+                this.setNotification(callback);
+                isFulfilled=true;
+                WebView.callbacks.remove(fetchRef);
             }
-            WebView.fetchCalls.remove(uploadRef);
+            catch(Exception exception){}
         }
 
         return isFulfilled?Result.success():Result.failure();
     }
 
-    private void setProgressNotification(/* JSONObject props */){
+    private void setNotification(CallbackContext callback){
         Fetcher.createNotificationChannel();
         final int id=new Random().nextInt();
         final NotificationCompat.Builder builder=new NotificationCompat.Builder(WebView.context,channelId);
-        builder.setContentTitle("File Download");
-        builder.setContentText("Download in progress");
+        builder.setContentTitle("File Name");
+        builder.setContentText("0%");
         builder.setSmallIcon(WebView.context.getApplicationInfo().icon);
         builder.setOngoing(true);
         builder.setProgress(100,0,false);
         manager.notify(id,builder.build());
+        this.fetchData(id,builder,callback);
+    }
+
+    private void fetchData(int id,NotificationCompat.Builder builder,CallbackContext callback){
         new Thread(new Runnable(){
             public void run(){
+                Boolean isFinished=false;
+                int progress=0;
                 try{
-                    for(int progress=0;progress<=10;progress++){
+                    final JSONObject params=new JSONObject();
+                    while(progress<100){
                         Thread.sleep(1500);
-                        builder.setProgress(100,progress*10,false);
+                        progress+=new Random().nextInt(25);
+                        isFinished=progress>=100;
+                        params.put("progress",progress);
+                        params.put("isFinished",isFinished);
+                        builder.setProgress(100,progress,false);
+                        builder.setContentText(progress+"%");
+                        final PluginResult result=new PluginResult(PluginResult.Status.OK,params);
+                        result.setKeepCallback(!isFinished);
                         manager.notify(id,builder.build());
+                        callback.sendPluginResult(result);
                     }
                     builder.setContentTitle("File Downloaded");
                     builder.setContentText(null);
@@ -78,9 +89,15 @@ public class Fetcher extends Worker{
                     builder.setOngoing(false);
                     manager.notify(id,builder.build());
                 } 
-                catch(Exception exception){}
+                catch(Exception exception){
+                    callback.error(exception.getMessage());
+                }
             }
         }).start();
+    }   
+
+    private void upload(String path,JSONObject params){
+
     }
 
     static private void createNotificationChannel(){
