@@ -51,8 +51,8 @@ public class Downloader extends Worker{
             final DownloadManager downloader=(DownloadManager)WebView.cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
             final Uri uri=Uri.parse(url/* .replaceAll(" ","%20") */);
             final DownloadManager.Request request=new DownloadManager.Request(uri);
-            final String extension=getExtension(url);
-            final String filename=params.optString("filename",WebView.getAppName())+"."+extension;
+            final String extension=WebView.getExtension(url);
+            final String filename=params.optString("filename",WebView.getAppName().replaceAll(" ",""))+"."+extension;
             request.setTitle(filename);
             final String type=params.optString("type");
             if(type!=null){
@@ -90,7 +90,7 @@ public class Downloader extends Worker{
                             final Cursor cursor=downloader.query(query);
                             if(cursor.moveToFirst()){
                                 final long total=cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                                if(total>-1){
+                                if(total>0){
                                     final int downloaded=cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                                     final double progress=(downloaded/total)*100f;
                                     isFinished=progress>=100;
@@ -133,14 +133,5 @@ public class Downloader extends Worker{
         catch(Exception exception){
             callback.error(exception.getMessage());
         }
-    }
-
-    static String getExtension(String url){
-        final StringTokenizer tokenizer=new StringTokenizer(url,".");
-        String extension="";
-        while(tokenizer.hasMoreTokens()){
-            extension=tokenizer.nextToken();
-        }
-        return extension;
     }
 }

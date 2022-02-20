@@ -20,38 +20,35 @@ import java.util.Random;
 import android.os.Build;
 
 
-public class Fetcher extends Worker{
+public class Uploader extends Worker{
 
-    static final String channelId="FetcherChannel";
+    static final String channelId="UploaderChannel";
     static Boolean channelCreated=false;
     protected static final NotificationManagerCompat manager=NotificationManagerCompat.from(WebView.context);
 
-    public Fetcher(Context context,WorkerParameters params){
+    public Uploader(Context context,WorkerParameters params){
         super(context,params);
     }
     
    @Override
     public Result doWork(){
-        Boolean isFulfilled=false;
         final Data data=this.getInputData();
-        final String fetchRef=data.getString("fetchRef");
-        if(fetchRef!=null){
+        final String callbackRef=data.getString("callbackRef");
+        if(callbackRef!=null){
             try{
-                final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(fetchRef);
-                final String url=data.getString("url");
+                final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(callbackRef);
                 final JSONObject params=new JSONObject(data.getString("params"));
                 this.setNotification(callback);
-                isFulfilled=true;
-                WebView.callbacks.remove(fetchRef);
+                WebView.callbacks.remove(callbackRef);
             }
             catch(Exception exception){}
         }
 
-        return isFulfilled?Result.success():Result.failure();
+        return Result.success();
     }
 
     private void setNotification(CallbackContext callback){
-        Fetcher.createNotificationChannel();
+        Uploader.createNotificationChannel();
         final int id=new Random().nextInt();
         final NotificationCompat.Builder builder=new NotificationCompat.Builder(WebView.context,channelId);
         builder.setContentTitle("File Name");

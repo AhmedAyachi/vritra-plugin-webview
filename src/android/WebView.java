@@ -4,6 +4,7 @@ import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
 import com.ahmedayachi.webview.Downloader;
+import com.ahmedayachi.webview.Uploader;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -70,7 +71,12 @@ public class WebView extends CordovaPlugin{
         }
         else if(action.equals("download")){
             JSONObject params=args.getJSONObject(0);
-            this.download(params,callbackContext);
+            this.fetch("download",params,callbackContext);
+            return true;
+        }
+        else if(action.equals("upload")){
+            JSONObject params=args.getJSONObject(0);
+            this.fetch("upload",params,callbackContext);
             return true;
         }
         return false;
@@ -145,7 +151,7 @@ public class WebView extends CordovaPlugin{
         }
         wvactivity.finish();
     }
-    private void download(JSONObject params,CallbackContext callbackContext){
+    private void fetch(String method,JSONObject params,CallbackContext callbackContext){
         final String url=params.optString("url");
         if(url!=null){
             final String ref=Integer.toString(new Random().nextInt());
@@ -156,7 +162,7 @@ public class WebView extends CordovaPlugin{
                 WebView.callbacks.put(ref,callbackContext);
             }
             catch(JSONException exception){}
-            final WorkRequest request=new OneTimeWorkRequest.Builder(Downloader.class).setInputData(data.build()).build();
+            final WorkRequest request=new OneTimeWorkRequest.Builder(method.equals("download")?Downloader.class:Uploader.class).setInputData(data.build()).build();
             WorkManager.getInstance(WebView.context).enqueue(request);   
         }
     }
@@ -198,5 +204,14 @@ public class WebView extends CordovaPlugin{
             name="appname";
         }
         return name;
+    }
+
+    static String getExtension(String url){
+        final StringTokenizer tokenizer=new StringTokenizer(url,".");
+        String extension="";
+        while(tokenizer.hasMoreTokens()){
+            extension=tokenizer.nextToken();
+        }
+        return extension;
     }
 }

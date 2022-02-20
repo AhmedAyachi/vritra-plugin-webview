@@ -28,11 +28,23 @@ interface WebView{
         location?:String,
         filename?:String,
         type?:String,
-        toast:String,
+        toast?:String,
         onProgress(info:{
             progress:Number,
             isFinished:Boolean,
         }):void,
         onFail(message:String):void,
     }):void;
+    upload(params:{
+        url:string,
+        files:{
+            type:String,
+            src:String,
+        }[],
+        onProgress(info:{
+            progress:Number,
+            isFinished:Boolean,
+        }):void,
+        onFail(message:String):void,
+    }):void,
 }

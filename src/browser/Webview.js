@@ -70,7 +70,10 @@ module.exports={
         });
         iframe.remove();
     },
-    fetch:(url,props={})=>{
-        console.log("fetch not supported");
-    }
+    download:(params)=>{
+        console.log("download not supported");
+    },
+    upload:(params)=>{
+        console.log("upload not supported");
+    },
 }
