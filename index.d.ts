@@ -39,7 +39,7 @@ interface WebView{
         url:string,
         files:{
             type:String,
-            src:String,
+            uri:String,
         }[],
         onProgress(info:{
             progress:Number,

@@ -13,7 +13,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.NotificationCompat;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.widget.Toast;
 import org.json.JSONObject;
 import java.util.Random;
@@ -38,13 +37,18 @@ public class Uploader extends Worker{
             try{
                 final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(callbackRef);
                 final JSONObject params=new JSONObject(data.getString("params"));
-                this.setNotification(callback);
+                this.upload(params,callback);
                 WebView.callbacks.remove(callbackRef);
             }
             catch(Exception exception){}
         }
 
         return Result.success();
+    }
+
+    private void upload(JSONObject params,CallbackContext callback){
+        final String url=params.optString("url");
+         
     }
 
     private void setNotification(CallbackContext callback){
@@ -92,10 +96,6 @@ public class Uploader extends Worker{
             }
         }).start();
     }   
-
-    private void upload(String path,JSONObject params){
-
-    }
 
     static private void createNotificationChannel(){
         if((!channelCreated)&&(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)){

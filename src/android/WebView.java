@@ -152,7 +152,7 @@ public class WebView extends CordovaPlugin{
         wvactivity.finish();
     }
     private void fetch(String method,JSONObject params,CallbackContext callbackContext){
-        final String url=params.optString("url");
+        final String url=params.optString("url",null);
         if(url!=null){
             final String ref=Integer.toString(new Random().nextInt());
             final Data.Builder data=new Data.Builder();
