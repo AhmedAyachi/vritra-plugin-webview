@@ -7,11 +7,12 @@ import retrofit2.Call;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import java.util.ArrayList;
 
 
 public interface UploadAPI {
 
     @Multipart
     @POST("/")
-    Call<ResponseBody> uploadFile(@Part MultipartBody.Part part,@Part("somedata") RequestBody requestbody);
+    Call<ResponseBody> uploadFile(@Part ArrayList<MultipartBody.Part> fileParts,@Part("upload") RequestBody requestbody);
 }

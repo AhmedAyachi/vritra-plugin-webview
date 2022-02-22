@@ -37,6 +37,7 @@ interface WebView{
     }):void;
     upload(params:{
         url:string,
+        toast?:String,
         files:{
             type?:String,
             path:String,
