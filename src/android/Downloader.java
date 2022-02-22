@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.os.Environment;
-import java.util.StringTokenizer;
 import android.database.Cursor;
 import android.widget.Toast;
 

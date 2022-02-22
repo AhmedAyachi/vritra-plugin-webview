@@ -38,8 +38,9 @@ interface WebView{
     upload(params:{
         url:string,
         files:{
-            type:String,
-            uri:String,
+            type?:String,
+            path:String,
+            newName?:String,
         }[],
         onProgress(info:{
             progress:Number,

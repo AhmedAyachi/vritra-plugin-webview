@@ -1,6 +1,9 @@
 package com.ahmedayachi.webview;
 
 import com.ahmedayachi.webview.WebView;
+import com.ahmedayachi.webview.UploadAPI;
+import com.ahmedayachi.webview.UploaderClient;
+import com.ahmedayachi.webview.FileUtils;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import android.content.Intent;
@@ -8,6 +11,7 @@ import android.content.Context;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import androidx.work.ListenableWorker.Result;
+import javafx.scene.media.Media;
 import androidx.work.Data;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.NotificationCompat;
@@ -15,8 +19,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.widget.Toast;
 import org.json.JSONObject;
+import org.json.JSONArray;
+import java.io.File;
 import java.util.Random;
 import android.os.Build;
+import android.net.Uri;
+import okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import retrofit2.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+/*import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part; */
 
 
 public class Uploader extends Worker{
@@ -47,8 +64,38 @@ public class Uploader extends Worker{
     }
 
     private void upload(JSONObject params,CallbackContext callback){
-        final String url=params.optString("url");
-         
+        final JSONArray files=params.optJSONArray("files");
+        try{
+            final JSONObject props=files.optJSONObject(0);
+
+            final File file=new File(FileUtils.getPath(WebView.context,Uri.parse(props.optString("path"))));
+            final RequestBody fileRequest=RequestBody.create(MediaType.parse(props.optString("type","*")),file);
+            final MultipartBody.Part filePart=MultipartBody.Part.createFormData(props.optString("newName","newname"),file.getName(),fileRequest);
+            
+            final RequestBody dataRequest=RequestBody.create(MediaType.parse("text/plain"),params.optString("body","body"));
+            final Retrofit client=UploaderClient.getClient(params.optString("url"));
+            final UploadAPI api=client.create(UploadAPI.class);
+            final Call call=api.uploadFile(filePart,dataRequest);
+            call.enqueue(new Callback(){
+                @Override
+                public void onResponse(Call call,Response response){
+                    callback.success(props);
+                }
+
+                @Override
+                public void onFailure(Call call,Throwable throwable){
+                    callback.error("onFailure:"+throwable.getMessage());
+                }
+            });
+            WebView.cordova.getActivity().runOnUiThread(new Runnable(){
+                public void run(){
+                    Toast.makeText(WebView.context,file.getAbsolutePath(),Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        catch(Exception exception){
+            callback.error("catch:"+exception.getMessage());
+        }
     }
 
     private void setNotification(CallbackContext callback){
