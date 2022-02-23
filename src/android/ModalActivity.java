@@ -23,7 +23,7 @@ public class ModalActivity extends WebViewActivity{
 
         final Window window=getWindow();
         try{
-            String styleExtra=intent.getStringExtra("style");
+            String styleExtra=intent.getStringExtra("modalStyle");
             if(styleExtra!=null){
                 style=new JSONObject(styleExtra);
                 final LayoutParams layoutparams=window.getAttributes();

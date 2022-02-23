@@ -7,7 +7,7 @@ interface WebView{
         message:String,
         statusBarTranslucent:Boolean,
         asModal:Boolean,
-        style:{
+        modalStyle:{
             width:Number,
             height:Number,
             marginVertical:Number,
