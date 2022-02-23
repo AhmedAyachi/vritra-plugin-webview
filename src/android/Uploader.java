@@ -121,6 +121,7 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
                 }
                 @Override
                 public void onFailure(Call call,Throwable throwable){
+                    manager.cancel(id);
                     callback.error(throwable.getMessage());
                 }
             });
