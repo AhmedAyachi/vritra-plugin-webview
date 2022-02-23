@@ -6,7 +6,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 >
     <name>WebView</name>
-
     <js-module name="webview" src="www/index.js">
         <clobbers target="WebView"/>
     </js-module>
@@ -18,13 +17,13 @@
             </feature>
         </config-file>
         <edit-config 
-            file="AndroidManifest.xml"
+            file="app/src/main/AndroidManifest.xml"
             target="/manifest/application/activity[@android:name='MainActivity']"
             mode="merge"
         >
             <activity android:theme="@style/MainActivity"/>
         </edit-config>
-        <config-file target="AndroidManifest.xml" parent="application">
+        <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
                 android:label="WebView"
@@ -40,7 +39,7 @@
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/ModalActivity"/>
+        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
