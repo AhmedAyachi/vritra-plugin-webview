@@ -3,7 +3,8 @@ package com.ahmedayachi.webview;
 import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
-import com.ahmedayachi.webview.BackgroundService;
+import com.ahmedayachi.webview.Downloader;
+import com.ahmedayachi.webview.Uploader;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -18,14 +19,12 @@ import androidx.work.WorkRequest;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Data;
-import android.widget.Toast;
+import java.util.StringTokenizer;
 
 
 public class WebView extends CordovaPlugin{
 
-    private static final ArrayList<CallbackContext> wvcallbacks=new ArrayList<CallbackContext>();
-    protected static final JSONObject backgroundCalls=new JSONObject();
-    private static int index=-1;
+    protected static final JSONObject callbacks=new JSONObject();
     private static Store store=new Store();
 
     static Context context;
@@ -71,8 +70,14 @@ public class WebView extends CordovaPlugin{
             this.close(message);
             return true;
         }
-        else if(action.equals("useBackgroundService")){
-            this.useBackgroundService(callbackContext);
+        else if(action.equals("download")){
+            JSONObject params=args.getJSONObject(0);
+            this.fetch("download",params,callbackContext);
+            return true;
+        }
+        else if(action.equals("upload")){
+            JSONObject params=args.getJSONObject(0);
+            this.fetch("upload",params,callbackContext);
             return true;
         }
         return false;
@@ -83,27 +88,28 @@ public class WebView extends CordovaPlugin{
         final CordovaPlugin plugin=this;
         WebView.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
+                final int ref=new Random().nextInt(9999);
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(options,intent);
-                WebView.wvcallbacks.add(callbackContext);
-                WebView.index++;
-                plugin.cordova.startActivityForResult(plugin,intent,WebView.index);
+                try{
+                    WebView.callbacks.put(Integer.toString(ref),callbackContext);
+                }
+                catch(JSONException exception){}
+                plugin.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
     }
 
     @Override
-    public void onActivityResult(int requestCode,int resultCode,Intent intent){
-        if(requestCode==WebView.index){
-            final CallbackContext callback=WebView.wvcallbacks.get(WebView.index);
-            WebView.wvcallbacks.remove(WebView.index);
-            WebView.index--; 
-            String message=Integer.toString(WebViewActivity.RESULT_OK);
-            if(resultCode==WebViewActivity.RESULT_OK){
-                if(intent!=null){
-                    message=intent.getStringExtra("message");
-                }
+    public void onActivityResult(int ref,int resultCode,Intent intent){
+        final String key=Integer.toString(ref);
+        final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(key);
+        if(callback!=null){
+            WebView.callbacks.remove(key);
+            String message="";
+            if((resultCode==WebViewActivity.RESULT_OK)&&(intent!=null)){
+                message=intent.getStringExtra("message");
             }
             JSONObject data=new JSONObject();
             try{
@@ -146,14 +152,20 @@ public class WebView extends CordovaPlugin{
         }
         wvactivity.finish();
     }
-    private void useBackgroundService(CallbackContext callbackContext){
-        final String ref=Integer.toString(new Random().nextInt());
-        try{
-            WebView.backgroundCalls.put(ref,callbackContext);
+    private void fetch(String method,JSONObject params,CallbackContext callbackContext){
+        final String url=params.optString("url",null);
+        if(url!=null){
+            final String ref=Integer.toString(new Random().nextInt());
+            final Data.Builder data=new Data.Builder();
+            data.putString("callbackRef",ref);
+            data.putString("params",params.toString());
+            try{
+                WebView.callbacks.put(ref,callbackContext);
+            }
+            catch(JSONException exception){}
+            final WorkRequest request=new OneTimeWorkRequest.Builder(method.equals("download")?Downloader.class:Uploader.class).setInputData(data.build()).build();
+            WorkManager.getInstance(WebView.context).enqueue(request);   
         }
-        catch(JSONException exception){}
-        final Intent intent=new Intent(WebView.context,BackgroundService.class);
-        WebView.cordova.startActivityForResult(this,intent,-1);
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){
@@ -182,5 +194,25 @@ public class WebView extends CordovaPlugin{
         if(statusBarTranslucent!=null){
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
+    }
+
+    static String getAppName(){
+        String name=null;
+        try{
+            name=context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
+        }
+        catch(Exception exception){
+            name="appname";
+        }
+        return name;
+    }
+
+    static String getExtension(String url){
+        final StringTokenizer tokenizer=new StringTokenizer(url,".");
+        String extension="";
+        while(tokenizer.hasMoreTokens()){
+            extension=tokenizer.nextToken();
+        }
+        return extension;
     }
 }

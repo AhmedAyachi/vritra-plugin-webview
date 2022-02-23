@@ -70,13 +70,10 @@ module.exports={
         });
         iframe.remove();
     },
-    useBackgroundService:(executor,onFail)=>{
-        try{
-            executor&&executor();
-        }
-        catch{
-            onFail&&onFail();
-        }
-        
-    }
+    download:(params)=>{
+        console.log("download not supported");
+    },
+    upload:(params)=>{
+        console.log("upload not supported");
+    },
 }

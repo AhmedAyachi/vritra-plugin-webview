@@ -24,7 +24,12 @@ module.exports={
     close:(message)=>{
         exec(null,null,"WebView","close",[message||""]);
     },
-    useBackgroundService:(executor,onFail)=>{
-        exec(executor,onFail,"WebView","useBackgroundService",null);
-    }
+    download:(params)=>{
+        const {onProgress,onFail}=params;
+        exec(onProgress,onFail,"WebView","download",[params]);
+    },
+    upload:(params)=>{
+        const {onProgress,onFail}=params;
+        exec(onProgress,onFail,"WebView","upload",[params]);
+    },
 }
