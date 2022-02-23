@@ -3,8 +3,6 @@ package com.ahmedayachi.webview;
 import com.ahmedayachi.webview.WebViewActivity;
 import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
-import com.ahmedayachi.webview.Downloader;
-import com.ahmedayachi.webview.Uploader;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -13,13 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
-import java.util.ArrayList;
 import java.util.Random;
-import androidx.work.WorkRequest;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.Data;
-import java.util.StringTokenizer;
 
 
 public class WebView extends CordovaPlugin{
@@ -68,16 +60,6 @@ public class WebView extends CordovaPlugin{
         else if(action.equals("close")){
             String message=args.getString(0);
             this.close(message);
-            return true;
-        }
-        else if(action.equals("download")){
-            JSONObject params=args.getJSONObject(0);
-            this.fetch("download",params,callbackContext);
-            return true;
-        }
-        else if(action.equals("upload")){
-            JSONObject params=args.getJSONObject(0);
-            this.fetch("upload",params,callbackContext);
             return true;
         }
         return false;
@@ -152,21 +134,6 @@ public class WebView extends CordovaPlugin{
         }
         wvactivity.finish();
     }
-    private void fetch(String method,JSONObject params,CallbackContext callbackContext){
-        final String url=params.optString("url",null);
-        if(url!=null){
-            final String ref=Integer.toString(new Random().nextInt());
-            final Data.Builder data=new Data.Builder();
-            data.putString("callbackRef",ref);
-            data.putString("params",params.toString());
-            try{
-                WebView.callbacks.put(ref,callbackContext);
-            }
-            catch(JSONException exception){}
-            final WorkRequest request=new OneTimeWorkRequest.Builder(method.equals("download")?Downloader.class:Uploader.class).setInputData(data.build()).build();
-            WorkManager.getInstance(WebView.context).enqueue(request);   
-        }
-    }
 
     private static void setIntentExtras(JSONObject options,Intent intent){
         String file=options.optString("file");
@@ -194,25 +161,5 @@ public class WebView extends CordovaPlugin{
         if(statusBarTranslucent!=null){
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
-    }
-
-    static String getAppName(){
-        String name=null;
-        try{
-            name=context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
-        }
-        catch(Exception exception){
-            name="appname";
-        }
-        return name;
-    }
-
-    static String getExtension(String url){
-        final StringTokenizer tokenizer=new StringTokenizer(url,".");
-        String extension="";
-        while(tokenizer.hasMoreTokens()){
-            extension=tokenizer.nextToken();
-        }
-        return extension;
     }
 }

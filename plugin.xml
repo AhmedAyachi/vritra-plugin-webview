@@ -23,9 +23,6 @@
         >
             <activity android:theme="@style/MainActivity"/>
         </edit-config>
-        <edit-config file="app/src/main/AndroidManifest.xml" target="/manifest/application" mode="merge">
-            <application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true"/>
-        </edit-config>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
@@ -39,27 +36,11 @@
                 android:launchMode="standard"
                 android:theme="@style/Modal"
             />
-            <activity 
-                android:name="com.ahmedayachi.webview.BackgroundService" 
-                android:label="Background"
-                android:launchMode="standard"
-                android:theme="@style/WebView"
-            />
-        </config-file>
-        <config-file target="app/src/main/AndroidManifest.xml" parent=".">
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
         </config-file>
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/Uploader.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/UploaderClient.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/UploadAPI.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/FileUtils.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/ProgressRequest.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/Downloader.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>
@@ -67,7 +48,6 @@
         <source-file src="Xml/slide_down.xml" target-dir="res/animator"/>
         <source-file src="Xml/slide_left.xml" target-dir="res/animator"/>
         <source-file src="Xml/fade_out.xml" target-dir="res/animator"/>
-        <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
     </platform>
 
     <platform name="browser">
