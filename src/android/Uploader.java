@@ -21,6 +21,7 @@ import android.app.NotificationManager;
 import android.widget.Toast;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import org.json.JSONException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,8 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
     protected static final NotificationManagerCompat manager=NotificationManagerCompat.from(WebView.context);
 
     CallbackContext callback;
-    JSONObject params=new JSONObject();
+    JSONObject output=new JSONObject();
+    JSONObject error=new JSONObject();
     NotificationCompat.Builder builder;
     int id;
 
@@ -59,13 +61,7 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
             try{
                 callback=(CallbackContext)WebView.callbacks.opt(callbackRef);
                 final JSONObject params=new JSONObject(data.getString("params"));
-                final Uploader instance=this;
-                new Thread(new Runnable(){
-                    public void run(){
-                        instance.upload(params);
-                    }
-                }).start();
-                //this.upload(params);
+                this.upload(params);
                 WebView.callbacks.remove(callbackRef);
             }
             catch(Exception exception){}
@@ -82,12 +78,26 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
             for(int i=0;i<length;i++){
                 final JSONObject props=files.optJSONObject(i);
                 final File file=new File(FileUtils.getPath(WebView.context,Uri.parse(props.optString("path"))));
-                final ProgressRequest fileRequest=new ProgressRequest(props.optString("type","*"),file,this);
-                final MultipartBody.Part filePart=MultipartBody.Part.createFormData("filename",props.optString("newName",file.getName()),fileRequest);
+                final ProgressRequest fileRequest=new ProgressRequest(props.optString("type","*"),file,this,i,length);
+                String key=null,value=null;
+                final JSONObject formData=props.optJSONObject("formData");
+                if(formData!=null){
+                    final JSONArray keys=formData.names();
+                    key=keys.optString(0,null);
+                    if(key!=null){
+                        value=formData.optString(key);
+                    }
+                }
+                if(key==null){
+                    key="filename";
+                    value=file.getName();
+                }
+                final MultipartBody.Part filePart=MultipartBody.Part.createFormData(key,value,fileRequest);
                 fileParts.add(filePart);
             }
             
-            final RequestBody dataRequest=RequestBody.create(MediaType.parse("text/plain"),params.optString("body","body"));
+            final JSONObject body=params.optJSONObject("body");
+            final RequestBody dataRequest=RequestBody.create(MediaType.parse("application/json"),body!=null?body.toString():"");
             final Retrofit client=UploaderClient.getClient(params.optString("url"));
             final UploadAPI api=client.create(UploadAPI.class);
             final Call call=api.uploadFile(fileParts,dataRequest);
@@ -103,26 +113,38 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
                                 }
                             });
                         }
-                        builder.setContentTitle("Upload complete");
+                        builder.setContentTitle(((length>1)?""+length+" files":"file")+" uploaded successfully");
                         builder.setContentText(null);
                         builder.setProgress(100,100,false);
                         builder.setOngoing(false);
                         manager.notify(id,builder.build());
                         try{
-                            params.put("progress",100);
-                            params.put("isFinished",true);
+                            output.put("progress",100);
+                            output.put("isFinished",true);
+                            output.put("response",getJSONObjectResponse(response));
+                            callback.success(output);
+                            manager.notify(id,builder.build());
                         }
                         catch(Exception exception){}
-                        callback.success(params);
                     }
                     else{
-                        callback.error("Unknown error");
+                        try{
+                            manager.cancel(id);
+                            error.put("message","Unknown error");
+                            error.put("response",getJSONObjectResponse(response));
+                            callback.error(error);
+                        }
+                        catch(Exception exception){}
                     }
                 }
                 @Override
                 public void onFailure(Call call,Throwable throwable){
-                    manager.cancel(id);
-                    callback.error(throwable.getMessage());
+                    try{
+                        manager.cancel(id);
+                        error.put("message",throwable.getMessage());
+                        callback.error(error);
+                    }
+                    catch(Exception e){}
                 }
             });
             Uploader.createNotificationChannel();
@@ -137,7 +159,11 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
             manager.notify(id,builder.build());
         }
         catch(Exception exception){
-            callback.error(exception.getMessage());
+            try{
+                error.put("message",exception.getMessage());
+                callback.error(error);
+            }
+            catch(Exception e){}
         }
     }
 
@@ -145,26 +171,54 @@ public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
     public void onProgress(int progress){ 
         final Boolean isFinished=progress>=100;
         try{
-            params.put("progress",progress);
-            params.put("isFinished",isFinished);
+            output.put("progress",progress);
+            output.put("isFinished",isFinished);
         }
         catch(Exception exception){}
         builder.setProgress(100,progress,false);
         builder.setContentText(progress+"%");
         manager.notify(id,builder.build());
-        final PluginResult result=new PluginResult(PluginResult.Status.OK,params);
+        final PluginResult result=new PluginResult(PluginResult.Status.OK,output);
         result.setKeepCallback(!isFinished);
         callback.sendPluginResult(result);
     }
     @Override
     public void onError(){
-        callback.error("Unknown Error");
+        try{
+            error.put("message","Unknown error");
+            callback.error(error);
+        }
+        catch(Exception exception){}
     }
     @Override
     public void onFinish(){
         
     }
 
+    static private JSONObject getJSONObjectResponse(Response response) throws Exception{
+        String json=response.toString().replace("Response{","{").replaceAll("=",":\"").replaceAll(",","\",").replace("}","\"}");
+        final JSONObject object=new JSONObject(json);
+        final Boolean isSuccessful=response.isSuccessful();
+        object.put("isSuccessful",isSuccessful);
+        final String code=object.optString("code",null);
+        if(code!=null){
+            object.put("code",Integer.parseInt(code));
+        }
+        if(isSuccessful){
+            object.put("body",response.body());
+        }
+        else{
+            final String query=response.errorBody().string();
+            try{
+                final JSONObject body=new JSONObject(query);
+                object.put("body",body);
+            }
+            catch(JSONException exception){
+                object.put("body",query);
+            }
+        }
+        return object;
+    }
     static private void createNotificationChannel(){
         if((!channelCreated)&&(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)){
             int importance=NotificationManager.IMPORTANCE_HIGH;
