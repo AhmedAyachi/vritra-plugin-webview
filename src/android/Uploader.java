@@ -4,6 +4,7 @@ import com.ahmedayachi.webview.WebView;
 import com.ahmedayachi.webview.UploadAPI;
 import com.ahmedayachi.webview.UploaderClient;
 import com.ahmedayachi.webview.FileUtils;
+import com.ahmedayachi.webview.ProgressRequest;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
 import android.content.Intent;
@@ -35,11 +36,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class Uploader extends Worker{
+public class Uploader extends Worker implements ProgressRequest.UploadCallbacks{
 
     static final String channelId="UploaderChannel";
     static Boolean channelCreated=false;
     protected static final NotificationManagerCompat manager=NotificationManagerCompat.from(WebView.context);
+
+    CallbackContext callback;
+    JSONObject params=new JSONObject();
+    NotificationCompat.Builder builder;
+    int id;
 
     public Uploader(Context context,WorkerParameters params){
         super(context,params);
@@ -51,9 +57,15 @@ public class Uploader extends Worker{
         final String callbackRef=data.getString("callbackRef");
         if(callbackRef!=null){
             try{
-                final CallbackContext callback=(CallbackContext)WebView.callbacks.opt(callbackRef);
+                callback=(CallbackContext)WebView.callbacks.opt(callbackRef);
                 final JSONObject params=new JSONObject(data.getString("params"));
-                this.upload(params,callback);
+                final Uploader instance=this;
+                new Thread(new Runnable(){
+                    public void run(){
+                        instance.upload(params);
+                    }
+                }).start();
+                //this.upload(params);
                 WebView.callbacks.remove(callbackRef);
             }
             catch(Exception exception){}
@@ -62,16 +74,15 @@ public class Uploader extends Worker{
         return Result.success();
     }
 
-    private void upload(JSONObject params,CallbackContext callback){
+    private void upload(JSONObject params){
         final JSONArray files=params.optJSONArray("files");
         final ArrayList<MultipartBody.Part> fileParts=new ArrayList<MultipartBody.Part>(1);
-        
         try{
             final int length=files.length();
             for(int i=0;i<length;i++){
                 final JSONObject props=files.optJSONObject(i);
                 final File file=new File(FileUtils.getPath(WebView.context,Uri.parse(props.optString("path"))));
-                final RequestBody fileRequest=RequestBody.create(MediaType.parse(props.optString("type","*")),file);
+                final ProgressRequest fileRequest=new ProgressRequest(props.optString("type","*"),file,this);
                 final MultipartBody.Part filePart=MultipartBody.Part.createFormData("filename",props.optString("newName",file.getName()),fileRequest);
                 fileParts.add(filePart);
             }
@@ -83,72 +94,75 @@ public class Uploader extends Worker{
             call.enqueue(new Callback(){
                 @Override
                 public void onResponse(Call call,Response response){
-                    final String message=params.optString("toast",null);
-                    if(message!=null){
-                        WebView.cordova.getActivity().runOnUiThread(new Runnable(){
-                            public void run(){
-                                Toast.makeText(WebView.context,message,Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                    if(response.isSuccessful()){
+                        final String message=params.optString("toast",null);
+                        if(message!=null){
+                            WebView.cordova.getActivity().runOnUiThread(new Runnable(){
+                                public void run(){
+                                    Toast.makeText(WebView.context,message,Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        builder.setContentTitle("Upload complete");
+                        builder.setContentText(null);
+                        builder.setProgress(100,100,false);
+                        builder.setOngoing(false);
+                        manager.notify(id,builder.build());
+                        try{
+                            params.put("progress",100);
+                            params.put("isFinished",true);
+                        }
+                        catch(Exception exception){}
+                        callback.success(params);
                     }
-                    callback.success();
+                    else{
+                        callback.error("Unknown error");
+                    }
                 }
                 @Override
                 public void onFailure(Call call,Throwable throwable){
                     callback.error(throwable.getMessage());
                 }
             });
+            Uploader.createNotificationChannel();
+            id=new Random().nextInt(9999);
+            builder=new NotificationCompat.Builder(WebView.context,channelId);
+            builder.setContentTitle((length>1)?"Uploading "+length+" files":"Uploading file");
+            builder.setContentText("0%");
+            builder.setSmallIcon(WebView.context.getApplicationInfo().icon);
+            builder.setOngoing(true);
+            builder.setOnlyAlertOnce(true);
+            builder.setProgress(100,0,false);
+            manager.notify(id,builder.build());
         }
         catch(Exception exception){
             callback.error(exception.getMessage());
         }
     }
 
-    private void setNotification(CallbackContext callback){
-        Uploader.createNotificationChannel();
-        final int id=new Random().nextInt();
-        final NotificationCompat.Builder builder=new NotificationCompat.Builder(WebView.context,channelId);
-        builder.setContentTitle("File Name");
-        builder.setContentText("0%");
-        builder.setSmallIcon(WebView.context.getApplicationInfo().icon);
-        builder.setOngoing(true);
-        builder.setProgress(100,0,false);
+    @Override
+    public void onProgress(int progress){ 
+        final Boolean isFinished=progress>=100;
+        try{
+            params.put("progress",progress);
+            params.put("isFinished",isFinished);
+        }
+        catch(Exception exception){}
+        builder.setProgress(100,progress,false);
+        builder.setContentText(progress+"%");
         manager.notify(id,builder.build());
-        this.fetchData(id,builder,callback);
+        final PluginResult result=new PluginResult(PluginResult.Status.OK,params);
+        result.setKeepCallback(!isFinished);
+        callback.sendPluginResult(result);
     }
-
-    private void fetchData(int id,NotificationCompat.Builder builder,CallbackContext callback){
-        new Thread(new Runnable(){
-            public void run(){
-                Boolean isFinished=false;
-                int progress=0;
-                try{
-                    final JSONObject params=new JSONObject();
-                    while(progress<100){
-                        Thread.sleep(1500);
-                        progress+=new Random().nextInt(25);
-                        isFinished=progress>=100;
-                        params.put("progress",progress);
-                        params.put("isFinished",isFinished);
-                        builder.setProgress(100,progress,false);
-                        builder.setContentText(progress+"%");
-                        final PluginResult result=new PluginResult(PluginResult.Status.OK,params);
-                        result.setKeepCallback(!isFinished);
-                        manager.notify(id,builder.build());
-                        callback.sendPluginResult(result);
-                    }
-                    builder.setContentTitle("File Downloaded");
-                    builder.setContentText(null);
-                    builder.setProgress(0,0,false);
-                    builder.setOngoing(false);
-                    manager.notify(id,builder.build());
-                } 
-                catch(Exception exception){
-                    callback.error(exception.getMessage());
-                }
-            }
-        }).start();
-    }   
+    @Override
+    public void onError(){
+        callback.error("Unknown Error");
+    }
+    @Override
+    public void onFinish(){
+        
+    }
 
     static private void createNotificationChannel(){
         if((!channelCreated)&&(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)){
@@ -161,9 +175,3 @@ public class Uploader extends Worker{
         }
     }
 }
-
-/* WebView.cordova.getActivity().runOnUiThread(new Runnable(){
-    public void run(){
-        Toast.makeText(WebView.context,"downloading...",Toast.LENGTH_SHORT).show();
-    }
-}); */

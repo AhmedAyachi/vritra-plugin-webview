@@ -52,6 +52,7 @@
         <source-file src="src/android/UploaderClient.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/UploadAPI.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/FileUtils.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/ProgressRequest.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Downloader.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>

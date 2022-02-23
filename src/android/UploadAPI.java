@@ -14,5 +14,5 @@ public interface UploadAPI {
 
     @Multipart
     @POST("/")
-    Call<ResponseBody> uploadFile(@Part ArrayList<MultipartBody.Part> fileParts,@Part("upload") RequestBody requestbody);
+    Call<ResponseBody> uploadFile(@Part ArrayList<MultipartBody.Part> fileParts,@Part("data") RequestBody request);
 }
