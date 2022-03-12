@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="MainActivity" parent="@style/Theme.AppCompat.NoActionBar">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowAnimationStyle">@style/MainActivtiyAnimation</item>
     </style>
     <style name="MainActivtiyAnimation"> 
