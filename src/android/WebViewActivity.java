@@ -51,6 +51,7 @@ public class WebViewActivity extends CordovaActivity{
     public String getMessage(){
         return this.message;
     }
+    
     public void setMessage(String str){
         this.message=str;
         intent.putExtra("message",str);

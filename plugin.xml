@@ -13,9 +13,16 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="WebView">
-                <param name="android-package" value="com.ahmedayachi.webview.WebView" />
+                <param name="android-package" value="com.ahmedayachi.webview.WebView"/>
             </feature>
         </config-file>
+        <edit-config 
+            file="app/src/main/AndroidManifest.xml"
+            target="/manifest/application/activity[@android:name='MainActivity']"
+            mode="merge"
+        >
+            <activity android:launchMode="standard" android:theme="@style/WebView"/>
+        </edit-config>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
                 android:name="com.ahmedayachi.webview.WebViewActivity" 

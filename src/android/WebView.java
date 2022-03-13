@@ -11,7 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
+import java.util.ArrayList;
 import java.util.Random;
+import android.widget.Toast;
 
 
 public class WebView extends CordovaPlugin{
@@ -78,7 +80,7 @@ public class WebView extends CordovaPlugin{
                     WebView.callbacks.put(Integer.toString(ref),callbackContext);
                 }
                 catch(JSONException exception){}
-                plugin.cordova.startActivityForResult(plugin,intent,ref);
+                WebView.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
     }
@@ -132,6 +134,7 @@ public class WebView extends CordovaPlugin{
         if(!message.isEmpty()){
             wvactivity.setMessage(message);
         }
+        Toast.makeText(context,wvactivity.url,Toast.LENGTH_SHORT).show();
         wvactivity.finish();
     }
 
@@ -162,4 +165,5 @@ public class WebView extends CordovaPlugin{
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
     }
+    
 }
