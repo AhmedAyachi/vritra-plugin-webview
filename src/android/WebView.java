@@ -13,7 +13,6 @@ import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
 import java.util.Random;
-import android.widget.Toast;
 
 
 public class WebView extends CordovaPlugin{
@@ -22,11 +21,9 @@ public class WebView extends CordovaPlugin{
     private static Store store=new Store();
 
     static Context context;
-    static CordovaInterface cordova;
 
     @Override
     public void initialize(CordovaInterface cordova,CordovaWebView webView){
-        WebView.cordova=cordova;
         WebView.context=cordova.getContext();
     }
 
@@ -68,11 +65,11 @@ public class WebView extends CordovaPlugin{
     }
 
     private void show(JSONObject options,CallbackContext callbackContext){
-        final AppCompatActivity activity=WebView.cordova.getActivity();
+        final AppCompatActivity activity=this.cordova.getActivity();
         final CordovaPlugin plugin=this;
-        WebView.cordova.getThreadPool().execute(new Runnable(){
+        this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
-                final int ref=new Random().nextInt(9999);
+                final int ref=new Random().nextInt(999);
                 Boolean asModal=options.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(options,intent);
@@ -80,7 +77,7 @@ public class WebView extends CordovaPlugin{
                     WebView.callbacks.put(Integer.toString(ref),callbackContext);
                 }
                 catch(JSONException exception){}
-                WebView.cordova.startActivityForResult(plugin,intent,ref);
+                plugin.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
     }
@@ -121,20 +118,19 @@ public class WebView extends CordovaPlugin{
     }
     
     private void useMessage(CallbackContext callbackContext){
-        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
         callbackContext.success(wvactivity.getMessage());
     }
     private void setMessage(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
         wvactivity.setMessage(message);
     }
 
     private void close(String message){
-        final WebViewActivity wvactivity=(WebViewActivity)WebView.cordova.getActivity();
+        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
         if(!message.isEmpty()){
             wvactivity.setMessage(message);
         }
-        Toast.makeText(context,wvactivity.url,Toast.LENGTH_SHORT).show();
         wvactivity.finish();
     }
 

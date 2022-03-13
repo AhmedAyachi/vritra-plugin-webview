@@ -16,13 +16,6 @@
                 <param name="android-package" value="com.ahmedayachi.webview.WebView"/>
             </feature>
         </config-file>
-        <edit-config 
-            file="app/src/main/AndroidManifest.xml"
-            target="/manifest/application/activity[@android:name='MainActivity']"
-            mode="merge"
-        >
-            <activity android:theme="@style/MainActivity"/>
-        </edit-config>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
                 android:name="com.ahmedayachi.webview.WebViewActivity" 
@@ -41,7 +34,6 @@
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>
         <source-file src="Xml/slide_up.xml" target-dir="res/animator"/>
