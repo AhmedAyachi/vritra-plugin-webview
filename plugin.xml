@@ -21,7 +21,7 @@
             target="/manifest/application/activity[@android:name='MainActivity']"
             mode="merge"
         >
-            <activity android:launchMode="standard" android:theme="@style/WebView"/>
+            <activity android:theme="@style/MainActivity"/>
         </edit-config>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
@@ -41,6 +41,7 @@
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="Xml/MainActivity.xml" target-dir="res/values"/>
         <source-file src="Xml/WebView.xml" target-dir="res/values"/>
         <source-file src="Xml/Modal.xml" target-dir="res/values"/>
         <source-file src="Xml/slide_up.xml" target-dir="res/animator"/>
