@@ -42,6 +42,18 @@
         <source-file src="Xml/fade_out.xml" target-dir="res/animator"/>
     </platform>
 
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="WebView">
+                <param name="ios-package" value="WebView"/>
+                <!-- <param name="onload" value="false"/> -->
+            </feature>
+        </config-file>
+        <source-file src="src/ios/WebView.swift"/>
+        <source-file src="src/ios/Plugin.swift"/>
+        <!-- <source-file src="src/ios/ViewController.swift"/> -->
+    </platform>
+    
     <platform name="browser">
         <js-module src="src/browser/WebView.js" name="browserwebview">
             <clobbers target="WebView"/>
