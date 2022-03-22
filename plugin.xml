@@ -45,13 +45,12 @@
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="WebView">
-                <param name="ios-package" value="WebView"/>
-                <!-- <param name="onload" value="false"/> -->
+                <param name="ios-package" value="Webview" onload="false"/>
             </feature>
         </config-file>
-        <source-file src="src/ios/WebView.swift"/>
-        <source-file src="src/ios/Plugin.swift"/>
-        <!-- <source-file src="src/ios/ViewController.swift"/> -->
+        <source-file src="src/ios/Webview.swift"/>
+        <source-file src="src/ios/WebViewPlugin.swift"/>
+        <source-file src="src/ios/ViewController.swift"/>
     </platform>
     
     <platform name="browser">
