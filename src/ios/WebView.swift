@@ -3,7 +3,7 @@ import Foundation;
 
 class Webview:WebViewPlugin {
 
-    static public var store:[String:Any]=[:];
+    static public let store=Store();
     public var showCommand:CDVInvokedUrlCommand?=nil;
 
     override func pluginInitialize(){
@@ -39,14 +39,14 @@ class Webview:WebViewPlugin {
     func initiateStore(command:CDVInvokedUrlCommand){
         let state=command.arguments[0] as? [String:Any];
         if(!(state==nil)){
-            Webview.store=state!;
-            success(command,Webview.store);
+            Webview.store.initiate(state);
+            success(command,Webview.store.toObject());
         }
     }
 
     @objc(useStore:)
     func useStore(command:CDVInvokedUrlCommand){
-        success(command,Webview.store);
+        success(command,Webview.store.toObject());
     }
 
     @objc(setStore:)
