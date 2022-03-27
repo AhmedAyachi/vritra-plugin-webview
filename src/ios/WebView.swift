@@ -18,7 +18,7 @@ class Webview:WebViewPlugin {
             let viewcontroller=self.viewController!;
             viewcontroller.addChild(child);
             viewcontroller.view.addSubview(child.view);
-            showCommand=command;
+            self.showCommand=command;
         }
     }
 
@@ -36,7 +36,11 @@ class Webview:WebViewPlugin {
 
     @objc(initiateStore:)
     func initiateStore(command:CDVInvokedUrlCommand){
-
+        let state=command.arguments[0] as? [String:Any];
+        if(!(state==nil)){
+            Webview.store=state!;
+            success(command,Webview.store);
+        }
     }
 
     @objc(useStore:)
@@ -52,7 +56,10 @@ class Webview:WebViewPlugin {
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
         if(!(self.viewController.parent==nil)){
-            self.setMessage(command:command);
+            let message=command.arguments[0] as! String;
+            if(!message.isEmpty){
+                self.setMessage(command:command);
+            }
             self.viewController.view.removeFromSuperview();
             self.viewController.removeFromParent();
         }

@@ -3,6 +3,7 @@
 class ViewController:CDVViewController{
 
     var plugin:Webview?=nil;
+    var options:[AnyHashable:Any]=[:];
     var message:String?=nil;
     override public var title:String?{
         get{
@@ -12,32 +13,59 @@ class ViewController:CDVViewController{
             self.message=value;
         }
     };
-
-    override func willMove(toParent: UIViewController?){
-        super.willMove(toParent:toParent);
-    }
-
-    override func didMove(toParent:UIViewController?){
-        super.didMove(toParent:toParent);
+    
+    override func viewDidDisappear(_ animated:Bool){
+        super.viewDidDisappear(animated);
         let showCommand:CDVInvokedUrlCommand?=plugin!.showCommand;
         if(!(showCommand==nil)){
             let data:[AnyHashable:Any]=[
-                "message":self.title,
+                "message":self.title as Any,
                 "store":Webview.store,
             ];
             plugin!.success(showCommand!,data);
         }
     }
 
+    func setOptions(_ options:[AnyHashable:Any],_ plugin:Webview){
+        self.options=options;
+        self.plugin=plugin;
+        self.title=options["message"] as? String;
+        self.setUrl();
+        self.setView();
+    }
+
+    func setUrl(){
+        var url=options["file"] as? String;
+        if(url==nil){
+            self.wwwFolderName=nil;
+            url=options["url"] as? String;
+        }
+        else{
+            self.wwwFolderName="www";
+        }
+        self.startPage=url;
+    }
+
+    func setView(){
+        let view=self.view!;
+        view.frame=UIScreen().bounds;
+        view.clipsToBounds=false;
+        view.backgroundColor=UIColor.white;
+        view.isOpaque=true;
+        var statusHeight=CGFloat(20);
+        let webview=self.webView!;
+        /* if#available(iOS 13,*){
+            let value=view.window?.windowScene?.statusBarManager?.statusBarFrame.height;
+            if(!(value==nil)){
+                statusHeight=value!;
+            }
+        } */
+        webview.frame.origin.y=(-100);
+    }
+
     static func getInstance(_ options:[AnyHashable:Any],_ plugin:Webview)->ViewController{
         let viewcontroller=ViewController();
-        viewcontroller.wwwFolderName="www";
-        viewcontroller.startPage=options["file"] as? String;
-        viewcontroller.view.frame=UIScreen().bounds;
-        //viewcontroller.view.layoutMargins=UIEdgeInsets(top:25,left:0,bottom:0,right:0);
-        viewcontroller.plugin=plugin;
-        viewcontroller.title=options["message"] as? String;
-
+        viewcontroller.setOptions(options,plugin);
         return viewcontroller;
     }
 }
