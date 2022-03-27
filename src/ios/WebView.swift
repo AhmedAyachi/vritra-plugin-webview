@@ -18,6 +18,7 @@ class Webview:WebViewPlugin {
             let viewcontroller=self.viewController!;
             viewcontroller.addChild(child);
             viewcontroller.view.addSubview(child.view);
+            child.isModal ? showModal(child) : showWebView(child);
             self.showCommand=command;
         }
     }
@@ -60,8 +61,12 @@ class Webview:WebViewPlugin {
             if(!message.isEmpty){
                 self.setMessage(command:command);
             }
-            self.viewController.view.removeFromSuperview();
-            self.viewController.removeFromParent();
+
+            let callback=self.viewController.isBeingPresented ? hideModal : hideWebView;
+            callback(self.viewController,{_ in
+                self.viewController.view.removeFromSuperview();
+                self.viewController.removeFromParent();
+            });
         }
     }
 

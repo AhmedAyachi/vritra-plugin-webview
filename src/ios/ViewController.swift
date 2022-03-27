@@ -5,6 +5,15 @@ class ViewController:CDVViewController{
     var plugin:Webview?=nil;
     var options:[AnyHashable:Any]=[:];
     var message:String?=nil;
+    public var isModal:Bool=true;
+
+    override public var isBeingPresented:Bool{
+        get{
+            return self.isModal;
+        }
+    }
+    
+
     override public var title:String?{
         get{
             return message;
@@ -13,7 +22,7 @@ class ViewController:CDVViewController{
             self.message=value;
         }
     };
-    
+
     override func viewDidDisappear(_ animated:Bool){
         super.viewDidDisappear(animated);
         let showCommand:CDVInvokedUrlCommand?=plugin!.showCommand;
@@ -30,6 +39,7 @@ class ViewController:CDVViewController{
         self.options=options;
         self.plugin=plugin;
         self.title=options["message"] as? String;
+        self.isModal=(options["asModal"] as? Bool) ?? false;
         self.setUrl();
         self.setView();
     }
@@ -52,7 +62,7 @@ class ViewController:CDVViewController{
         view.clipsToBounds=false;
         view.backgroundColor=UIColor.white;
         view.isOpaque=true;
-        var statusHeight=CGFloat(20);
+        //var statusHeight=CGFloat(20);
         let webview=self.webView!;
         /* if#available(iOS 13,*){
             let value=view.window?.windowScene?.statusBarManager?.statusBarFrame.height;

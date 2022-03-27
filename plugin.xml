@@ -51,6 +51,7 @@
         <source-file src="src/ios/Webview.swift"/>
         <source-file src="src/ios/WebViewPlugin.swift"/>
         <source-file src="src/ios/ViewController.swift"/>
+        <source-file src="src/ios/Animations.swift"/>
     </platform>
     
     <platform name="browser">
