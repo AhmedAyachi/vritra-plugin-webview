@@ -14,11 +14,11 @@ class Webview:WebViewPlugin {
     func show(command:CDVInvokedUrlCommand){
         let options=command.arguments[0] as? [AnyHashable:Any];
         if(!(options==nil)){
-            let child=ViewController.getInstance(options!,self);
+            let childvc=ViewController.getInstance(options!,self);
             let viewcontroller=self.viewController!;
-            viewcontroller.addChild(child);
-            viewcontroller.view.addSubview(child.view);
-            child.isModal ? showModal(child) : showWebView(child);
+            viewcontroller.addChild(childvc);
+            viewcontroller.view.addSubview(childvc.view);
+            childvc.isModal ? showModal(childvc) : showWebView(childvc);
             self.showCommand=command;
         }
     }

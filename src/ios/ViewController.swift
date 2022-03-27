@@ -7,12 +7,20 @@ class ViewController:CDVViewController{
     var message:String?=nil;
     public var isModal:Bool=true;
 
+    override var prefersStatusBarHidden:Bool{
+        return true;
+    }
+
+    override func viewDidLoad(){
+        super.viewDidLoad();
+        setNeedsStatusBarAppearanceUpdate();
+    }
+
     override public var isBeingPresented:Bool{
         get{
             return self.isModal;
         }
     }
-    
 
     override public var title:String?{
         get{
@@ -58,19 +66,22 @@ class ViewController:CDVViewController{
 
     func setView(){
         let view=self.view!;
-        view.frame=UIScreen().bounds;
+        view.frame=UIScreen.main.bounds;
         view.clipsToBounds=false;
         view.backgroundColor=UIColor.white;
         view.isOpaque=true;
-        //var statusHeight=CGFloat(20);
-        let webview=self.webView!;
-        /* if#available(iOS 13,*){
+        /* var statusHeight=CGFloat(20);
+        var bounds=(self.view.window ?? UIScreen.main).bounds;
+        self.view.frame=bounds;
+        self.webView.frame=bounds;
+        if#available(iOS 13,*){
             let value=view.window?.windowScene?.statusBarManager?.statusBarFrame.height;
             if(!(value==nil)){
                 statusHeight=value!;
             }
-        } */
-        webview.frame.origin.y=(-100);
+        }
+        frame.size.height-=statusHeight;
+        self.webView!.frame=frame; */
     }
 
     static func getInstance(_ options:[AnyHashable:Any],_ plugin:Webview)->ViewController{
