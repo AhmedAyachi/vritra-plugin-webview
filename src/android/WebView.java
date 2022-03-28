@@ -160,6 +160,11 @@ public class WebView extends CordovaPlugin{
         if(statusBarTranslucent!=null){
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
+
+        String backgroundColor=options.optString("backgroundColor","white");
+        if(backgroundColor!=null){
+            intent.putExtra("backgroundColor",backgroundColor);
+        }
     }
     
 }
