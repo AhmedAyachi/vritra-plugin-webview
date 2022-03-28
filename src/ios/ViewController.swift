@@ -68,20 +68,13 @@ class ViewController:CDVViewController{
         let view=self.view!;
         view.frame=UIScreen.main.bounds;
         view.clipsToBounds=false;
-        view.backgroundColor=UIColor.white;
         view.isOpaque=true;
-        /* var statusHeight=CGFloat(20);
-        var bounds=(self.view.window ?? UIScreen.main).bounds;
-        self.view.frame=bounds;
-        self.webView.frame=bounds;
-        if#available(iOS 13,*){
-            let value=view.window?.windowScene?.statusBarManager?.statusBarFrame.height;
-            if(!(value==nil)){
-                statusHeight=value!;
-            }
-        }
-        frame.size.height-=statusHeight;
-        self.webView!.frame=frame; */
+
+        let backgroundColor=options["backgroundColor"] as? String;
+        let color=backgroundColor==nil ? UIColor.white:getUIColorFromHex(backgroundColor!);
+        self.view.backgroundColor=color;
+        self.launchView.backgroundColor=color;
+        self.webView.backgroundColor=color;
     }
 
     static func getInstance(_ options:[AnyHashable:Any],_ plugin:Webview)->ViewController{
@@ -89,4 +82,61 @@ class ViewController:CDVViewController{
         viewcontroller.setOptions(options,plugin);
         return viewcontroller;
     }
+}
+
+func getUIColorFromHex(_ code:String)->UIColor{
+    var color=UIColor.white;
+    if(code.starts(with:"#")&&code.count>6){
+        let hex=code[..<code.index(code.startIndex,offsetBy:7)];
+    }
+    else{
+        switch(code.lowercased()){
+            case "black":
+                color=UIColor.black;
+                break;
+            case "blue":
+                color=UIColor.blue;
+                break;
+            case "brown":
+                color=UIColor.brown;
+                break;
+            case "cyan":
+                color=UIColor.cyan;
+                break;
+            case "darkgray":
+                color=UIColor.darkGray;
+                break;
+            case "gray":
+                color=UIColor.gray;
+                break;
+            case "green":
+                color=UIColor.green;
+                break;
+            case "lightgray":
+                color=UIColor.lightGray;
+                break;
+            case "magenta":
+                color=UIColor.magenta;
+                break;
+            case "orange":
+                color=UIColor.orange;
+                break;
+            case "purple":
+                color=UIColor.purple;
+                break;
+            case "red":
+                color=UIColor.red;
+                break;
+            case "white":
+                color=UIColor.white;
+                break;
+            case "yellow":
+                color=UIColor.yellow;
+                break;
+            default:
+                color=UIColor.white;
+                break;
+        }
+    }
+    return color;
 }
