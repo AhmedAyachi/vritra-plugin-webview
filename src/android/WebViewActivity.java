@@ -38,7 +38,7 @@ public class WebViewActivity extends CordovaActivity{
     }
 
     protected void loadHTML(){
-        
+        appView.getView().setBackgroundColor(Color.parseColor(intent.getStringExtra("backgroundColor")));
         appView.loadUrl(url);
         Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",true);
         if(statusBarTranslucent){
