@@ -6,6 +6,7 @@ interface WebView{
         file:String,
         message:String,
         statusBarTranslucent:Boolean,
+        backgroundColor:String,
         asModal:Boolean,
         modalStyle:{
             width:Number,
