@@ -51,7 +51,7 @@ class Webview:WebViewPlugin {
     func setStore(command:CDVInvokedUrlCommand){
         let key=command.arguments[0] as! String;
         let value=command.arguments[1];
-        Webview.store.set(key,value);
+        Webview.store.mutate(key,value);
         success(command,Webview.store.toObject());
     }
 
