@@ -37,7 +37,7 @@ class ViewController:CDVViewController{
         if(!(showCommand==nil)){
             let data:[AnyHashable:Any]=[
                 "message":self.title as Any,
-                "store":Webview.store,
+                "store":Webview.store.toObject(),
             ];
             plugin!.success(showCommand!,data);
         }
@@ -87,7 +87,7 @@ class ViewController:CDVViewController{
 func getUIColorFromHex(_ code:String)->UIColor{
     var color=UIColor.white;
     if(code.starts(with:"#")&&code.count>6){
-        let hex=code[..<code.index(code.startIndex,offsetBy:7)];
+        //let hex=code[..<code.index(code.startIndex,offsetBy:7)];
     }
     else{
         switch(code.lowercased()){
