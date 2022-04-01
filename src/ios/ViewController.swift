@@ -87,7 +87,20 @@ class ViewController:CDVViewController{
 func getUIColorFromHex(_ code:String)->UIColor{
     var color=UIColor.white;
     if(code.starts(with:"#")&&code.count>6){
-        //let hex=code[..<code.index(code.startIndex,offsetBy:7)];
+        let hex=code[code.index(after:code.startIndex)..<code.index(code.startIndex,offsetBy:7)];
+        var parts:[Int16]=[];
+        for i in 0..<3 {
+            let start=hex.index(hex.startIndex,offsetBy:i*2);
+            let pair=String(hex[start...hex.index(start,offsetBy:1)]);
+            let decimal=Int16(pair,radix:16)!;
+            parts.append(decimal);
+        }
+        color=UIColor(
+            red:CGFloat(parts[0]),
+            green:CGFloat(parts[1]),
+            blue:CGFloat(parts[2]),
+            alpha:1
+        );
     }
     else{
         switch(code.lowercased()){
