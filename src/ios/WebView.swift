@@ -72,11 +72,3 @@ class Webview:WebViewPlugin {
     }
 
 }
-
-/* 
-let alert=UIAlertController(title:"toast title",message:"toast message",preferredStyle:.actionSheet);
-self.viewController.present(alert,animated:true);
-DispatchQueue.main.asyncAfter(deadline:DispatchTime.now()+1){
-    alert.dismiss(animated:true);
-} 
-*/
