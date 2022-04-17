@@ -6,20 +6,17 @@ class Webview:WebViewPlugin {
     static let store=Store();
     public var showCommand:CDVInvokedUrlCommand?=nil;
 
-    override func pluginInitialize(){
-        
-    }
-
     @objc(show:)
     func show(command:CDVInvokedUrlCommand){
-        let options=command.arguments[0] as? [AnyHashable:Any];
-        if(!(options==nil)){
-            let childvc=ViewController.getInstance(options!,self);
-            let viewcontroller=self.viewController!;
-            viewcontroller.addChild(childvc);
-            viewcontroller.view.addSubview(childvc.view);
-            childvc.isModal ? showModal(childvc) : showWebView(childvc);
-            self.showCommand=command;
+        if let options=command.arguments[0] as? [AnyHashable:Any] {
+            DispatchQueue.main.async(execute:{[self] in
+                let childvc=ViewController.getInstance(options,self);
+                let viewcontroller=self.viewController!;
+                viewcontroller.addChild(childvc);
+                viewcontroller.view.addSubview(childvc.view);
+                childvc.isModal ? showModal(childvc) : showWebView(childvc);
+                self.showCommand=command;
+            });
         }
     }
 
@@ -58,17 +55,22 @@ class Webview:WebViewPlugin {
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
         if(!(self.viewController.parent==nil)){
-            let message=command.arguments[0] as! String;
-            if(!message.isEmpty){
-                self.setMessage(command:command);
-            }
-
-            let callback=self.viewController.isBeingPresented ? hideModal : hideWebView;
-            callback(self.viewController,{_ in
-                self.viewController.view.removeFromSuperview();
-                self.viewController.removeFromParent();
+            DispatchQueue.main.async(execute:{[self] in
+                let message=command.arguments[0] as! String;
+                if(!message.isEmpty){
+                    self.setMessage(command:command);
+                }
+                let callback=self.viewController.isBeingPresented ? hideModal : hideWebView;
+                callback(self.viewController,{_ in
+                    self.viewController.view.removeFromSuperview();
+                    self.viewController.removeFromParent();
+                });
+            
             });
         }
     }
-
 }
+
+/* override func pluginInitialize(){
+        
+} */
