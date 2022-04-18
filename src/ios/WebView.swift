@@ -54,7 +54,7 @@ class Webview:WebViewPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if(!(self.viewController.parent==nil)){
+        if !(self.viewController.parent==nil){
             DispatchQueue.main.async(execute:{[self] in
                 let message=command.arguments[0] as! String;
                 if(!message.isEmpty){
@@ -65,7 +65,6 @@ class Webview:WebViewPlugin {
                     self.viewController.view.removeFromSuperview();
                     self.viewController.removeFromParent();
                 });
-            
             });
         }
     }
