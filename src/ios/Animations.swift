@@ -5,7 +5,7 @@ func showWebView(_ viewcontroller:UIViewController){
     view.transform=CGAffineTransform(translationX:UIScreen.main.bounds.size.width,y:0);
     view.alpha=0;
     UIView.animate(
-        withDuration:0.55,
+        withDuration:0.2,
         delay:0,
         options:.curveLinear,
         animations:{
@@ -17,7 +17,7 @@ func showWebView(_ viewcontroller:UIViewController){
 
 func hideWebView(_ viewcontroller:UIViewController,_ onHidden:((Bool)->Void)?){
     UIView.animate(
-        withDuration:0.15,
+        withDuration:0.1,
         delay:0,
         options:.curveLinear,
         animations:{
