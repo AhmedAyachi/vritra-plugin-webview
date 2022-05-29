@@ -23,6 +23,8 @@ interface WebView{
         * A message to pass to the new webiew.
         * This message is freed when the new webview is closed
         * and the onClose method is called. 
+        * @Note
+        * If message is not of type string, JSON.stringify is called.
         */
         message:String,
         /** 
