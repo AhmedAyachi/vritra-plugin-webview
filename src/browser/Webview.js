@@ -65,7 +65,7 @@ module.exports={
         const iframe=frameElement.parentNode.querySelector("iframe");
         const {onClose}=iframe;
         onClose&&this.useStore(store=>{
-            onClose({message:message===undefined?iframe.message:message,store});
+            onClose({message:message===undefined?iframe.message:stringifyMessage(message),store});
         });
         iframe.remove();
     },
