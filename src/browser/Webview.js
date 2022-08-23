@@ -7,7 +7,7 @@ module.exports={
             const iframe=document.createElement("iframe");
             iframe.src=file;
             iframe.onClose=onClose;
-            iframe.message=message;
+            iframe.message=JSON.stringify(message);
             Object.assign(iframe.style,{
                 position:"fixed",
                 width:"100%",
@@ -60,7 +60,7 @@ module.exports={
     },
     setMessage:(message="")=>{
         const iframe=frameElement.parentNode.querySelector("iframe");
-        iframe.message=message;
+        iframe.message=JSON.stringify(message);
     },
     close:function(message){
         const iframe=frameElement.parentNode.querySelector("iframe");
