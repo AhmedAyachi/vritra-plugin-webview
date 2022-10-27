@@ -80,15 +80,12 @@ interface WebView{
     /**
      * Sets the store value.
      * Only objects are accepted.
-     * @default empty object.
+     * @param store 
+     * default: empty object
+     * @param onFullfilled 
+     * Called when the store is successfully set. 
      */
-    initiateStore(
-        store:Object,
-        /**
-        * Called when the store is successfully set. 
-        */
-        onFullfilled:(store:Object)=>void,
-    ):void,
+    initiateStore(store:Object,onFullfilled:(store:Object)=>void):void,
     /**
     * Uses the store object.
     * @note
@@ -98,30 +95,33 @@ interface WebView{
     */
     useStore(handler:(store:Object)=>void):void,
     /**
-    * Sets the store properties. 
-    */
+     * @param key 
+     * the path to the value you want to set.
+     * @ForArrays
+     * 
+     * array[*] will target all the array items.
+     * 
+     * [index] => sets an array item at index.
+     * @UsableOnLastPathComponent
+     * 
+     * [push] => inserts the value at the end of an array.
+     * 
+     * [unshift] => inserts the value at the start of an array.
+     * 
+     * [pop] => removes the last item from an array, value property is ignored.
+     * 
+     * [shift] => removes the first item from an array, value property is ignored.
+     * 
+     * [last] => sets the last array item.
+     * 
+     * @example
+     * "object.array[*][*].object.array[last]"
+     * "object.array[*].object.array[*].property"
+     * "object.array[0].array[4].array[last].property"
+     * @param value 
+     * @param onFullfilled 
+     */
     setStore(
-        /**
-        * the path to the value you want to set.
-        * @ForArrays
-        * array[*] will target all the array elements.
-        * 
-        * [index] => sets an array element at index.
-        * @UsableOnLastPathComponent
-        * [push] => inserts the value at the end of an array.
-        * 
-        * [unshift] => inserts the value at the start of an array.
-        * 
-        * [pop] => removes the last element from an array, value property is ignored.
-        * 
-        * [shift] => removes the first element from an array, value property is ignored.
-        * 
-        * [last] => sets the last array element.
-        * @example
-        * "object.array[*][*].object.array[last]"
-        * "object.array[*].object.array[*].property"
-        * "object.array[0].array[4].array[last].property"
-        */
         key:String,
         value:any,
         onFullfilled:(store:Object)=>void
