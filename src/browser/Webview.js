@@ -1,7 +1,9 @@
 
+const JsParser=cordova.require("cordova-plugin-webview.WebviewJsParser");
+const timeout=40;
 
 module.exports={
-    show:(options)=>{
+    show:(options)=>{setTimeout(()=>{
         const {file=options.url,message,onClose}=options;
         if(file){
             const iframe=document.createElement("iframe");
@@ -20,10 +22,10 @@ module.exports={
             });
             document.body.appendChild(iframe);
         }
-    },
+    },timeout)},
     initiateStore:function(store,onFullfilled){
+        localStorage.setItem("store",JSON.stringify(store));
         if(store&&(typeof(store)==="object")&&(!Array.isArray(store))){
-            localStorage.setItem("store",JSON.stringify(store));
         }
         else{
             localStorage.setItem("store","{}");
@@ -32,7 +34,7 @@ module.exports={
             onFullfilled&&onFullfilled(store);
         });
     },
-    useStore:(onFullfilled)=>{
+    useStore:(onFullfilled)=>{setTimeout(()=>{
         if(typeof(onFullfilled)==="function"){
             let store=localStorage.getItem("store");
             if(store){
@@ -44,30 +46,34 @@ module.exports={
             } 
             onFullfilled(store);
         }
-    },
-    setStore:(key,value,onFullfilled)=>{
+    },timeout)},
+    setStore:(key,value,onFullfilled)=>{setTimeout(()=>{
         const store=JSON.parse(localStorage.getItem("store"))||{};
-        store[key]=value;
+        JsParser(store,key,value);
         localStorage.setItem("store",JSON.stringify(store));
         onFullfilled&&onFullfilled(store);
-    },
-    useMessage:(onFullfilled)=>{
+    },timeout)},
+    useMessage:(onFullfilled)=>{setTimeout(()=>{
         if(typeof(onFullfilled)==="function"){
             const iframe=frameElement.parentNode.querySelector("iframe");
             onFullfilled(iframe.message);
         }
-    },
-    setMessage:(message="")=>{
+    },timeout)},
+    setMessage:(message="")=>{setTimeout(()=>{
         const iframe=frameElement.parentNode.querySelector("iframe");
         iframe.message=stringifyMessage(message);
-    },
+    },timeout)},
     close:function(message){
         const iframe=frameElement.parentNode.querySelector("iframe");
         const {onClose}=iframe;
-        onClose&&this.useStore(store=>{
-            onClose({message:message===undefined?iframe.message:stringifyMessage(message),store});
-        });
-        iframe.remove();
+        if(onClose){
+            this.useStore(store=>{
+                onClose({message:message===undefined?iframe.message:stringifyMessage(message),store});
+            });
+        }
+        else{
+            setTimeout(()=>{iframe.remove()},timeout);
+        }
     },
 }
 
