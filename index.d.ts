@@ -102,6 +102,8 @@ interface WebView{
      * array[*] will target all the array items.
      * 
      * [index] => sets an array item at index.
+     * 
+     * [last] => uses the last array item.
      * @UsableOnLastPathComponent
      * 
      * [push] => inserts the value at the end of an array.
@@ -111,8 +113,6 @@ interface WebView{
      * [pop] => removes the last item from an array, value property is ignored.
      * 
      * [shift] => removes the first item from an array, value property is ignored.
-     * 
-     * [last] => sets the last array item.
      * 
      * @example
      * "object.array[*][*].object.array[last]"
