@@ -25,14 +25,10 @@ const getKeyValue=(key,data)=>{
     const bracketi=key.indexOf("]");
     if(bracketi>-1){
         const index=key.substring(0,bracketi).trim();
-        if(index==="*"){
-            value=data;
-        }
-        else if(index==="last"){
-            value=data[data.length-1];
-        }
-        else{
-            value=data[parseInt(index)];
+        switch(index){
+            case "*": value=data;break;
+            case "last": value=data[data.length-1];break;
+            default: value=data[parseInt(index)];break;
         }
     }
     else{
