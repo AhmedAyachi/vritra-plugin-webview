@@ -65,15 +65,16 @@ module.exports={
     },timeout)},
     close:function(message){
         const iframe=frameElement.parentNode.querySelector("iframe");
-        const {onClose}=iframe;
-        if(onClose){
-            this.useStore(store=>{
+        new Promise(resolve=>{
+            const {onClose}=iframe;
+            onClose?this.useStore(store=>{
                 onClose({message:message===undefined?iframe.message:stringifyMessage(message),store});
-            });
-        }
-        else{
+                resolve();
+            }):resolve();
+        }).
+        then(()=>{
             setTimeout(()=>{iframe.remove()},timeout);
-        }
+        });
     },
 }
 
