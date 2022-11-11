@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 
@@ -57,8 +58,7 @@ public class WebView extends CordovaPlugin{
             return true;
         }
         else if(action.equals("close")){
-            String message=args.getString(0);
-            this.close(message);
+            this.close(args);
             return true;
         }
         return false;
@@ -126,10 +126,11 @@ public class WebView extends CordovaPlugin{
         wvactivity.setMessage(message);
     }
 
-    private void close(String message){
+    private void close(JSONArray params){
         final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        if(!message.isEmpty()){
-            wvactivity.setMessage(message);
+        final Boolean isUndefined=params.optBoolean(0);
+        if(!isUndefined){
+            wvactivity.setMessage(params.optString(1));
         }
         wvactivity.finish();
     }

@@ -131,7 +131,8 @@ interface WebView{
     * @param message
     * The message to pass to the previous webview.
     * if message is undefined, the value is ignored.
-    * if message is null, it's passed as an empty string. 
+    * if message is not a string, it's passed as an empty string.
+    * @see Must use JSON.stringify to pass other types of values as message
     */
     close(message:String):void,
 }
