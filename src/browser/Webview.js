@@ -78,15 +78,4 @@ module.exports={
     },
 }
 
-const stringify=(message)=>{
-    let str="";
-    if(message){
-        if(typeof(message)==="string"){
-            str=message;
-        }
-        else{
-            str=JSON.stringify(message);
-        }
-    }
-    return str;
-}
+const stringify=(message)=>message?((typeof(message)==="string")?message:JSON.stringify(message)):"";
