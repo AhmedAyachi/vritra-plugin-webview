@@ -75,6 +75,8 @@ interface WebView{
     useMessage(handler:(message:String)=>void):void,
     /**
     * Sets the message value. 
+    * @see if message is a falsy value, is passed as an empty string.
+    * @see if message is not a string, JSON.stringify is called.
     */
     setMessage(message:String):void,
     /**
@@ -130,9 +132,8 @@ interface WebView{
     * Close the current webview.
     * @param message
     * The message to pass to the previous webview.
-    * if message is undefined, the value is ignored.
-    * if message is not a string, it's passed as an empty string.
-    * @see Must use JSON.stringify to pass other types of values as message
+    * @see if message is undefined, the value is ignored.
+    * @see if message is not a string, JSON.stringify is called.
     */
     close(message:String):void,
 }

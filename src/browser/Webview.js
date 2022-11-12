@@ -9,7 +9,7 @@ module.exports={
             const iframe=document.createElement("iframe");
             iframe.src=file;
             iframe.onClose=onClose;
-            iframe.message=stringifyMessage(message);
+            iframe.message=stringify(message);
             Object.assign(iframe.style,{
                 position:"fixed",
                 width:"100%",
@@ -61,14 +61,14 @@ module.exports={
     },timeout)},
     setMessage:(message="")=>{setTimeout(()=>{
         const iframe=frameElement.parentNode.querySelector("iframe");
-        iframe.message=stringifyMessage(message);
+        iframe.message=stringify(message);
     },timeout)},
     close:function(message){
         const iframe=frameElement.parentNode.querySelector("iframe");
         new Promise(resolve=>{
             const {onClose}=iframe;
             onClose?this.useStore(store=>{
-                onClose({message:message===undefined?iframe.message:stringifyMessage(message),store});
+                onClose({message:message===undefined?iframe.message:stringify(message),store});
                 resolve();
             }):resolve();
         }).
@@ -78,7 +78,7 @@ module.exports={
     },
 }
 
-const stringifyMessage=(message)=>{
+const stringify=(message)=>{
     let str="";
     if(message){
         if(typeof(message)==="string"){

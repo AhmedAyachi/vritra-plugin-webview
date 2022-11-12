@@ -22,9 +22,22 @@ module.exports={
         exec(onFullfilled,null,"WebView","useMessage",[]);
     },
     setMessage:(message)=>{
-        exec(null,null,"WebView","setMessage",[message||""]);
+        exec(null,null,"WebView","setMessage",[stringify(message)]);
     },
     close:(message)=>{
-        exec(null,null,"WebView","close",[message===undefined,typeof(message)==="string"?message:""]);
+        exec(null,null,"WebView","close",[message===undefined,stringify(message)]);
     },
+}
+
+const stringify=(message)=>{
+    let str="";
+    if(message){
+        if(typeof(message)==="string"){
+            str=message;
+        }
+        else{
+            str=JSON.stringify(message);
+        }
+    }
+    return str;
 }
