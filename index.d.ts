@@ -4,11 +4,13 @@ interface WebView{
     /**
      * Defines the props of app webviews 
      * @param webviews 
+     * @param fallback called when an error occurred
      */
-    defineWebViews(webviews:WebViewProps[]):void,
+    defineWebViews(webviews:WebViewProps[],fallback:(message:String)=>void):void,
     /**
-    * Shows a new webview with a right-to-left animation.
+    * Shows a new webview.
     * The shown webview will have access to all cordova plugins.
+    * @see Overwrites defined webview props
     */
     show(options:WebViewProps&{
         /**
@@ -101,8 +103,7 @@ interface WebView{
     ):void,
     /**
     * Close the current webview.
-    * @param message
-    * The message to pass to the previous webview.
+    * @param message The message to pass to the previous webview.
     * @see if message is undefined, the value is ignored.
     * @see if message is not a string, JSON.stringify is called.
     */

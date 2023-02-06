@@ -1,12 +1,31 @@
 
 const JsParser=cordova.require("cordova-plugin-webview.WebviewJsParser");
 const timeout=40;
+const data=[];
 
 module.exports={
+    defineWebViews:(webviews=[],fallback)=>{setTimeout(()=>{
+        webviews.forEach(webview=>{
+            if(webview.id&&(webview.file||webview.url)){
+                data.push(webview);
+            }
+        });
+    },timeout)},
     show:(options)=>{setTimeout(()=>{
-        const {file=options.url,message,onClose}=options;
+        let props,{id}=options;
+        const webviews=frameElement?frameElement.parentNode.querySelector("iframe").webviews:data;
+        if(id){
+            props=webviews.find(webview=>webview.id===id);
+            console.log(props,webviews);
+            Object.assign(props,options);
+        }
+        else{
+            props=options;
+        }
+        const {file=options.url,message,backgroundColor,onClose}=props;
         if(file){
             const iframe=document.createElement("iframe");
+            iframe.webviews=webviews;
             iframe.src=file;
             iframe.onClose=onClose;
             iframe.message=stringify(message);
@@ -17,25 +36,25 @@ module.exports={
                 inset:0,
                 margin:"auto",
                 border:"none",
-                backgroundColor:"white",
+                backgroundColor:backgroundColor||"white",
                 zIndex:2147483647,
             });
             document.body.appendChild(iframe);
         }
     },timeout)},
-    initiateStore:function(store,onFullfilled){
-        localStorage.setItem("store",JSON.stringify(store));
+    initiateStore:function(store,callback){
+        localStorage.setItem("store",stringify(store));
         if(store&&(typeof(store)==="object")&&(!Array.isArray(store))){
         }
         else{
             localStorage.setItem("store","{}");
         }
         this.useStore(store=>{
-            onFullfilled&&onFullfilled(store);
+            callback&&callback(store);
         });
     },
-    useStore:(onFullfilled)=>{setTimeout(()=>{
-        if(typeof(onFullfilled)==="function"){
+    useStore:(callback)=>{setTimeout(()=>{
+        if(typeof(callback)==="function"){
             let store=localStorage.getItem("store");
             if(store){
                 store=JSON.parse(localStorage.getItem("store"));
@@ -44,19 +63,19 @@ module.exports={
                 localStorage.setItem("store","{}");
                 store={};
             } 
-            onFullfilled(store);
+            callback(store);
         }
     },timeout)},
-    setStore:(key,value,onFullfilled)=>{setTimeout(()=>{
+    setStore:(key,value,callback)=>{setTimeout(()=>{
         const store=JSON.parse(localStorage.getItem("store"))||{};
         JsParser(store,key,value);
-        localStorage.setItem("store",JSON.stringify(store));
-        onFullfilled&&onFullfilled(store);
+        localStorage.setItem("store",stringify(store));
+        callback&&callback(store);
     },timeout)},
-    useMessage:(onFullfilled)=>{setTimeout(()=>{
-        if(typeof(onFullfilled)==="function"){
+    useMessage:(callback)=>{setTimeout(()=>{
+        if(typeof(callback)==="function"){
             const iframe=frameElement.parentNode.querySelector("iframe");
-            onFullfilled(iframe.message);
+            callback(iframe.message);
         }
     },timeout)},
     setMessage:(message="")=>{setTimeout(()=>{
