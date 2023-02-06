@@ -7,6 +7,7 @@ import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.Context;
+import android.content.res.Resources;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -20,15 +21,19 @@ import java.util.Random;
 
 public class WebView extends CordovaPlugin{
 
+    static Context context;
+    static protected Resources resources;
+    static protected String packagename;
+
     protected static final JSONObject callbacks=new JSONObject();
     private static final JSONObject webviews=new JSONObject();
     private static Store store=new Store();
 
-    static Context context;
-
     @Override
-    public void initialize(CordovaInterface cordova,CordovaWebView webView){
+    public void initialize(CordovaInterface cordova,CordovaWebView webview){
         WebView.context=cordova.getContext();
+        WebView.resources=WebView.context.getResources();
+        WebView.packagename=WebView.context.getPackageName();
     }
 
     @Override
@@ -226,6 +231,10 @@ public class WebView extends CordovaPlugin{
         if(modalStyle!=null){
             intent.putExtra("modalStyle",modalStyle.toString());
         }
+    }
+
+    static protected int getResourceId(String type,String name){
+        return resources.getIdentifier(name,type,WebView.packagename);
     }
     
 }
