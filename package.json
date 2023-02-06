@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-webview",
-  "version": "3.3.5",
+  "version": "1.0.0",
   "main": "www/index.js",
   "types": "index.d.ts",
   "description": "cordova custom plugin template",
@@ -12,8 +12,9 @@
     ]
   },
   "keywords": [
-    "ecosystem:cordova",
-    "cordova-android"
+    "webview","cordova",
+    "cordova-android",
+    "activity","viewcontroller"
   ],
   "author": "Ahmed Ayachi",
   "license": "ISC"

@@ -134,6 +134,18 @@ type WebViewProps={
         * @default true
         */
     statusBarTranslucent?:boolean,
+    /**
+     * The new webview animation when shown.
+     * @see Applied only for non-modal webviews.
+     * @default "slideLeft"
+     */
+    showAnimation:"slideLeft"|"slideUp"|"fadeIn",
+    /**
+     * The new webview animation when closed.
+     * @see Applied only for non-modal webviews.
+     * @default "fadeOut"
+     */
+    closeAnimation:"slideDown"|"fadeOut",
     /** 
     * The webview background color before loading html file.
     * @default "white".

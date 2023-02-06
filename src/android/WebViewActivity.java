@@ -20,8 +20,9 @@ public class WebViewActivity extends CordovaActivity{
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        super.init();
         this.intent=this.getIntent();
+        this.overridePendingTransition(getShowAnimation(),0);
+        super.init();
         
         url=intent.getStringExtra("file");
         if(url==null||url.isEmpty()){
@@ -37,6 +38,25 @@ public class WebViewActivity extends CordovaActivity{
         this.setResult(WebViewActivity.RESULT_OK,intent);
     }
 
+    protected int getShowAnimation(){
+        String animationId=intent.getStringExtra("showAnimation");
+        switch(animationId){
+            case "slideUp" : return WebView.getResourceId("animator","slide_up");
+            case "fadeIn" : return WebView.getResourceId("animator","fade_in");
+            case "slideLeft":
+            default : return WebView.getResourceId("animator","slide_left"); 
+        }
+    }
+
+    protected int getCloseAnimation(){
+        String animationId=intent.getStringExtra("closeAnimation");
+        switch(animationId){
+            case "slideDown" : return WebView.getResourceId("animator","slide_down");
+            case "fadeOut":
+            default : return WebView.getResourceId("animator","fade_out"); 
+        }
+    }
+
     protected void loadHTML(){
         appView.getView().setBackgroundColor(Color.parseColor(intent.getStringExtra("backgroundColor")));
         appView.loadUrl(url);
@@ -47,6 +67,12 @@ public class WebViewActivity extends CordovaActivity{
             View decorview=getWindow().getDecorView();
             decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
+    }
+
+    @Override
+    public void finish(){
+        super.finish();
+        this.overridePendingTransition(0,getCloseAnimation());
     }
 
     public String getMessage(){

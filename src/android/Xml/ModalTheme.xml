@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Modal" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="ModalTheme" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowAnimationStyle">@style/ModalAnimation</item>
     </style>
-    <style name="ModalAnimation"> 
-        <item name="android:activityOpenEnterAnimation">@animator/slide_up</item>
-        <item name="android:activityCloseExitAnimation">@animator/slide_down</item>
-    </style> 
 </resources>

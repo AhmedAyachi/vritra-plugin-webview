@@ -227,6 +227,12 @@ public class WebView extends CordovaPlugin{
             intent.putExtra("backgroundColor",backgroundColor);
         }
 
+        final String showAnimation=props.optString("showAnimation","slideLeft");
+        intent.putExtra("showAnimation",showAnimation);
+
+        final String closeAnimation=props.optString("closeAnimation","fadeOut");
+        intent.putExtra("closeAnimation",closeAnimation);
+        
         final JSONObject modalStyle=props.optJSONObject("modalStyle");
         if(modalStyle!=null){
             intent.putExtra("modalStyle",modalStyle.toString());

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.Gravity;
 
 
-public class ModalActivity extends WebViewActivity{
+public class ModalActivity extends WebViewActivity {
 
     private JSONObject style=null;
     static private DisplayMetrics metrics=null;
@@ -45,6 +45,16 @@ public class ModalActivity extends WebViewActivity{
         catch(JSONException exception){
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         }
+    }
+
+    @Override
+    protected int getShowAnimation(){
+        return WebView.getResourceId("animator","slide_up");
+    }
+
+    @Override
+    protected int getCloseAnimation(){
+        return WebView.getResourceId("animator","slide_down");
     }
 
     private int getWidth(){
