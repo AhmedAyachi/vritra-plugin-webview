@@ -2,6 +2,9 @@ const exec=require("cordova/exec");
 
 
 module.exports={
+    defineWebViews:(webviews,fallback)=>{
+        exec(null,fallback,"WebView","defineWebViews",[webviews]);
+    },
     show:(options)=>{
         const {onClose,message}=options;
         if((message!==undefined)&&(typeof(message)!=="string")){
@@ -9,17 +12,17 @@ module.exports={
         }
         exec(onClose,null,"WebView","show",[options]);
     },
-    initiateStore:(state,onFullfilled)=>{
-        exec(onFullfilled,null,"WebView","initiateStore",[state]);
+    initiateStore:(state,callback)=>{
+        exec(callback,null,"WebView","initiateStore",[state]);
     },
-    useStore:(onFullfilled)=>{
-        exec(onFullfilled,null,"WebView","useStore",[onFullfilled]);
+    useStore:(callback)=>{
+        exec(callback,null,"WebView","useStore",[callback]);
     },
-    setStore:(key,value,onFullfilled)=>{
-        exec(onFullfilled,null,"WebView","setStore",[key,value]);
+    setStore:(key,value,callback)=>{
+        exec(callback,null,"WebView","setStore",[key,value]);
     },
-    useMessage:(onFullfilled)=>{
-        exec(onFullfilled,null,"WebView","useMessage",[]);
+    useMessage:(callback)=>{
+        exec(callback,null,"WebView","useMessage",[]);
     },
     setMessage:(message)=>{
         exec(null,null,"WebView","setMessage",[stringify(message)]);

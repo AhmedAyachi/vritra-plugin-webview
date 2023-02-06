@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 
@@ -19,6 +21,7 @@ import java.util.Random;
 public class WebView extends CordovaPlugin{
 
     protected static final JSONObject callbacks=new JSONObject();
+    private static final JSONObject webviews=new JSONObject();
     private static Store store=new Store();
 
     static Context context;
@@ -30,38 +33,59 @@ public class WebView extends CordovaPlugin{
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
-        if(action.equals("show")){
+        boolean result=true;
+        if(action.equals("defineWebViews")){
+            final JSONArray webviews=args.getJSONArray(0);
+            this.defineWebViews(webviews,callbackContext);
+        }
+        else if(action.equals("show")){
             JSONObject options=args.getJSONObject(0);
             this.show(options,callbackContext);
-            return true;
         }
         else if(action.equals("initiateStore")){
             JSONObject state=args.getJSONObject(0);
             this.initiateStore(state,callbackContext);
-            return true;
         }
         else if(action.equals("useStore")){
             this.useStore(callbackContext);
-            return true;
         }
         else if(action.equals("setStore")){
             this.setStore(args,callbackContext);
-            return true;
         }
         else if(action.equals("useMessage")){
             this.useMessage(callbackContext);
-            return true;
         }
         else if(action.equals("setMessage")){
             String message=args.getString(0);
             this.setMessage(message);
-            return true;
         }
         else if(action.equals("close")){
             this.close(args);
-            return true;
         }
-        return false;
+        else{
+            result=false;
+        }
+        return result;
+    }
+
+    private void defineWebViews(JSONArray webviews,CallbackContext callbackContext){
+        final int length=webviews.length();
+        for(int i=0;i<length;i++){
+            final JSONObject webview=webviews.optJSONObject(i);
+            final String id=webview.optString("id");
+            final boolean validId=!id.isEmpty();
+            try{
+                if(validId&&(webview.has("file")||webview.has("url"))){
+                    WebView.webviews.put(id,webview);
+                }
+                else{
+                    throw new Exception("Invalid Webview props");
+                }
+            }
+            catch(Exception exception){
+                callbackContext.error(exception.getMessage());
+            }
+        }
     }
 
     private void show(JSONObject options,CallbackContext callbackContext){
@@ -70,9 +94,10 @@ public class WebView extends CordovaPlugin{
         this.cordova.getThreadPool().execute(new Runnable(){
             public void run(){
                 final int ref=new Random().nextInt(999);
-                Boolean asModal=options.optBoolean("asModal");
+                final JSONObject props=WebView.getWebViewProps(options);
+                Boolean asModal=props.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
-                WebView.setIntentExtras(options,intent);
+                WebView.setIntentExtras(props,intent);
                 try{
                     WebView.callbacks.put(Integer.toString(ref),callbackContext);
                 }
@@ -80,6 +105,19 @@ public class WebView extends CordovaPlugin{
                 plugin.cordova.startActivityForResult(plugin,intent,ref);
             }
         });
+    }
+
+    private static JSONObject getWebViewProps(JSONObject options){
+        JSONObject props=null;
+        final String id=options.optString("id");
+        if((!id.isEmpty())&&WebView.webviews.has(id)){
+            final JSONObject defaults=WebView.webviews.optJSONObject(id);
+            props=WebView.mergeJSONObjects(defaults,options);
+        }
+        else{
+            props=options;
+        }
+        return props;
     }
 
     @Override
@@ -133,6 +171,23 @@ public class WebView extends CordovaPlugin{
             wvactivity.setMessage(params.optString(1));
         }
         wvactivity.finish();
+    }
+
+    private static JSONObject mergeJSONObjects(JSONObject object1,JSONObject object2){
+        JSONObject merged=null;
+        try{
+            final Iterator<String> keys1=object1.keys();
+            final  ArrayList<String> names=new ArrayList<String>();
+            keys1.forEachRemaining(names::add);
+            merged=new JSONObject(object1,names.toArray(new String[names.size()]));
+            final Iterator<String> keys2=object2.keys();
+            while(keys2.hasNext()){
+                final String key=keys2.next();
+                merged.put(key,object2.opt(key));
+            }
+        }
+        catch(Exception exception){}
+        return merged;
     }
 
     private static void setIntentExtras(JSONObject options,Intent intent){

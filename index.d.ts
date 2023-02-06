@@ -2,23 +2,21 @@ declare const WebView:WebView;
 
 interface WebView{
     /**
+     * Defines the props of app webviews 
+     * @param webviews 
+     */
+    defineWebViews(webviews:WebViewProps[]):void,
+    /**
     * Shows a new webview with a right-to-left animation.
     * The shown webview will have access to all cordova plugins.
     */
-    show(options:{
+    show(options:WebViewProps&{
         /**
-        * A http/https url to show external sites.
-        * Overwrites the file property.
-        * @warning
-        * Please be careful when using this property because
-        * the target url will have access to cordova plugins.
-        */
-        url:String,
-        /**
-        * A filename with extension in your www folder.
-        * If the url property is used, this value is ignored.
-        */
-        file:String,
+         * The target webview's id. 
+         * 
+         * More prioritized then url prop, less prioritized than file prop.
+         */
+        id:string,
         /**
         * A message to pass to the new webiew.
         * This message is freed when the new webview is closed
@@ -27,33 +25,6 @@ interface WebView{
         * If message is not of type string, JSON.stringify is called.
         */
         message:String,
-        /** 
-        * if True, the statusbar and the keybaord will overlay the webview.
-        * Android only. For ios, use cordova-plugin-statusbar instead.
-        * @default true
-        */
-        statusBarTranslucent:Boolean,
-        /** 
-        * The webview background color before loading html file.
-        * @default "white".
-        */
-        backgroundColor:String,
-        /**
-        * If true, shows the new webview with a modal animation.
-        * @default false.
-        */
-        asModal:Boolean,
-        /**
-        * Ignored when  
-        */
-        modalStyle:{
-            width:Number,
-            height:Number,
-            marginVertical:Number,
-            marginHorizontal:Number,
-            verticalAlign:"bottom"|"top"|"middle",
-            opacity:Number,
-        },
         /**
         * Called when the new webview is closed. 
         */
@@ -136,4 +107,52 @@ interface WebView{
     * @see if message is not a string, JSON.stringify is called.
     */
     close(message:String):void,
+}
+
+type WebViewProps={
+    /**
+     * The target webview's id.
+     * @requires file or url props while definition
+     */
+    id:string,
+    /**
+    * A http/https url to show external sites.
+    * @warning
+    * Please be careful when using this property because
+    * the target url will have access to cordova plugins.
+    */
+    url:string,
+    /**
+    * A filename with extension in your www folder.
+    * 
+    * More prioritized then the url prop.
+    */
+    file:string,
+    /** 
+        * if True, the statusbar and the keybaord will overlay the webview.
+        * Android only. For ios, use cordova-plugin-statusbar instead.
+        * @default true
+        */
+    statusBarTranslucent?:boolean,
+    /** 
+    * The webview background color before loading html file.
+    * @default "white".
+    */
+    backgroundColor?:string,
+    /**
+    * If true, shows the new webview with a modal animation.
+    * @default false.
+    */
+    asModal?:boolean,
+    /**
+    * Only applied when asModal is true
+    */
+    modalStyle?:{
+        width:number,
+        height:number,
+        marginVertical:number,
+        marginHorizontal:number,
+        verticalAlign:"bottom"|"top"|"middle",
+        opacity:number,
+    },
 }
