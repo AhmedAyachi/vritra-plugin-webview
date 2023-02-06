@@ -148,11 +148,39 @@ type WebViewProps={
     * Only applied when asModal is true
     */
     modalStyle?:{
+        /**
+         * width of the modal relative to the window width.
+         * 
+         * Value between 0 and 1.
+         * @default 1
+         */
         width:number,
+        /**
+         * height of the modal relative to the window height.
+         * 
+         * Value between 0 and 1.
+         * @default 1
+         */
         height:number,
-        marginVertical:number,
-        marginHorizontal:number,
+        /**
+         * Top margin of the modal relative to the window height.
+         * 
+         * Value between -1 and 1.
+         */
+        marginTop:number,
+        /**
+         * Left margin of the modal relative to the window width.
+         * 
+         * Value between -1 and 1.
+         */
+        marginLeft:number,
+        /**
+         * @default "middle"
+         */
         verticalAlign:"bottom"|"top"|"middle",
+        /**
+         * @default 1
+         */
         opacity:number,
     },
 }

@@ -190,36 +190,41 @@ public class WebView extends CordovaPlugin{
         return merged;
     }
 
-    private static void setIntentExtras(JSONObject options,Intent intent){
-        String file=options.optString("file");
+    private static void setIntentExtras(JSONObject props,Intent intent){
+        String file=props.optString("file");
         if((file!=null)&&(!file.isEmpty())){
             intent.putExtra("file","file:///android_asset/www/"+file);
         }
         else{
-            String url=options.optString("url");
+            String url=props.optString("url");
             intent.putExtra("url",url);
         }
-        String message=options.optString("message");
+        String message=props.optString("message");
         if(message!=null){
             intent.putExtra("message",message);
         }
         
-        Boolean asModal=options.optBoolean("asModal");
+        Boolean asModal=props.optBoolean("asModal");
         if(asModal){
-            JSONObject style=options.optJSONObject("style");
+            JSONObject style=props.optJSONObject("style");
             if(style!=null){
                 intent.putExtra("style",style.toString());
             }
         }
 
-        Boolean statusBarTranslucent=options.optBoolean("statusBarTranslucent",true);
+        Boolean statusBarTranslucent=props.optBoolean("statusBarTranslucent",true);
         if(statusBarTranslucent!=null){
             intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         }
 
-        String backgroundColor=options.optString("backgroundColor","white");
+        String backgroundColor=props.optString("backgroundColor","white");
         if(backgroundColor!=null){
             intent.putExtra("backgroundColor",backgroundColor);
+        }
+
+        final JSONObject modalStyle=props.optJSONObject("modalStyle");
+        if(modalStyle!=null){
+            intent.putExtra("modalStyle",modalStyle.toString());
         }
     }
     

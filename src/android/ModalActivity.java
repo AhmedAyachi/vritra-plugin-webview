@@ -20,7 +20,6 @@ public class ModalActivity extends WebViewActivity{
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
         final Window window=getWindow();
         try{
             String styleExtra=intent.getStringExtra("modalStyle");
@@ -31,7 +30,6 @@ public class ModalActivity extends WebViewActivity{
                     metrics=new DisplayMetrics();
                     getWindowManager().getDefaultDisplay().getMetrics(metrics);
                 }
-                
                 layoutparams.width=this.getWidth();
                 layoutparams.height=this.getHeight();
                 layoutparams.gravity=this.getGravity();
@@ -54,7 +52,6 @@ public class ModalActivity extends WebViewActivity{
         if((width<0)||(width>1)){
             width=1;
         }
-        
         width=width*metrics.widthPixels;
         return (int)width;
     }
@@ -64,26 +61,18 @@ public class ModalActivity extends WebViewActivity{
         if((height<0)||(height>1)){
             height=1;
         }
-        
         height=height*metrics.heightPixels;
         return (int)height;
     }
 
     private int getGravity(){
-        String verticalAlign=style.optString("verticalAlign");
-        int gravity=Gravity.BOTTOM;
-        if((verticalAlign!=null)&&(verticalAlign!="bottom")){
-            switch(verticalAlign){
-                case "top":
-                    gravity=Gravity.TOP;
-                    break;
-                case "middle":
-                    gravity=Gravity.CENTER;
-                    break;
-                default:break;
-            }
+        String verticalAlign=style.optString("verticalAlign","middle");
+        switch(verticalAlign){
+            case "top": return Gravity.TOP;
+            case "bottom": return Gravity.BOTTOM;
+            case "middle": return Gravity.CENTER;
+            default: return Gravity.CENTER;
         }
-        return gravity;
     }
 
     private float getAlpha(){
@@ -91,16 +80,16 @@ public class ModalActivity extends WebViewActivity{
     }
 
     private int getX(){
-        double x=style.optDouble("marginHorizontal",0);
-        if((x>-1)&&(x<1)){
+        double x=style.optDouble("marginLeft",0);
+        if((x>=-1)&&(x<=1)){
             x=x*metrics.widthPixels;
         }
         return (int)x;
     }
 
     private int getY(){
-        double y=style.optDouble("marginVertical",0);
-        if((y>-1)&&(y<1)){
+        double y=style.optDouble("marginTop",0);
+        if((y>=-1)&&(y<=1)){
             y=y*metrics.heightPixels;
         }
         return (int)y;
