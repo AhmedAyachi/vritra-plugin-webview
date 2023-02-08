@@ -16,7 +16,6 @@ module.exports={
         const webviews=frameElement?frameElement.parentNode.querySelector("iframe").webviews:data;
         if(id){
             props=webviews.find(webview=>webview.id===id);
-            console.log(props,webviews);
             Object.assign(props,options);
         }
         else{
