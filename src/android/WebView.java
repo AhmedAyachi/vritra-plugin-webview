@@ -211,9 +211,9 @@ public class WebView extends CordovaPlugin{
         
         Boolean asModal=props.optBoolean("asModal");
         if(asModal){
-            JSONObject style=props.optJSONObject("style");
-            if(style!=null){
-                intent.putExtra("style",style.toString());
+            final JSONObject modalStyle=props.optJSONObject("modalStyle");
+            if(modalStyle!=null){
+                intent.putExtra("modalStyle",modalStyle.toString());
             }
         }
 
@@ -232,11 +232,6 @@ public class WebView extends CordovaPlugin{
 
         final String closeAnimation=props.optString("closeAnimation","fadeOut");
         intent.putExtra("closeAnimation",closeAnimation);
-        
-        final JSONObject modalStyle=props.optJSONObject("modalStyle");
-        if(modalStyle!=null){
-            intent.putExtra("modalStyle",modalStyle.toString());
-        }
     }
 
     static protected int getResourceId(String type,String name){
