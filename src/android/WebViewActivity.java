@@ -8,6 +8,7 @@ import android.view.View;
 import android.graphics.Color;
 import android.content.Intent;
 import java.lang.Runnable;
+//import android.widget.Toast;
 
 
 public class WebViewActivity extends CordovaActivity{
@@ -40,27 +41,31 @@ public class WebViewActivity extends CordovaActivity{
 
     protected int getShowAnimation(){
         String animationId=intent.getStringExtra("showAnimation");
+        String name=null;
         switch(animationId){
-            case "slideUp" : return WebView.getResourceId("animator","slide_up");
-            case "fadeIn" : return WebView.getResourceId("animator","fade_in");
+            case "slideUp": name="slide_up";break;
+            case "fadeIn": name="fade_in";break;
             case "slideLeft":
-            default : return WebView.getResourceId("animator","slide_left"); 
+            default: name="slide_left";break; 
         }
+        return WebView.getResourceId("animator",name);
     }
 
     protected int getCloseAnimation(){
         String animationId=intent.getStringExtra("closeAnimation");
+        String name=null;
         switch(animationId){
-            case "slideDown" : return WebView.getResourceId("animator","slide_down");
+            case "slideDown": name="slide_down";break;
             case "fadeOut":
-            default : return WebView.getResourceId("animator","fade_out"); 
+            default: name="fade_out";break; 
         }
+        return WebView.getResourceId("animator",name);
     }
 
     protected void loadHTML(){
         appView.getView().setBackgroundColor(Color.parseColor(intent.getStringExtra("backgroundColor")));
         appView.loadUrl(url);
-        Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",true);
+        Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
         if(statusBarTranslucent){
             final Window window=getWindow();
             window.setStatusBarColor(Color.TRANSPARENT);
