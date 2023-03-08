@@ -8,7 +8,7 @@ import java.lang.NumberFormatException;
 import java.util.ArrayList;
 
 
-public class Store{
+public class Store {
     private JSONObject store=null;
 
     public Store(){

@@ -11,7 +11,7 @@ import java.lang.Runnable;
 //import android.widget.Toast;
 
 
-public class WebViewActivity extends CordovaActivity{
+public class WebViewActivity extends CordovaActivity {
     
     protected String url=null;
     protected String message="";

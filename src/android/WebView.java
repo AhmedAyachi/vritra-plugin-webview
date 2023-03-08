@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Random;
 
 
-public class WebView extends CordovaPlugin{
+public class WebView extends CordovaPlugin {
 
     static Context context;
     static protected Resources resources;
