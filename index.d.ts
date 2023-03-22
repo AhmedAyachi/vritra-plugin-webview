@@ -57,10 +57,10 @@ interface WebView{
      * Only objects are accepted.
      * @param store 
      * default: empty object
-     * @param onFullfilled 
+     * @param callback 
      * Called when the store is successfully set. 
      */
-    initiateStore(store:Object,onFullfilled:(store:Object)=>void):void,
+    initiateStore(store:Object,callback:(store:Object)=>void):void,
     /**
     * Uses the store object.
     * @note
@@ -94,12 +94,12 @@ interface WebView{
      * "object.array[*].object.array[*].property"
      * "object.array[0].array[4].array[last].property"
      * @param value 
-     * @param onFullfilled 
+     * @param callback 
      */
     setStore(
         key:String,
         value:any,
-        onFullfilled:(store:Object)=>void
+        callback:(store:Object)=>void
     ):void,
     /**
     * Close the current webview.
@@ -113,7 +113,7 @@ interface WebView{
 type WebViewProps={
     /**
      * The target webview's id.
-     * @requires file or url props while definition
+     * @requires file or url props in definition
      */
     id:string,
     /**
@@ -130,10 +130,10 @@ type WebViewProps={
     */
     file:string,
     /** 
-        * if True, the statusbar and the keybaord will overlay the webview.
-        * Android only. For ios, use cordova-plugin-statusbar instead.
-        * @default true
-        */
+    * if True, the statusbar and the keybaord will overlay the webview.
+    * Android only. For ios, use cordova-plugin-statusbar instead.
+    * @default true
+    */
     statusBarTranslucent?:boolean,
     /**
      * The new webview animation when shown.
