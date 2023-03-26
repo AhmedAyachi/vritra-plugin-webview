@@ -76,12 +76,12 @@ public class ModalActivity extends WebViewActivity {
     }
 
     private int getGravity(){
-        String verticalAlign=style.optString("verticalAlign","middle");
+        String verticalAlign=style.optString("verticalAlign","bottom");
         switch(verticalAlign){
             case "top": return Gravity.TOP;
             case "bottom": return Gravity.BOTTOM;
             case "middle": return Gravity.CENTER;
-            default: return Gravity.CENTER;
+            default: return Gravity.BOTTOM;
         }
     }
 

@@ -1,6 +1,6 @@
 declare const WebView:WebView;
 
-interface WebView{
+interface WebView {
     /**
      * Defines the props of app webviews 
      * @param webviews 
@@ -188,7 +188,7 @@ type WebViewProps={
          */
         marginLeft:number,
         /**
-         * @default "middle"
+         * @default "bottom"
          */
         verticalAlign:"bottom"|"top"|"middle",
         /**
