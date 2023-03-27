@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo.WindowLayout;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.Gravity;
+import android.widget.Toast;
 
 
 public class ModalActivity extends WebViewActivity {
@@ -22,25 +23,25 @@ public class ModalActivity extends WebViewActivity {
         super.onCreate(savedInstanceState);
         final Window window=getWindow();
         try{
-            String styleExtra=intent.getStringExtra("modalStyle");
-            if(styleExtra!=null){
-                style=new JSONObject(styleExtra);
-                final LayoutParams layoutparams=window.getAttributes();
-                if(metrics==null){
-                    metrics=new DisplayMetrics();
-                    getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                }
-                layoutparams.width=this.getWidth();
-                layoutparams.height=this.getHeight();
-                layoutparams.gravity=this.getGravity();
-                layoutparams.alpha=this.getAlpha();
-                layoutparams.x=this.getX();
-                layoutparams.y=this.getY();
-                window.setAttributes(layoutparams);
+            String stylejson=intent.getStringExtra("modalStyle");
+            if(stylejson!=null){
+                style=new JSONObject(stylejson);
             }
             else{
-                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+                style=new JSONObject();
             }
+            final LayoutParams layoutparams=window.getAttributes();
+            if(metrics==null){
+                metrics=new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            }
+            layoutparams.width=this.getWidth();
+            layoutparams.height=this.getHeight();
+            layoutparams.gravity=this.getGravity();
+            layoutparams.alpha=this.getAlpha();
+            layoutparams.x=this.getX();
+            layoutparams.y=this.getY();
+            window.setAttributes(layoutparams);
         }
         catch(JSONException exception){
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
@@ -67,7 +68,7 @@ public class ModalActivity extends WebViewActivity {
     }
 
     private int getHeight(){
-        double height=style.optDouble("height",1); 
+        double height=style.optDouble("height",0.85); 
         if((height<0)||(height>1)){
             height=1;
         }
@@ -79,8 +80,8 @@ public class ModalActivity extends WebViewActivity {
         String verticalAlign=style.optString("verticalAlign","bottom");
         switch(verticalAlign){
             case "top": return Gravity.TOP;
-            case "bottom": return Gravity.BOTTOM;
             case "middle": return Gravity.CENTER;
+            case "bottom":
             default: return Gravity.BOTTOM;
         }
     }

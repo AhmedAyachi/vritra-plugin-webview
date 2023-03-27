@@ -172,21 +172,21 @@ type WebViewProps={
          * height of the modal relative to the window height.
          * 
          * Value between 0 and 1.
-         * @default 1
+         * @default 0.85
          */
         height:number,
-        /**
-         * Top margin of the modal relative to the window height.
-         * 
-         * Value between -1 and 1.
-         */
-        marginTop:number,
         /**
          * Left margin of the modal relative to the window width.
          * 
          * Value between -1 and 1.
          */
         marginLeft:number,
+        /**
+         * Top margin of the modal relative to the window height.
+         * 
+         * Value between -1 and 1.
+         */
+        marginTop:number,
         /**
          * @default "bottom"
          */
