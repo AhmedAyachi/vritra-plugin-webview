@@ -19,7 +19,7 @@ class Webview:WebViewPlugin {
                     }
                 };
             }
-        };
+        }
     }
 
     @objc(show:)

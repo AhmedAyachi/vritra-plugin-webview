@@ -84,7 +84,7 @@ public class WebView extends CordovaPlugin {
                     WebView.webviews.put(id,webview);
                 }
                 else{
-                    throw new Exception("Invalid Webview props");
+                    throw new Exception("Invalid WebView props");
                 }
             }
             catch(Exception exception){
