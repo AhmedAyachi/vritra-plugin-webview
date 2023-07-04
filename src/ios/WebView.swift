@@ -1,7 +1,7 @@
 import Foundation;
 
 
-class Webview:WebViewPlugin {
+class Webview:CordovaPlugin {
 
     static let store=Store();
     public var showCommand:CDVInvokedUrlCommand?=nil;

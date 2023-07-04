@@ -51,10 +51,10 @@
             </feature>
         </config-file>
         <source-file src="src/ios/Webview.swift"/>
-        <source-file src="src/ios/WebViewPlugin.swift"/>
         <source-file src="src/ios/ViewController.swift"/>
         <source-file src="src/ios/Animations.swift"/>
         <source-file src="src/ios/Store.swift"/>
+        <dependency id="cordova-plugin-swift-support" url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"/>
     </platform>
     
     <platform name="browser">
