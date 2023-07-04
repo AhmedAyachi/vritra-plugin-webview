@@ -28,7 +28,7 @@ module.exports={
         exec(null,null,"WebView","setMessage",[stringify(message)]);
     },
     close:(message)=>{
-        exec(null,null,"WebView","close",[message===undefined,stringify(message)]);
+        exec(null,null,"WebView","close",[stringify(message),message===undefined]);
     },
 }
 

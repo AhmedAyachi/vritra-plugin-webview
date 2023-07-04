@@ -171,9 +171,9 @@ public class WebView extends CordovaPlugin {
 
     private void close(JSONArray params){
         final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        final Boolean isUndefined=params.optBoolean(0);
+        final Boolean isUndefined=params.optBoolean(1);
         if(!isUndefined){
-            wvactivity.setMessage(params.optString(1));
+            wvactivity.setMessage(params.optString(0));
         }
         wvactivity.finish();
     }
