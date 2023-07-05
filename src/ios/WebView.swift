@@ -24,13 +24,15 @@ class Webview:CordovaPlugin {
 
     @objc(show:)
     func show(command:CDVInvokedUrlCommand){
-        if let options=command.arguments[0] as? [String:Any] {
+        if var options=command.arguments[0] as? [String:Any] {
             DispatchQueue.main.async(execute:{[self] in
-                let childvc=ViewController.getInstance(getWebViewProps(options),self);
+                options=getWebViewProps(options);
+                let childvc=ViewController(options,self);
                 let viewcontroller=self.viewController!;
                 viewcontroller.addChild(childvc);
                 viewcontroller.view.addSubview(childvc.view);
-                childvc.isModal ? showModal(childvc) : showWebView(childvc);
+                childvc.isModal ? showModal(childvc) : 
+                showWebView(childvc,options["showAnimation"] as? String);
                 self.showCommand=command;
             });
         }
@@ -47,13 +49,18 @@ class Webview:CordovaPlugin {
     @objc(useMessage:)
     func useMessage(command:CDVInvokedUrlCommand){
         if(!(self.viewController.parent==nil)){
-            success(command,self.viewController.title);
+            if let viewcontroller=self.viewController as? ViewController {
+                success(command,viewcontroller.message);
+            }
         }
     }
 
     @objc(setMessage:)
     func setMessage(command:CDVInvokedUrlCommand){
-        self.viewController.title=command.arguments[0] as? String;
+        if let viewcontroller=self.viewController as? ViewController {
+            let message=command.arguments[0] as? String;
+            viewcontroller.message=message;
+        }
     }
 
     @objc(initiateStore:)
@@ -78,18 +85,24 @@ class Webview:CordovaPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if !(self.viewController.parent==nil){
+        if let viewcontroller=self.viewController as? ViewController {
+            if !(viewcontroller.parent==nil){
             DispatchQueue.main.async(execute:{[self] in
                 let isUndefined=command.arguments[1] as! Bool;
                 if(!isUndefined){
                     self.setMessage(command:command);
                 }
-                let callback=self.viewController.isBeingPresented ? hideModal : hideWebView;
-                callback(self.viewController,{_ in
-                    self.viewController.view.removeFromSuperview();
-                    self.viewController.removeFromParent();
+                let callback=viewcontroller.isModal ? hideModal : {
+                    (_ viewcontroller:ViewController,_ onHidden:((Bool)->Void)?)->() in
+                    let options=viewcontroller.options;
+                    hideWebView(viewcontroller,options["closeAnimation"] as? String,onHidden);
+                };
+                callback(viewcontroller,{_ in
+                    viewcontroller.view.removeFromSuperview();
+                    viewcontroller.removeFromParent();
                 });
             });
+        }
         }
     }
 }

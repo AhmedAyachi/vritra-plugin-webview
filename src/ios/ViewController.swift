@@ -1,11 +1,25 @@
 
 
-class ViewController:CDVViewController{
+class ViewController:CDVViewController {
 
     var plugin:Webview?=nil;
     var options:[AnyHashable:Any]=[:];
     var message:String?=nil;
-    public var isModal:Bool=true;
+    var isModal:Bool=true;
+
+    init(_ options:[AnyHashable:Any],_ plugin:Webview?){
+        super.init(nibName:nil,bundle:nil);
+        self.options=options;
+        self.plugin=plugin;
+        self.message=options["message"] as? String;
+        self.isModal=(options["asModal"] as? Bool) ?? false;
+        self.setUrl();
+        self.setView();
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder:coder);
+    }
 
     override var prefersStatusBarHidden:Bool{
         return true;
@@ -16,40 +30,16 @@ class ViewController:CDVViewController{
         setNeedsStatusBarAppearanceUpdate();
     }
 
-    override public var isBeingPresented:Bool{
-        get{
-            return self.isModal;
-        }
-    }
-
-    override public var title:String?{
-        get{
-            return message;
-        }
-        set(value){
-            self.message=value;
-        }
-    };
-
     override func viewDidDisappear(_ animated:Bool){
         super.viewDidDisappear(animated);
         let showCommand:CDVInvokedUrlCommand?=plugin!.showCommand;
         if(!(showCommand==nil)){
             let data:[AnyHashable:Any]=[
-                "message":self.title as Any,
+                "message":self.message as Any,
                 "store":Webview.store.toObject(),
             ];
             plugin!.success(showCommand!,data);
         }
-    }
-
-    func setOptions(_ options:[AnyHashable:Any],_ plugin:Webview){
-        self.options=options;
-        self.plugin=plugin;
-        self.title=options["message"] as? String;
-        self.isModal=(options["asModal"] as? Bool) ?? false;
-        self.setUrl();
-        self.setView();
     }
 
     func setUrl(){
@@ -75,12 +65,6 @@ class ViewController:CDVViewController{
         self.view.backgroundColor=color;
         self.launchView.backgroundColor=color;
         self.webView.backgroundColor=color;
-    }
-
-    static func getInstance(_ options:[AnyHashable:Any],_ plugin:Webview)->ViewController{
-        let viewcontroller=ViewController();
-        viewcontroller.setOptions(options,plugin);
-        return viewcontroller;
     }
 }
 

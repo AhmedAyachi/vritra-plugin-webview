@@ -50,10 +50,12 @@
                 <param name="ios-package" value="Webview" onload="false"/>
             </feature>
         </config-file>
-        <source-file src="src/ios/Webview.swift"/>
-        <source-file src="src/ios/ViewController.swift"/>
-        <source-file src="src/ios/Animations.swift"/>
         <source-file src="src/ios/Store.swift"/>
+        <source-file src="src/ios/ViewController.swift"/>
+        <source-file src="src/ios/Webview.swift"/>
+        <source-file src="src/ios/Animations/HideAnimations.swift"/>
+        <source-file src="src/ios/Animations/ShowAnimations.swift"/>
+        <source-file src="src/ios/Animations/WebViewAnimator.swift"/>
         <dependency 
             id="cordova-plugin-swift-support" 
             url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"
