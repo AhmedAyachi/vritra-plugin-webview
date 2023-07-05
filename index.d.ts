@@ -10,7 +10,7 @@ interface WebView {
     /**
     * Shows a new webview.
     * The shown webview will have access to all cordova plugins.
-    * @see Overwrites defined webview props
+    * @notice Overwrites defined webview props
     */
     show(options:WebViewProps&{
         /**
@@ -48,8 +48,8 @@ interface WebView {
     useMessage(handler:(message:String)=>void):void,
     /**
     * Sets the message value. 
-    * @see if message is a falsy value, is passed as an empty string.
-    * @see if message is not a string, JSON.stringify is called.
+    * @notice if message is a falsy value, is passed as an empty string.
+    * @notice if message is not a string, JSON.stringify is called.
     */
     setMessage(message:String):void,
     /**
@@ -104,8 +104,8 @@ interface WebView {
     /**
     * Close the current webview.
     * @param message The message to pass to the previous webview.
-    * @see if message is undefined, the value is ignored.
-    * @see if message is not a string, JSON.stringify is called.
+    * @notice if message is undefined, the value is ignored.
+    * @notice if message is not a string, JSON.stringify is called.
     */
     close(message:String):void,
 }
@@ -137,13 +137,13 @@ type WebViewProps={
     statusBarTranslucent?:boolean,
     /**
      * The new webview animation when shown.
-     * @see Applied only for non-modal webviews.
+     * @notice Applied only for non-modal webviews.
      * @default "slideLeft"
      */
     showAnimation:"slideLeft"|"slideUp"|"fadeIn",
     /**
      * The new webview animation when closed.
-     * @see Applied only for non-modal webviews.
+     * @notice Applied only for non-modal webviews.
      * @default "fadeOut"
      */
     closeAnimation:"slideDown"|"fadeOut",
