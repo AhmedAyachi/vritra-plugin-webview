@@ -1,23 +1,24 @@
 
 
-class ViewController:CDVViewController {
+class WebViewController:CDVViewController {
 
     var plugin:Webview?=nil;
     var options:[AnyHashable:Any]=[:];
     var message:String?=nil;
-    var isModal:Bool=true;
+    var isModal:Bool {
+        get {return false}
+    };
 
     init(_ options:[AnyHashable:Any],_ plugin:Webview?){
         super.init(nibName:nil,bundle:nil);
         self.options=options;
         self.plugin=plugin;
         self.message=options["message"] as? String;
-        self.isModal=(options["asModal"] as? Bool) ?? false;
         self.setUrl();
         self.setView();
     }
 
-    required init?(coder: NSCoder) {
+    required init?(coder:NSCoder) {
         super.init(coder:coder);
     }
 
@@ -56,10 +57,11 @@ class ViewController:CDVViewController {
 
     func setView(){
         let view=self.view!;
-        view.frame=UIScreen.main.bounds;
-        view.clipsToBounds=false;
-        view.isOpaque=true;
-
+        if(!self.isModal){
+            view.frame=UIScreen.main.bounds;
+            view.clipsToBounds=false;
+        }
+        view.isOpaque=(!self.isModal);
         let backgroundColor=options["backgroundColor"] as? String;
         let color=backgroundColor==nil ? UIColor.white:getUIColorFromHex(backgroundColor!);
         self.view.backgroundColor=color;

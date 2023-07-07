@@ -8,7 +8,6 @@ import android.view.View;
 import android.graphics.Color;
 import android.content.Intent;
 import java.lang.Runnable;
-//import android.widget.Toast;
 
 
 public class WebViewActivity extends CordovaActivity {

@@ -6,7 +6,11 @@ func slideDown(_ view:UIView,_ onHidden:((Bool)->Void)?){
         delay:0,
         options:.curveEaseOut,
         animations:{
-            view.transform=CGAffineTransform(translationX:0,y:UIScreen.main.bounds.size.height);
+            let screenBounds=UIScreen.main.bounds;
+            view.layer.transform=CATransform3DMakeTranslation(
+                view.bounds.origin.x,
+                screenBounds.height-view.frame.origin.y,0
+            );
             view.alpha=0;
         },
         completion:onHidden

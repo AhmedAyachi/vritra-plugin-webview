@@ -27,12 +27,13 @@ class Webview:CordovaPlugin {
         if var options=command.arguments[0] as? [String:Any] {
             DispatchQueue.main.async(execute:{[self] in
                 options=getWebViewProps(options);
-                let childvc=ViewController(options,self);
+                let asModal=(options["asModal"] as? Bool) ?? false;
+                let childvc=asModal ? ModalController(options,self) : WebViewController(options,self);
                 let viewcontroller=self.viewController!;
+                //viewcontroller.present(childvc,animated:true);
                 viewcontroller.addChild(childvc);
                 viewcontroller.view.addSubview(childvc.view);
-                childvc.isModal ? showModal(childvc) : 
-                showWebView(childvc,options["showAnimation"] as? String);
+                childvc.isModal ? showModal(childvc) : showWebView(childvc,options["showAnimation"] as? String);
                 self.showCommand=command;
             });
         }
@@ -49,7 +50,7 @@ class Webview:CordovaPlugin {
     @objc(useMessage:)
     func useMessage(command:CDVInvokedUrlCommand){
         if(!(self.viewController.parent==nil)){
-            if let viewcontroller=self.viewController as? ViewController {
+            if let viewcontroller=self.viewController as? WebViewController {
                 success(command,viewcontroller.message);
             }
         }
@@ -57,7 +58,7 @@ class Webview:CordovaPlugin {
 
     @objc(setMessage:)
     func setMessage(command:CDVInvokedUrlCommand){
-        if let viewcontroller=self.viewController as? ViewController {
+        if let viewcontroller=self.viewController as? WebViewController {
             let message=command.arguments[0] as? String;
             viewcontroller.message=message;
         }
@@ -85,7 +86,7 @@ class Webview:CordovaPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if let viewcontroller=self.viewController as? ViewController {
+        if let viewcontroller=self.viewController as? WebViewController {
             if !(viewcontroller.parent==nil){
             DispatchQueue.main.async(execute:{[self] in
                 let isUndefined=command.arguments[1] as! Bool;
@@ -93,7 +94,7 @@ class Webview:CordovaPlugin {
                     self.setMessage(command:command);
                 }
                 let callback=viewcontroller.isModal ? hideModal : {
-                    (_ viewcontroller:ViewController,_ onHidden:((Bool)->Void)?)->() in
+                    (_ viewcontroller:WebViewController,_ onHidden:((Bool)->Void)?)->() in
                     let options=viewcontroller.options;
                     hideWebView(viewcontroller,options["closeAnimation"] as? String,onHidden);
                 };
