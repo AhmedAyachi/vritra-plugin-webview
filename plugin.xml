@@ -56,7 +56,6 @@
         <source-file src="src/ios/Webview.swift"/>
         <source-file src="src/ios/Animations/HideAnimations.swift"/>
         <source-file src="src/ios/Animations/ShowAnimations.swift"/>
-        <source-file src="src/ios/Animations/WebViewAnimator.swift"/>
         <dependency 
             id="cordova-plugin-swift-support" 
             url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"

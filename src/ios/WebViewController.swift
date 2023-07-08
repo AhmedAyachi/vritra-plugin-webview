@@ -3,19 +3,19 @@
 class WebViewController:CDVViewController {
 
     var plugin:Webview?=nil;
-    var options:[AnyHashable:Any]=[:];
+    var options:[String:Any]=[:];
     var message:String?=nil;
     var isModal:Bool {
         get {return false}
     };
 
-    init(_ options:[AnyHashable:Any],_ plugin:Webview?){
+    init(_ options:[String:Any],_ plugin:Webview?){
         super.init(nibName:nil,bundle:nil);
         self.options=options;
         self.plugin=plugin;
         self.message=options["message"] as? String;
         self.setUrl();
-        self.setView();
+        self.setBackgroundColor();
     }
 
     required init?(coder:NSCoder) {
@@ -55,19 +55,59 @@ class WebViewController:CDVViewController {
         self.startPage=url;
     }
 
-    func setView(){
-        let view=self.view!;
-        if(!self.isModal){
-            view.frame=UIScreen.main.bounds;
-            view.clipsToBounds=false;
-        }
-        view.isOpaque=(!self.isModal);
+    func setBackgroundColor(){
+        self.view.clipsToBounds=false;
         let backgroundColor=options["backgroundColor"] as? String;
         let color=backgroundColor==nil ? UIColor.white:getUIColorFromHex(backgroundColor!);
-        self.view.backgroundColor=color;
-        self.launchView.backgroundColor=color;
-        self.webView.backgroundColor=color;
+        webView.isOpaque=false;
+        webView.backgroundColor=color;
     }
+
+    func addTo(_ parentController:UIViewController){
+        parentController.addChild(self);
+        parentController.view.addSubview(self.view);
+        self.show();
+    }
+
+    func show(){
+        let animation=({
+            let animationId=options["showAnimation"] as? String;
+            switch(animationId){
+                case "fadeIn": return fadeIn;
+                case "slideUp": return slideUp;
+                default: return slideLeft;
+            }
+        })();
+        let mainview=self.view!;
+        let statusBarTranslucent=options["statusBarTranslucent"] as? Bool ?? false;
+        if(statusBarTranslucent){
+            
+        }
+        else{
+            let statusBarColor=options["statusBarColor"] as? String ?? "white";
+            let scrollView=mainview.subviews.first!;
+            scrollView.backgroundColor=getUIColorFromHex(statusBarColor);
+            scrollView.frame.size.height=UIApplication.shared.statusBarFrame.height;
+        }
+        animation(mainview,0.5);
+    }
+    
+    func hide(_ onHidden:((Bool)->Void)?){
+        let closeAnimation=options["closeAnimation"] as? String ?? "fadeOut";
+        let mainview=self.view!;
+        let options=["onFinish":onHidden as Any];
+        switch(closeAnimation){
+            case "slideDown": slideDown(mainview,options);break;
+            default: fadeOut(mainview,options);break;
+        }
+    }
+
+    func remove(){
+        self.hide({_ in
+            self.view.removeFromSuperview();
+            self.removeFromParent();
+        });
+    };
 }
 
 func getUIColorFromHex(_ code:String)->UIColor{
@@ -89,53 +129,23 @@ func getUIColorFromHex(_ code:String)->UIColor{
         );
     }
     else{
-        switch(code.lowercased()){
-            case "black":
-                color=UIColor.black;
-                break;
-            case "blue":
-                color=UIColor.blue;
-                break;
-            case "brown":
-                color=UIColor.brown;
-                break;
-            case "cyan":
-                color=UIColor.cyan;
-                break;
-            case "darkgray":
-                color=UIColor.darkGray;
-                break;
-            case "gray":
-                color=UIColor.gray;
-                break;
-            case "green":
-                color=UIColor.green;
-                break;
-            case "lightgray":
-                color=UIColor.lightGray;
-                break;
-            case "magenta":
-                color=UIColor.magenta;
-                break;
-            case "orange":
-                color=UIColor.orange;
-                break;
-            case "purple":
-                color=UIColor.purple;
-                break;
-            case "red":
-                color=UIColor.red;
-                break;
-            case "white":
-                color=UIColor.white;
-                break;
-            case "yellow":
-                color=UIColor.yellow;
-                break;
-            default:
-                color=UIColor.white;
-                break;
-        }
+        color=({switch(code){
+            case "transparent": return UIColor.clear;
+            case "black": return UIColor.black;
+            case "blue": return UIColor.blue;
+            case "brown": return UIColor.brown;
+            case "cyan": return UIColor.cyan;
+            case "darkgray": return UIColor.darkGray;
+            case "gray": return UIColor.gray;
+            case "green": return UIColor.green;
+            case "lightgray": return UIColor.lightGray;
+            case "magenta": return UIColor.magenta;
+            case "orange": return UIColor.orange;
+            case "purple": return UIColor.purple;
+            case "red": return UIColor.red;
+            case "yellow": return UIColor.yellow;
+            default: return UIColor.white; 
+        }})();
     }
     return color;
 }

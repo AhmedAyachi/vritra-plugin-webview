@@ -28,12 +28,9 @@ class Webview:CordovaPlugin {
             DispatchQueue.main.async(execute:{[self] in
                 options=getWebViewProps(options);
                 let asModal=(options["asModal"] as? Bool) ?? false;
-                let childvc=asModal ? ModalController(options,self) : WebViewController(options,self);
-                let viewcontroller=self.viewController!;
+                let viewcontroller=asModal ? ModalController(options,self) : WebViewController(options,self);
+                viewcontroller.addTo(self.viewController!);
                 //viewcontroller.present(childvc,animated:true);
-                viewcontroller.addChild(childvc);
-                viewcontroller.view.addSubview(childvc.view);
-                childvc.isModal ? showModal(childvc) : showWebView(childvc,options["showAnimation"] as? String);
                 self.showCommand=command;
             });
         }
@@ -88,26 +85,14 @@ class Webview:CordovaPlugin {
     func close(command:CDVInvokedUrlCommand){
         if let viewcontroller=self.viewController as? WebViewController {
             if !(viewcontroller.parent==nil){
-            DispatchQueue.main.async(execute:{[self] in
-                let isUndefined=command.arguments[1] as! Bool;
-                if(!isUndefined){
-                    self.setMessage(command:command);
-                }
-                let callback=viewcontroller.isModal ? hideModal : {
-                    (_ viewcontroller:WebViewController,_ onHidden:((Bool)->Void)?)->() in
-                    let options=viewcontroller.options;
-                    hideWebView(viewcontroller,options["closeAnimation"] as? String,onHidden);
-                };
-                callback(viewcontroller,{_ in
-                    viewcontroller.view.removeFromSuperview();
-                    viewcontroller.removeFromParent();
+                DispatchQueue.main.async(execute:{[self] in
+                    let isUndefined=command.arguments[1] as! Bool;
+                    if(!isUndefined){
+                        self.setMessage(command:command);
+                    }
+                    viewcontroller.remove();
                 });
-            });
-        }
+            }
         }
     }
 }
-
-/* override func pluginInitialize(){
-        
-} */

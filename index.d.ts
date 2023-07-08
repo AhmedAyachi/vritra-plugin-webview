@@ -131,10 +131,23 @@ type WebViewProps={
     file:string,
     /** 
     * if True, the statusbar and the keybaord will overlay the webview.
-    * Android only. For ios, use cordova-plugin-statusbar instead.
-    * @default true
+    * 
+    * Android only. 
+    * 
+    * For ios, use cordova-plugin-statusbar instead.
+    * @default false
     */
     statusBarTranslucent?:boolean,
+    /**
+     * Only applied when statusBarTranslucent false
+     * @default "white"
+     */
+    statusBarColor?:WebViewColor,
+    /** 
+    * The webview background color before loading the html file.
+    * @default "white".
+    */
+    backgroundColor?:WebViewColor,
     /**
      * The new webview animation when shown.
      * @notice Applied only for non-modal webviews.
@@ -147,11 +160,6 @@ type WebViewProps={
      * @default "fadeOut"
      */
     closeAnimation:"slideDown"|"fadeOut",
-    /** 
-    * The webview background color before loading html file.
-    * @default "white".
-    */
-    backgroundColor?:string,
     /**
     * If true, shows the new webview with a modal animation.
     * @default false.
@@ -197,3 +205,11 @@ type WebViewProps={
         opacity:number,
     },
 }
+
+type WebViewColor=(
+    "black"|"blue"|"brown"|"cyan"|
+    "darkgray"|"gray"|"green"|"lightgray"|
+    "magenta"|"orange"|"purple"|"red"|
+    "yellow"|"white"|"transparent"|"#"
+)
+
