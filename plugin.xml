@@ -61,6 +61,7 @@
             id="cordova-plugin-swift-support" 
             url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"
         />
+        <resource-file src="src/Assets/Audio/modal_shown.ogg"/>
     </platform>
     
     <platform name="browser">

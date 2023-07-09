@@ -1,3 +1,4 @@
+import AVFAudio;
 
 
 class ModalController:WebViewController {
@@ -20,28 +21,35 @@ class ModalController:WebViewController {
         super.init(coder:coder);
     }
 
+    override func viewDidLoad(){
+        super.viewDidLoad();
+        do{
+            if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"ogg"){
+                let audioPlayer:AVAudioPlayer=try AVAudioPlayer(contentsOf:audioURL);
+                audioPlayer.play();
+            };
+        }
+        catch{}
+    }
+
     override func viewDidLayoutSubviews(){
         super.viewDidLayoutSubviews();
         self.setViewBounds();
     }
     
     override func show(){
-        let mainview=self.view!;
-        let webView=self.webView!;
-        fadeIn(mainview,0.3);
-        slideUp(webView,0.3);
+        let duration=0.3;
+        fadeIn(self.view,duration);
+        slideUp(self.webView,duration);
     }
 
     override func hide(_ onHidden:((Bool)->Void)?){
-        let mainview=self.view!;
-        let webView=self.webView!;
-        fadeOut(mainview,[
-            "duration":0.4,
-        ]);
-        slideDown(webView,[
-            "duration":0.4,
+        let duration=0.4;
+        slideDown(self.webView,[
+            "duration":duration,
             "onFinish":onHidden as Any,
         ]);
+        fadeOut(self.view,["duration":duration]);
     }
 
     private func setViewBounds(){
@@ -52,46 +60,33 @@ class ModalController:WebViewController {
         let availableSize=view.superview!.frame;
         let screenWidth=availableSize.width;
         let screenHeight=availableSize.height;
-        let width=self.getWidth()*screenWidth;
-        let height=self.getHeight()*screenHeight;
-        let marginLeft=self.getMarginLeft()*screenWidth;
-        var marginTop=self.getMarginTop()*screenHeight;
+        let width=self.getDimension("width")*screenWidth;
+        let height=self.getDimension("height",0.85)*screenHeight;
+        let marginLeft=self.getMargin("Left")*screenWidth;
+        var marginTop=self.getMargin("Top")*screenHeight;
         let verticalAlign=self.getVerticalAlign();
         switch(verticalAlign){
             case "bottom":marginTop+=screenHeight-height;break;
             case "middle":marginTop+=(screenHeight-height)/2;break;
             default:break;
         }
+        view.alpha=self.getOpacity();
         view.frame=CGRect(x:marginLeft,y:marginTop,width:width,height:height);
     }
     
-    private func getWidth()->Double{
-        var width=style["width"] as? Double ?? 1;
-        if((width<0)||(width>1)){
-            width=1;
+    private func getDimension(_ name:String,_ fallback:Double=1)->Double{
+        var dimension=style[name] as? Double ?? fallback;
+        if((dimension<0)||(dimension>1)){
+            dimension=1;
         }
-        return width;
+        return dimension;
     }
-    private func getHeight()->Double{
-        var height=style["height"] as? Double ?? 0.85;
-        if((height<0)||(height>1)){
-            height=0.85;
+    private func getMargin(_ side:String)->Double{
+        var margin=style["margin"+side] as? Double ?? 0;
+        if((margin < -1)||(margin>1)){
+            margin=0;
         }
-        return height;
-    }
-    private func getMarginLeft()->Double{
-        var marginLeft=style["marginLeft"] as? Double ?? 0;
-        if((marginLeft < -1)||(marginLeft>1)){
-            marginLeft=0;
-        }
-        return marginLeft;
-    }
-    private func getMarginTop()->Double{
-        var marginTop=style["marginTop"] as? Double ?? 0;
-        if((marginTop < -1)||(marginTop>1)){
-            marginTop=0;
-        }
-        return marginTop;
+        return margin;
     }
     private func getVerticalAlign()->String{
         var verticalAlign="bottom";
@@ -101,5 +96,12 @@ class ModalController:WebViewController {
             }
         }
         return verticalAlign;
+    }
+    private func getOpacity()->Double{
+        var opacity=style["opacity"] as? Double ?? 1;
+        if((opacity>1)||(opacity<0)){
+            opacity=1;
+        }
+        return opacity;
     }
 }
