@@ -42,7 +42,7 @@
         <source-file src="src/android/Xml/slide_left.xml" target-dir="res/animator"/>
         <source-file src="src/android/Xml/fade_out.xml" target-dir="res/animator"/>
         <source-file src="src/android/Xml/fade_in.xml" target-dir="res/animator"/>
-        <source-file src="src/Assets/Audio/modal_shown.ogg" target-dir="res/raw"/>
+        <source-file src="src/Assets/Audio/modal_shown.mp3" target-dir="res/raw"/>
     </platform>
 
     <platform name="ios">
@@ -61,7 +61,7 @@
             id="cordova-plugin-swift-support" 
             url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"
         />
-        <resource-file src="src/Assets/Audio/modal_shown.ogg"/>
+        <resource-file src="src/Assets/Audio/modal_shown.mp3"/>
     </platform>
     
     <platform name="browser">
