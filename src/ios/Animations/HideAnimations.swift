@@ -7,7 +7,7 @@ func slideDown(_ view:UIView,_ animOptions:[String:Any]?=nil){
     UIView.animate(
         withDuration:duration,
         delay:0,
-        options:.curveEaseOut,
+        options:.curveEaseIn,
         animations:{
             view.frame.origin.y=UIScreen.main.bounds.height;
             view.alpha=0;

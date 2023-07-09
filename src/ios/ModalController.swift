@@ -7,6 +7,7 @@ class ModalController:WebViewController {
         get {return true}
     };
     lazy var style:[String:Any]=[:];
+    var audioPlayer:AVAudioPlayer?=nil;
 
     override init(_ options:[String:Any],_ plugin:Webview?){
         super.init(options,plugin);
@@ -21,15 +22,20 @@ class ModalController:WebViewController {
         super.init(coder:coder);
     }
 
-    override func viewDidLoad(){
-        super.viewDidLoad();
-        do{
-            if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"ogg"){
-                let audioPlayer:AVAudioPlayer=try AVAudioPlayer(contentsOf:audioURL);
-                audioPlayer.play();
+    override func viewDidAppear(_ animated:Bool){
+        super.viewDidAppear(animated);
+        let silent:Bool=style["silent"] as? Bool ?? false;
+        if(!silent){
+            if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3"){
+                do{
+                    audioPlayer=try AVAudioPlayer(contentsOf:audioURL);
+                    audioPlayer?.volume=0.1;
+                    audioPlayer?.play();
+                }
+                catch{}
             };
         }
-        catch{}
+        
     }
 
     override func viewDidLayoutSubviews(){
@@ -38,13 +44,13 @@ class ModalController:WebViewController {
     }
     
     override func show(){
-        let duration=0.3;
+        let duration=0.2;
         fadeIn(self.view,duration);
         slideUp(self.webView,duration);
     }
 
     override func hide(_ onHidden:((Bool)->Void)?){
-        let duration=0.4;
+        let duration=0.2;
         slideDown(self.webView,[
             "duration":duration,
             "onFinish":onHidden as Any,
