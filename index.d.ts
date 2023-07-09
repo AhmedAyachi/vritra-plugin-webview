@@ -153,13 +153,13 @@ type WebViewProps={
      * @notice Applied only for non-modal webviews.
      * @default "slideLeft"
      */
-    showAnimation:"slideLeft"|"slideUp"|"fadeIn",
+    showAnimation?:"slideLeft"|"slideUp"|"fadeIn",
     /**
      * The new webview animation when closed.
      * @notice Applied only for non-modal webviews.
      * @default "fadeOut"
      */
-    closeAnimation:"slideDown"|"fadeOut",
+    closeAnimation?:"slideDown"|"fadeOut",
     /**
     * If true, shows the new webview with a modal animation.
     * @default false.
@@ -203,6 +203,10 @@ type WebViewProps={
          * @default 1
          */
         opacity:number,
+        /**
+         * @default false
+         */
+        silent:boolean,
     },
 }
 

@@ -42,6 +42,7 @@
         <source-file src="src/android/Xml/slide_left.xml" target-dir="res/animator"/>
         <source-file src="src/android/Xml/fade_out.xml" target-dir="res/animator"/>
         <source-file src="src/android/Xml/fade_in.xml" target-dir="res/animator"/>
+        <source-file src="src/Assets/Audio/modal_shown.ogg" target-dir="res/raw"/>
     </platform>
 
     <platform name="ios">

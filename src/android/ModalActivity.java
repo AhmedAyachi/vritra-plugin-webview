@@ -10,7 +10,8 @@ import android.content.pm.ActivityInfo.WindowLayout;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.Gravity;
-import android.widget.Toast;
+//import android.widget.Toast;
+import android.media.MediaPlayer;
 
 
 public class ModalActivity extends WebViewActivity {
@@ -24,12 +25,7 @@ public class ModalActivity extends WebViewActivity {
         final Window window=getWindow();
         try{
             String stylejson=intent.getStringExtra("modalStyle");
-            if(stylejson!=null){
-                style=new JSONObject(stylejson);
-            }
-            else{
-                style=new JSONObject();
-            }
+            style=(stylejson==null)?new JSONObject():new JSONObject(stylejson);
             final LayoutParams layoutparams=window.getAttributes();
             if(metrics==null){
                 metrics=new DisplayMetrics();
@@ -45,6 +41,27 @@ public class ModalActivity extends WebViewActivity {
         }
         catch(JSONException exception){
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        final Boolean silent=style.optBoolean("silent",false);
+        if(!silent){
+            final int audioId=WebView.getResourceId("raw","modal_shown");
+            MediaPlayer mediaplayer=MediaPlayer.create(this,audioId);
+            if(mediaplayer!=null){
+                mediaplayer.setLooping(false);
+                mediaplayer.setVolume(0.1f,0.1f);
+                mediaplayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener(){
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer){
+                        mediaplayer.release();
+                    }
+                });
+                mediaplayer.start();
+            }
         }
     }
 
