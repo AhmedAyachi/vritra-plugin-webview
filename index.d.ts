@@ -140,7 +140,7 @@ type WebViewProps={
     statusBarTranslucent?:boolean,
     /**
      * Only applied when statusBarTranslucent false
-     * @default "white"
+     * @default "white" on ios, "black" on android
      */
     statusBarColor?:WebViewColor,
     /** 

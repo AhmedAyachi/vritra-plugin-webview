@@ -5,6 +5,7 @@ import com.ahmedayachi.webview.ModalActivity;
 import com.ahmedayachi.webview.Store;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Color;
 import android.content.Intent;
 import android.content.Context;
 import android.content.res.Resources;
@@ -217,15 +218,15 @@ public class WebView extends CordovaPlugin {
             }
         }
 
-        Boolean statusBarTranslucent=props.optBoolean("statusBarTranslucent",true);
-        if(statusBarTranslucent!=null){
-            intent.putExtra("statusBarTranslucent",statusBarTranslucent);
+        Boolean statusBarTranslucent=props.optBoolean("statusBarTranslucent",false);
+        intent.putExtra("statusBarTranslucent",statusBarTranslucent);
+        if(!statusBarTranslucent){
+            String statusBarColor=props.optString("statusBarColor","black");
+            intent.putExtra("statusBarColor",statusBarColor);
         }
 
         String backgroundColor=props.optString("backgroundColor","white");
-        if(backgroundColor!=null){
-            intent.putExtra("backgroundColor",backgroundColor);
-        }
+        intent.putExtra("backgroundColor",backgroundColor);
 
         final String showAnimation=props.optString("showAnimation","slideLeft");
         intent.putExtra("showAnimation",showAnimation);
@@ -236,6 +237,15 @@ public class WebView extends CordovaPlugin {
 
     static protected int getResourceId(String type,String name){
         return resources.getIdentifier(name,type,WebView.packagename);
+    }
+
+    static protected int getColor(String name){
+        switch(name){
+            case "brown": return  Color.parseColor("#964B00");
+            case "orange": return  Color.parseColor("#FFA500");
+            case "transparent": return Color.TRANSPARENT;
+            default: return Color.parseColor(name);
+        }
     }
     
 }
