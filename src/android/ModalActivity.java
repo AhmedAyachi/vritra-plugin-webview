@@ -62,6 +62,8 @@ public class ModalActivity extends WebViewActivity {
                 });
                 mediaplayer.start();
             }
+            try{style.put("silent",true);}
+            catch(Exception exception){}
         }
     }
 
