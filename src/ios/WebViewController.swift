@@ -46,21 +46,22 @@ class WebViewController:CDVViewController {
     func setUrl(){
         var url=options["file"] as? String;
         if(url==nil){
-            self.wwwFolderName=nil;
+            self.wwwFolderName="";
             url=options["url"] as? String;
         }
         else{
             self.wwwFolderName="www";
         }
-        self.startPage=url;
+        self.startPage=url!;
     }
 
     func setBackgroundColor(){
+        let webview=self.webView!;
         self.view.clipsToBounds=false;
         let backgroundColor=options["backgroundColor"] as? String;
         let color=backgroundColor==nil ? UIColor.white:getUIColorFromHex(backgroundColor!);
-        webView.isOpaque=false;
-        webView.backgroundColor=color;
+        webview.isOpaque=false;
+        webview.backgroundColor=color;
     }
 
     func addTo(_ parentController:UIViewController){

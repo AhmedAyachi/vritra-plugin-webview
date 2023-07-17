@@ -46,12 +46,12 @@ class ModalController:WebViewController {
     override func show(){
         let duration=0.2;
         fadeIn(self.view,duration);
-        slideUp(self.webView,duration);
+        slideUp(self.webView!,duration);
     }
 
     override func hide(_ onHidden:((Bool)->Void)?){
         let duration=0.2;
-        slideDown(self.webView,[
+        slideDown(self.webView!,[
             "duration":duration,
             "onFinish":onHidden as Any,
         ]);
