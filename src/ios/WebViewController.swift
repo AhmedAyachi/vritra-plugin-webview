@@ -15,7 +15,6 @@ class WebViewController:CDVViewController {
         self.plugin=plugin;
         self.message=options["message"] as? String;
         self.setUrl();
-        self.setBackgroundColor();
     }
 
     required init?(coder:NSCoder) {
@@ -29,6 +28,7 @@ class WebViewController:CDVViewController {
     override func viewDidLoad(){
         super.viewDidLoad();
         setNeedsStatusBarAppearanceUpdate();
+        self.setBackgroundColor();
     }
 
     override func viewDidDisappear(_ animated:Bool){
@@ -113,7 +113,7 @@ class WebViewController:CDVViewController {
 
 func getUIColorFromHex(_ code:String)->UIColor{
     var color=UIColor.white;
-    if(code.starts(with:"#")&&code.count>6){
+    if(code.starts(with:"#")&&(code.count>6)){
         let hex=code[code.index(after:code.startIndex)..<code.index(code.startIndex,offsetBy:7)];
         var parts:[Int16]=[];
         for i in 0..<3 {
@@ -123,9 +123,9 @@ func getUIColorFromHex(_ code:String)->UIColor{
             parts.append(decimal);
         }
         color=UIColor(
-            red:CGFloat(parts[0]),
-            green:CGFloat(parts[1]),
-            blue:CGFloat(parts[2]),
+            red:CGFloat(parts[0])/255,
+            green:CGFloat(parts[1])/255,
+            blue:CGFloat(parts[2])/255,
             alpha:1
         );
     }
