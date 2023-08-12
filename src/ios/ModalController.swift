@@ -8,11 +8,11 @@ class ModalController:WebViewController {
     };
     lazy var style:[String:Any]=[:];
     var audioPlayer:AVAudioPlayer?=nil;
+    let bgview:UIView=UIView();
 
     override init(_ options:[String:Any],_ plugin:Webview?){
         super.init(options,plugin);
-        let mainview=self.view!;
-        mainview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.25);
+        setBGView();
         if let modalStyle=options["modalStyle"] as? [String:Any] {
             self.style=modalStyle;
         }
@@ -55,15 +55,15 @@ class ModalController:WebViewController {
             "duration":duration,
             "onFinish":onHidden as Any,
         ]);
-        fadeOut(self.view,["duration":duration]);
+        fadeOut(self.bgview,["duration":duration]);
     }
 
     private func setViewBounds(){
-        let view=self.webView!;
-        view.layer.cornerRadius=10;
-        view.layer.masksToBounds=true;
-        view.layer.isOpaque=true;
-        let availableSize=view.superview!.frame;
+        let webview=self.webView!;
+        webview.layer.cornerRadius=10;
+        webview.layer.masksToBounds=true;
+        webview.layer.isOpaque=true;
+        let availableSize=webview.superview!.frame;
         let screenWidth=availableSize.width;
         let screenHeight=availableSize.height;
         let width=self.getDimension("width")*screenWidth;
@@ -76,8 +76,8 @@ class ModalController:WebViewController {
             case "middle":marginTop+=(screenHeight-height)/2;break;
             default:break;
         }
-        view.alpha=self.getOpacity();
-        view.frame=CGRect(x:marginLeft,y:marginTop,width:width,height:height);
+        webview.alpha=self.getOpacity();
+        webview.frame=CGRect(x:marginLeft,y:marginTop,width:width,height:height);
     }
     
     private func getDimension(_ name:String,_ fallback:Double=1)->Double{
@@ -109,5 +109,12 @@ class ModalController:WebViewController {
             opacity=1;
         }
         return opacity;
+    }
+    
+    private func setBGView(){
+        let mainview=self.view!;
+        self.bgview.frame=mainview.frame;
+        bgview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.25);
+        mainview.insertSubview(bgview,belowSubview:self.webView!);
     }
 }
