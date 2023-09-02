@@ -58,8 +58,8 @@
         <source-file src="src/ios/Animations/HideAnimations.swift"/>
         <source-file src="src/ios/Animations/ShowAnimations.swift"/>
         <dependency 
-            id="cordova-plugin-swift-support" 
-            url="https://github.com/AhmedAyachi/cordova-plugin-swift-support"
+            id="corella-plugin-swift-support" 
+            url="https://github.com/AhmedAyachi/corella-plugin-swift-support"
         />
         <resource-file src="src/Assets/Audio/modal_shown.mp3"/>
     </platform>
