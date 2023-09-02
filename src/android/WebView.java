@@ -1,8 +1,8 @@
-package com.ahmedayachi.webview;
+package com.corella.webview;
 
-import com.ahmedayachi.webview.WebViewActivity;
-import com.ahmedayachi.webview.ModalActivity;
-import com.ahmedayachi.webview.Store;
+import com.corella.webview.WebViewActivity;
+import com.corella.webview.ModalActivity;
+import com.corella.webview.Store;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;

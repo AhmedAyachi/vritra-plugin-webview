@@ -1,6 +1,6 @@
-package com.ahmedayachi.webview;
+package com.corella.webview;
 
-import com.ahmedayachi.webview.WebViewActivity;
+import com.corella.webview.WebViewActivity;
 import android.os.Bundle;
 import org.json.JSONObject;
 import org.json.JSONException;

@@ -1,21 +1,21 @@
 {
-  "name": "cordova-plugin-webview",
-  "version": "1.0.0",
+  "name": "corella-plugin-webview",
+  "version": "0.0.0",
   "main": "www/index.js",
   "types": "index.d.ts",
-  "description": "cordova custom plugin template",
+  "description": "A corella plugin for cordova apps",
   "cordova": {
-    "id": "cordova-plugin-webview",
+    "id": "corella-plugin-webview",
     "platforms": [
       "android",
       "ios"
     ]
   },
   "keywords": [
-    "webview","cordova",
-    "cordova-android",
+    "webview","cordova","corella",
+    "cordova-android","cordova-corella",
     "activity","viewcontroller"
   ],
   "author": "Ahmed Ayachi",
-  "license": "ISC"
+  "license": "MIT"
 }

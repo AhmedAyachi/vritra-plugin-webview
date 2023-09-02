@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin 
-    id="cordova-plugin-webview" 
+    id="corella-plugin-webview" 
     version="1.0.0" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,18 +13,18 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="WebView">
-                <param name="android-package" value="com.ahmedayachi.webview.WebView"/>
+                <param name="android-package" value="com.corella.webview.WebView"/>
             </feature>
         </config-file>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
-                android:name="com.ahmedayachi.webview.WebViewActivity" 
+                android:name="com.corella.webview.WebViewActivity" 
                 android:label="WebView"
                 android:launchMode="standard"
                 android:theme="@style/WebViewTheme"
             />
             <activity 
-                android:name="com.ahmedayachi.webview.ModalActivity" 
+                android:name="com.corella.webview.ModalActivity" 
                 android:label="Modal"
                 android:launchMode="standard"
                 android:theme="@style/ModalTheme"
