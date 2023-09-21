@@ -22,7 +22,7 @@ class WebViewController:CDVViewController {
     }
 
     override var prefersStatusBarHidden:Bool{
-        return true;
+        return false;
     }
 
     override func viewDidLoad(){
@@ -81,9 +81,7 @@ class WebViewController:CDVViewController {
         })();
         let mainview=self.view!;
         let statusBarTranslucent=options["statusBarTranslucent"] as? Bool ?? false;
-        if(statusBarTranslucent){
-            
-        }
+        if(statusBarTranslucent){}
         else{
             let statusBarColor=options["statusBarColor"] as? String ?? "white";
             let scrollView=mainview.subviews.first!;
@@ -104,9 +102,11 @@ class WebViewController:CDVViewController {
     }
 
     func remove(){
-        self.hide({_ in
-            self.view.removeFromSuperview();
-            self.removeFromParent();
+        DispatchQueue.main.asyncAfter(deadline:.now()+0.025,execute:{
+            self.hide({_ in
+                self.view.removeFromSuperview();
+                self.removeFromParent();
+            });
         });
     };
 }
