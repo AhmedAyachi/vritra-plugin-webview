@@ -1,6 +1,6 @@
 {
   "name": "corella-plugin-webview",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "www/index.js",
   "types": "index.d.ts",
   "description": "A cordova plugin for opening a new cordova activity/viewController on android/iOS",

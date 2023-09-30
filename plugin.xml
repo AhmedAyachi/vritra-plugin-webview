@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin 
     id="corella-plugin-webview" 
-    version="1.0.0" 
+    version="0.0.2" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
 >
@@ -30,10 +30,10 @@
                 android:theme="@style/ModalTheme"
             />
         </config-file>
-        <source-file src="src/android/WebView.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/WebViewActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/ModalActivity.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
-        <source-file src="src/android/Store.java" target-dir="src/com/ahmedayachi/webview/WebView"/>
+        <source-file src="src/android/WebView.java" target-dir="src/com/corella/WebView"/>
+        <source-file src="src/android/WebViewActivity.java" target-dir="src/com/corella/WebView"/>
+        <source-file src="src/android/ModalActivity.java" target-dir="src/com/corella/WebView"/>
+        <source-file src="src/android/Store.java" target-dir="src/com/corella/WebView"/>
         <source-file src="src/android/Xml/modal_shape.xml" target-dir="res/drawable"/>
         <source-file src="src/android/Xml/WebViewTheme.xml" target-dir="res/values"/>
         <source-file src="src/android/Xml/ModalTheme.xml" target-dir="res/values"/>
