@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.Runnable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
@@ -171,12 +170,21 @@ public class WebView extends CordovaPlugin {
     }
 
     private void close(JSONArray params){
-        final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-        final Boolean isUndefined=params.optBoolean(1);
-        if(!isUndefined){
-            wvactivity.setMessage(params.optString(0));
+        final AppCompatActivity activity=this.cordova.getActivity();
+        if(activity instanceof WebViewActivity){
+            final WebViewActivity wvactivity=(WebViewActivity)activity;
+            final Boolean isUndefined=params.optBoolean(1);
+            if(!isUndefined){
+                wvactivity.setMessage(params.optString(0));
+            }
+            wvactivity.finish();
         }
-        wvactivity.finish();
+        else{
+            Intent intent=new Intent(Intent.ACTION_MAIN);
+			intent.addCategory(Intent.CATEGORY_HOME);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			activity.startActivity(intent);
+        }
     }
 
     private static JSONObject mergeJSONObjects(JSONObject object1,JSONObject object2){

@@ -51,7 +51,7 @@ interface WebView {
     * @notice if message is a falsy value, is passed as an empty string.
     * @notice if message is not a string, JSON.stringify is called.
     */
-    setMessage(message:String):void,
+    setMessage(message:string):void,
     /**
      * Sets the store value.
      * Only objects are accepted.
@@ -60,7 +60,7 @@ interface WebView {
      * @param callback 
      * Called when the store is successfully set. 
      */
-    initiateStore(store:Object,callback:(store:Object)=>void):void,
+    initiateStore(store:object,callback:(store:Object)=>void):void,
     /**
     * Uses the store object.
     * @note
@@ -97,17 +97,20 @@ interface WebView {
      * @param callback 
      */
     setStore(
-        key:String,
+        key:string,
         value:any,
-        callback:(store:Object)=>void
+        callback:(store:Object)=>void,
     ):void,
     /**
     * Close the current webview.
     * @param message The message to pass to the previous webview.
-    * @notice if message is undefined, the value is ignored.
-    * @notice if message is not a string, JSON.stringify is called.
+    * @android if called in the main webview, the app is minimized.
+    * @notice 
+    * if message is undefined, the value is ignored.
+    * 
+    * if message is not a string, JSON.stringify is called.
     */
-    close(message:String):void,
+    close(message:string):void,
 }
 
 type WebViewProps={
