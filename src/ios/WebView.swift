@@ -83,16 +83,14 @@ class Webview:CordovaPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if let viewcontroller=self.viewController as? WebViewController {
-            if !(viewcontroller.parent==nil){
-                DispatchQueue.main.async(execute:{[self] in
-                    let isUndefined=command.arguments[1] as! Bool;
-                    if(!isUndefined){
-                        self.setMessage(command:command);
-                    }
-                    viewcontroller.remove();
-                });
-            }
+        if let viewcontroller=self.viewController as? WebViewController,
+            viewcontroller.parent != nil {
+            let isUndefined=command.arguments[1] as! Bool;
+            if(!isUndefined){self.setMessage(command:command)};
+            viewcontroller.remove();
+        }
+        else{
+            UIControl().sendAction(#selector(URLSessionTask.suspend),to:UIApplication.shared,for:nil);
         }
     }
 }

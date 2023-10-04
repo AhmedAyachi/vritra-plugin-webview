@@ -104,11 +104,9 @@ interface WebView {
     /**
     * Close the current webview.
     * @param message The message to pass to the previous webview.
-    * @android if called in the main webview, the app is minimized.
-    * @notice 
-    * if message is undefined, the value is ignored.
-    * 
-    * if message is not a string, JSON.stringify is called.
+    * If message is undefined, the value is ignored.
+    * If message is not a string, JSON.stringify is called.
+    * @notice if called in the main webview, the app is minimized.
     */
     close(message:string):void,
 }
