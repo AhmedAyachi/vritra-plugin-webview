@@ -1,7 +1,7 @@
-package com.corella.webview;
+package com.wurm.webview;
 
 import android.os.Bundle;
-import com.corella.webview.WebView;
+import com.wurm.webview.WebView;
 import org.apache.cordova.*;
 import android.view.Window;
 import android.view.View;

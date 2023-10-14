@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin 
-    id="corella-plugin-webview" 
+    id="wurm-plugin-webview" 
     version="0.0.3" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,27 +13,27 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="WebView">
-                <param name="android-package" value="com.corella.webview.WebView"/>
+                <param name="android-package" value="com.wurm.webview.WebView"/>
             </feature>
         </config-file>
         <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <activity 
-                android:name="com.corella.webview.WebViewActivity" 
+                android:name="com.wurm.webview.WebViewActivity" 
                 android:label="WebView"
                 android:launchMode="standard"
                 android:theme="@style/WebViewTheme"
             />
             <activity 
-                android:name="com.corella.webview.ModalActivity" 
+                android:name="com.wurm.webview.ModalActivity" 
                 android:label="Modal"
                 android:launchMode="standard"
                 android:theme="@style/ModalTheme"
             />
         </config-file>
-        <source-file src="src/android/WebView.java" target-dir="src/com/corella/WebView"/>
-        <source-file src="src/android/WebViewActivity.java" target-dir="src/com/corella/WebView"/>
-        <source-file src="src/android/ModalActivity.java" target-dir="src/com/corella/WebView"/>
-        <source-file src="src/android/Store.java" target-dir="src/com/corella/WebView"/>
+        <source-file src="src/android/WebView.java" target-dir="src/com/wurm/WebView"/>
+        <source-file src="src/android/WebViewActivity.java" target-dir="src/com/wurm/WebView"/>
+        <source-file src="src/android/ModalActivity.java" target-dir="src/com/wurm/WebView"/>
+        <source-file src="src/android/Store.java" target-dir="src/com/wurm/WebView"/>
         <source-file src="src/android/Xml/modal_shape.xml" target-dir="res/drawable"/>
         <source-file src="src/android/Xml/WebViewTheme.xml" target-dir="res/values"/>
         <source-file src="src/android/Xml/ModalTheme.xml" target-dir="res/values"/>
@@ -58,8 +58,8 @@
         <source-file src="src/ios/Animations/HideAnimations.swift"/>
         <source-file src="src/ios/Animations/ShowAnimations.swift"/>
         <dependency 
-            id="corella-plugin-swift-support" 
-            url="https://github.com/AhmedAyachi/corella-plugin-swift-support"
+            id="wurm-plugin-swift-support" 
+            url="https://github.com/AhmedAyachi/wurm-plugin-swift-support"
         />
         <resource-file src="src/Assets/Audio/modal_shown.mp3"/>
     </platform>

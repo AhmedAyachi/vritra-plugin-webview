@@ -1,4 +1,4 @@
-package com.corella.webview;
+package com.wurm.webview;
 
 import org.json.JSONObject;
 import org.json.JSONArray;

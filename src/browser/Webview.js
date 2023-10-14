@@ -1,5 +1,5 @@
 
-const JsParser=cordova.require("corella-plugin-webview.WebviewJsParser");
+const JsParser=cordova.require("wurm-plugin-webview.WebviewJsParser");
 const timeout=40;
 const data=[];
 

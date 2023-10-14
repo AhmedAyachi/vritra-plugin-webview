@@ -1,11 +1,11 @@
 {
-  "name": "corella-plugin-webview",
-  "version": "0.0.3",
+  "name": "wurm-plugin-webview",
+  "version": "0.0.1",
   "main": "www/index.js",
   "types": "index.d.ts",
   "description": "A cordova plugin for opening a new cordova activity/viewController on android/iOS",
   "cordova": {
-    "id": "corella-plugin-webview",
+    "id": "wurm-plugin-webview",
     "platforms": [
       "android",
       "ios",
@@ -13,8 +13,8 @@
     ]
   },
   "keywords": [
-    "webview","cordova","corella",
-    "cordova-android","cordova-corella",
+    "webview","cordova","wurm",
+    "cordova-android","cordova-wurm",
     "activity","viewcontroller"
   ],
   "author": "Ahmed Ayachi",

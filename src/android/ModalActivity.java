@@ -1,6 +1,6 @@
-package com.corella.webview;
+package com.wurm.webview;
 
-import com.corella.webview.WebViewActivity;
+import com.wurm.webview.WebViewActivity;
 import android.os.Bundle;
 import org.json.JSONObject;
 import org.json.JSONException;
