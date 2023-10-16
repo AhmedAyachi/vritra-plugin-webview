@@ -1,7 +1,7 @@
-package com.wurm.webview;
+package com.vritra.webview;
 
 import android.os.Bundle;
-import com.wurm.webview.WebView;
+import com.vritra.webview.WebView;
 import org.apache.cordova.*;
 import android.view.Window;
 import android.view.View;

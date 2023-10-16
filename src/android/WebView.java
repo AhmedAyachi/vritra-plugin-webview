@@ -1,8 +1,8 @@
-package com.wurm.webview;
+package com.vritra.webview;
 
-import com.wurm.webview.WebViewActivity;
-import com.wurm.webview.ModalActivity;
-import com.wurm.webview.Store;
+import com.vritra.webview.WebViewActivity;
+import com.vritra.webview.ModalActivity;
+import com.vritra.webview.Store;
 import org.apache.cordova.*;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;

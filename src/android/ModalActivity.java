@@ -1,6 +1,6 @@
-package com.wurm.webview;
+package com.vritra.webview;
 
-import com.wurm.webview.WebViewActivity;
+import com.vritra.webview.WebViewActivity;
 import android.os.Bundle;
 import org.json.JSONObject;
 import org.json.JSONException;

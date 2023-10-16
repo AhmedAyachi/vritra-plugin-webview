@@ -1,4 +1,4 @@
-package com.wurm.webview;
+package com.vritra.webview;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
