@@ -1,9 +1,9 @@
 {
   "name": "vritra-plugin-webview",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "A cordova plugin for opening a new cordova activity/viewController on android/iOS",
   "main": "www/index.js",
   "types": "index.d.ts",
-  "description": "A cordova plugin for opening a new cordova activity/viewController on android/iOS",
   "cordova": {
     "id": "vritra-plugin-webview",
     "platforms": [
@@ -13,10 +13,16 @@
     ]
   },
   "keywords": [
-    "webview","cordova","vritra",
-    "cordova-android","cordova-vritra",
-    "activity","viewcontroller"
+    "cordova","plugin",
+    "vritra","webview",
+    "activity","viewcontroller",
+    "android","ios"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AhmedAyachi/vritra-plugin-webview"
+  },
+  "homepage": "https://vritrajs.github.io/#cordovaplugins#webview",
   "author": "Ahmed Ayachi",
   "license": "MIT"
 }
