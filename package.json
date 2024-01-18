@@ -1,6 +1,6 @@
 {
   "name": "vritra-plugin-webview",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A cordova plugin for opening a new cordova activity/viewController on android/iOS",
   "main": "www/index.js",
   "types": "index.d.ts",
