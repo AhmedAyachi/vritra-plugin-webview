@@ -1,5 +1,4 @@
-
-const JsParser=cordova.require("vritra-plugin-webview.WebviewJsParser");
+const JsParser=cordova.require("vritra-plugin-webview.WebViewJsParser");
 const timeout=40;
 const data=[];
 
@@ -41,17 +40,13 @@ module.exports={
             document.body.appendChild(iframe);
         }
     },timeout)},
-    initiateStore:function(store,callback){
-        localStorage.setItem("store",stringify(store));
+    initiateStore:function(store,callback){setTimeout(()=>{
         if(store&&(typeof(store)==="object")&&(!Array.isArray(store))){
+            localStorage.setItem("store",stringify(store));
         }
-        else{
-            localStorage.setItem("store","{}");
-        }
-        this.useStore(store=>{
-            callback&&callback(store);
-        });
-    },
+        else throw new Error("store needs to be an object");
+        callback&&this.useStore(callback);
+    },timeout)},
     useStore:(callback)=>{setTimeout(()=>{
         if(typeof(callback)==="function"){
             let store=localStorage.getItem("store");
@@ -82,17 +77,22 @@ module.exports={
         iframe.message=stringify(message);
     },timeout)},
     close:function(message){
-        const iframe=frameElement.parentNode.querySelector("iframe");
-        new Promise(resolve=>{
-            const {onClose}=iframe;
-            onClose?this.useStore(store=>{
-                onClose({message:message===undefined?iframe.message:stringify(message),store});
-                resolve();
-            }):resolve();
-        }).
-        then(()=>{
-            setTimeout(()=>{iframe.remove()},timeout);
-        });
+        if(frameElement){
+            const iframe=frameElement.parentNode.querySelector("iframe");
+            new Promise(resolve=>{
+                const {onClose}=iframe;
+                onClose?this.useStore(store=>{
+                    onClose({message:message===undefined?iframe.message:stringify(message),store});
+                    resolve();
+                }):resolve();
+            }).
+            then(()=>{
+                setTimeout(()=>{iframe.remove()},timeout);
+            });
+        }
+        else{
+            alert("Can't close the main WebView. The app will be minimized on android/ios.");
+        }
     },
 }
 

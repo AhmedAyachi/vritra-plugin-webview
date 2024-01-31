@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin 
     id="vritra-plugin-webview" 
-    version="1.0.0" 
+    version="1.0.2" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
 >
@@ -65,10 +65,10 @@
     </platform>
     
     <platform name="browser">
-        <js-module src="src/browser/Webview.js" name="WebView">
+        <js-module src="src/browser/WebView.js" name="WebView">
             <clobbers target="WebView"/>
         </js-module>
-        <js-module src="src/browser/JsParser.js" name="WebviewJsParser">
+        <js-module src="src/browser/JsParser.js" name="WebViewJsParser">
             <runs/>
         </js-module>
     </platform>
