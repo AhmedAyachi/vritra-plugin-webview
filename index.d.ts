@@ -208,6 +208,24 @@ type WebViewProps={
          * @default false
          */
         silent:boolean,
+        /**
+         * If true, the modal is dismissible via touch interactions
+         * @default true
+         */
+        dismissible:boolean,
+        /**
+         * Sets the notch color.
+         * The notch is shown only when the modal is dismissible
+         */
+        notchColor:string,
+        /** @default true */
+        roundedTopLeftCorner:boolean,
+        /** @default true */
+        roundedTopRightCorner:boolean,
+        /** @default false */
+        roundedBottomLeftCorner:boolean,
+        /** @default false */
+        roundedBottomRightCorner:boolean,
     },
 }
 

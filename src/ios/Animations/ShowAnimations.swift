@@ -18,7 +18,7 @@ func slideUp(_ view:UIView,_ duration:Double?=0.3){
     UIView.animate(
         withDuration:duration ?? 0.3,
         delay:0,
-        options:.curveEaseIn,
+        options:.curveEaseOut,
         animations:{
             view.transform=CGAffineTransform(translationX:0,y:0);
             view.alpha=1;

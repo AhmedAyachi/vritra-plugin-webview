@@ -7,8 +7,7 @@ class ModalController:WebViewController {
         get {return true}
     };
     lazy var style:[String:Any]=[:];
-    var audioPlayer:AVAudioPlayer?=nil;
-    let bgview:UIView=UIView();
+    let bgview=UIView();
 
     override init(_ options:[String:Any],_ plugin:Webview?){
         super.init(options,plugin);
@@ -21,9 +20,35 @@ class ModalController:WebViewController {
     required init?(coder:NSCoder) {
         super.init(coder:coder);
     }
-
+    
     override func viewDidAppear(_ animated:Bool){
         super.viewDidAppear(animated);
+        self.setSilent();
+        self.setDismissible();
+    }
+
+    override func viewDidLayoutSubviews(){
+        super.viewDidLayoutSubviews();
+        self.setViewBounds();
+    }
+    
+    override func show(){
+        let duration=0.25;
+        fadeIn(self.view,duration);
+        slideUp(self.webView!,duration);
+    }
+
+    override func hide(_ onHidden:((Bool)->Void)?){
+        let duration=0.15;
+        slideDown(self.webView!,[
+            "duration":duration,
+            "onFinish":onHidden as Any,
+        ]);
+        fadeOut(self.bgview,["duration":duration]);
+    }
+
+    var audioPlayer:AVAudioPlayer?=nil;
+    private func setSilent(){
         let silent:Bool=style["silent"] as? Bool ?? false;
         if(!silent){
             if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3"){
@@ -35,32 +60,77 @@ class ModalController:WebViewController {
                 catch{}
             };
         }
-        
-    }
-
-    override func viewDidLayoutSubviews(){
-        super.viewDidLayoutSubviews();
-        self.setViewBounds();
     }
     
-    override func show(){
-        let duration=0.2;
-        fadeIn(self.view,duration);
-        slideUp(self.webView!,duration);
+    private func setDismissible(){
+        let dismissible:Bool=style["dismissible"] as? Bool ?? true;
+        if(dismissible){
+            bgview.addGestureRecognizer(UITapGestureRecognizer(
+                target:self,
+                action:#selector(self.onBgViewTap)
+            ));
+            setupGestureRecognizer();
+        }
     }
-
-    override func hide(_ onHidden:((Bool)->Void)?){
-        let duration=0.2;
-        slideDown(self.webView!,[
-            "duration":duration,
-            "onFinish":onHidden as Any,
-        ]);
-        fadeOut(self.bgview,["duration":duration]);
+    @objc func onBgViewTap(sender:UITapGestureRecognizer){
+        self.remove();
     }
-
+    private func setupGestureRecognizer(){
+        let _=self.getNotch();
+        let panGesture=UIPanGestureRecognizer(target:self,action:#selector(self.onPanGesture));
+        self.webView?.addGestureRecognizer(panGesture);
+    }
+    private func getNotch()->UIView{
+        let notch=UIView();
+        if let webview=self.webView {
+            let notchColor=style["notchColor"] as? String;
+            let width=webview.frame.width;
+            let fraction=0.125;
+            notch.frame=CGRect(
+                x:(1-fraction)*width/2.0,y:6.5,
+                width:fraction*width,
+                height:4
+            );
+            notch.layer.cornerRadius=3;
+            notch.backgroundColor=notchColor==nil ? UIColor(displayP3Red:0,green:0,blue:0,alpha:0.1) : getUIColorFromHex(notchColor!);
+            webview.addSubview(notch);
+        }
+        return notch;
+    }
+    var startY=CGFloat(),originY=CGFloat();
+    @objc func onPanGesture(gesture:UIPanGestureRecognizer){
+        let state=gesture.state;
+        let y=gesture.location(in:self.view).y;
+        if(state==UIGestureRecognizer.State.began){
+            startY=y;
+            originY=self.webView?.frame.origin.y ?? 0;
+        }
+        else if let webview=self.webView {
+            let dy=y-startY;
+            if(state==UIGestureRecognizer.State.ended){
+                let threshold=0.3*webview.frame.height;
+                let speedY=gesture.velocity(in:self.view).y;
+                if((speedY>1000)||(dy>threshold)){self.remove()}
+                else{
+                    UIView.animate(
+                        withDuration:0.1,
+                        delay:0,
+                        options:.curveEaseOut,
+                        animations:{
+                            webview.frame.origin.y=self.originY;
+                        }
+                    );
+                };
+            }
+            else if(dy>0){
+                webview.frame.origin.y=originY+dy;
+            }
+        }
+    }
+    
     private func setViewBounds(){
         let webview=self.webView!;
-        webview.layer.cornerRadius=10;
+        self.setCorners(webview);
         webview.layer.masksToBounds=true;
         webview.layer.isOpaque=true;
         let availableSize=webview.superview!.frame;
@@ -79,7 +149,20 @@ class ModalController:WebViewController {
         webview.alpha=self.getOpacity();
         webview.frame=CGRect(x:marginLeft,y:marginTop,width:width,height:height);
     }
-    
+    private func setCorners(_ view:UIView){
+        let roundedTopLeftCorner=style["roundedTopLeftCorner"] as? Bool ?? true;
+        let roundedTopRightCorner=style["roundedTopRightCorner"] as? Bool ?? true;
+        let roundedBottomLeftCorner=style["roundedBottomLeftCorner"] as? Bool ?? false;
+        let roundedBottomRightCorner=style["roundedBottomRightCorner"] as? Bool ?? false;
+        let layer=view.layer;
+        layer.cornerRadius=12;
+        layer.maskedCorners=[
+            roundedTopLeftCorner ? .layerMinXMinYCorner : [],
+            roundedTopRightCorner ? .layerMaxXMinYCorner : [],
+            roundedBottomLeftCorner ? .layerMinXMaxYCorner : [],
+            roundedBottomRightCorner ? .layerMaxXMaxYCorner : [],
+        ];
+    }
     private func getDimension(_ name:String,_ fallback:Double=1)->Double{
         var dimension=style[name] as? Double ?? fallback;
         if((dimension<0)||(dimension>1)){
@@ -116,5 +199,6 @@ class ModalController:WebViewController {
         self.bgview.frame=mainview.frame;
         bgview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.25);
         mainview.insertSubview(bgview,belowSubview:self.webView!);
+        
     }
 }
