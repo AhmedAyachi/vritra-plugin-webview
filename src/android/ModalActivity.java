@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.MotionEvent;
 import android.view.WindowManager.LayoutParams;
 import android.util.DisplayMetrics;
 import android.graphics.Path;
@@ -21,9 +22,16 @@ import androidx.annotation.NonNull;
 
 public class ModalActivity extends WebViewActivity {
     
+    private JSONObject style=null;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        try{
+            String stylejson=intent.getStringExtra("modalStyle");
+            this.style=(stylejson==null)?new JSONObject():new JSONObject(stylejson);
+        }
+        catch(JSONException exception){}
     }
 
     @Override
@@ -59,17 +67,45 @@ public class ModalActivity extends WebViewActivity {
         return WebView.getResourceId("animator","slide_down");
     }
 
-    private JSONObject style=null;
-    private DisplayMetrics metrics=null;
     @Override
     protected void setStyle(){
         this.setStatusBar();
-        this.metrics=new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
         final Window window=getWindow();
-        try{
-            String stylejson=intent.getStringExtra("modalStyle");
-            style=(stylejson==null)?new JSONObject():new JSONObject(stylejson);
+        this.setLayout(window);
+        final View decorView=window.getDecorView();
+        final View rootView=decorView.getRootView();
+        final int transparentColor=WebView.getColor("transparent");
+        window.setBackgroundDrawable(new ColorDrawable(transparentColor));
+        rootView.setBackgroundColor(transparentColor);
+        decorView.setBackgroundColor(transparentColor);
+        this.setCorners();
+        this.setDismissible();
+    }
+
+    private void setDismissible(){
+        final Boolean dismissible=this.style.optBoolean("dismissible",true);
+        if(dismissible){
+            Window window=this.getWindow();
+            window.setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,LayoutParams.FLAG_NOT_TOUCH_MODAL);
+            window.addFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+        }
+    }
+    public boolean onTouchEvent(MotionEvent event){  
+        if(event.getAction()==MotionEvent.ACTION_OUTSIDE){   
+            this.finish();
+            return true;
+        }  
+        return false;
+    }  
+
+    private DisplayMetrics metrics=null;
+    private void setLayout(Window window){
+        this.metrics=new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(this.metrics);
+        if(this.style==null){
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        else{
             final LayoutParams layoutParams=window.getAttributes();
             layoutParams.width=this.getWidth();
             layoutParams.height=this.getHeight();
@@ -79,18 +115,6 @@ public class ModalActivity extends WebViewActivity {
             layoutParams.y=this.getY();
             window.setAttributes(layoutParams);
         }
-        catch(JSONException exception){
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        }
-        final View decorView=window.getDecorView();
-        final View rootView=decorView.getRootView();
-        final View webView=this.appView.getView();
-        final int transparentColor=WebView.getColor("transparent");
-        window.setBackgroundDrawable(new ColorDrawable(transparentColor));
-        rootView.setBackgroundColor(transparentColor);
-        decorView.setBackgroundColor(transparentColor);
-        webView.setBackgroundColor(transparentColor);
-        roundViewCorners(webView);
     }
     private int getWidth(){
         double width=style.optDouble("width",1); 
@@ -135,19 +159,20 @@ public class ModalActivity extends WebViewActivity {
         return (int)y;
     }
 
-    private void roundViewCorners(View view){
+    private void setCorners(){
         final Boolean roundedTopLeftCorner=style.optBoolean("roundedTopLeftCorner",true);
         final Boolean roundedTopRightCorner=style.optBoolean("roundedTopRightCorner",true);
         final Boolean roundedBottomLeftCorner=style.optBoolean("roundedBottomLeftCorner",false);
         final Boolean roundedBottomRightCorner=style.optBoolean("roundedBottomRightCorner",false);
-        view.setClipToOutline(true);
-        view.setBackgroundDrawable(new RoundedDrawable(
+        final View webView=this.appView.getView();
+        webView.setBackgroundColor(WebView.getColor("transparent"));
+        webView.setClipToOutline(true);
+        webView.setBackgroundDrawable(new RoundedDrawable(
             roundedTopLeftCorner,roundedTopRightCorner,
             roundedBottomLeftCorner,roundedBottomRightCorner,
             getBackgroundColor()
         ));
     }
-
     private static class RoundedDrawable extends ColorDrawable {
 
         static final float cornerRadius=35f;
@@ -156,7 +181,7 @@ public class ModalActivity extends WebViewActivity {
         private float[] radii=new float[]{0,0,0,0,0,0,0,0};
 
         RoundedDrawable(Boolean roundedTopLeftCorner,Boolean roundedTopRightCorner,Boolean roundedBottomLeftCorner,Boolean roundedBottomRightCorner,int backgroundColor){
-            //super(WebView.getColor("transparent"));
+            super(WebView.getColor("transparent"));
             if(roundedTopLeftCorner){radii[0]=cornerRadius;radii[1]=cornerRadius;};
             if(roundedTopRightCorner){radii[2]=cornerRadius;radii[3]=cornerRadius;};
             if(roundedBottomRightCorner){radii[4]=cornerRadius;radii[5]=cornerRadius;};
@@ -167,7 +192,7 @@ public class ModalActivity extends WebViewActivity {
         }
 
         @Override
-        public void draw(@NonNull Canvas canvas) {
+        public void draw(@NonNull Canvas canvas){
             final RectF rectF=new RectF();
             rectF.set(getBounds());
             final Path path=new Path();
@@ -176,7 +201,7 @@ public class ModalActivity extends WebViewActivity {
         }
 
         @Override
-        public int getOpacity() {
+        public int getOpacity(){
             return 1;
         }
     }
