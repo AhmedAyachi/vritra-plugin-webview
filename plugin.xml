@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin 
-    id="vritra-plugin-webview" 
-    version="1.0.2" 
+    id="vritra-plugin-webview" version="1.0.2" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android"
 >
@@ -34,7 +33,6 @@
         <source-file src="src/android/WebViewActivity.java" target-dir="src/com/vritra/WebView"/>
         <source-file src="src/android/ModalActivity.java" target-dir="src/com/vritra/WebView"/>
         <source-file src="src/android/Store.java" target-dir="src/com/vritra/WebView"/>
-        <source-file src="src/android/Xml/modal_shape.xml" target-dir="res/drawable"/>
         <source-file src="src/android/Xml/WebViewTheme.xml" target-dir="res/values"/>
         <source-file src="src/android/Xml/ModalTheme.xml" target-dir="res/values"/>
         <source-file src="src/android/Xml/slide_up.xml" target-dir="res/animator"/>

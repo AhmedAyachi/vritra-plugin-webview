@@ -1,8 +1,7 @@
 package com.vritra.webview;
 
-import android.os.Bundle;
-import com.vritra.webview.WebView;
 import org.apache.cordova.*;
+import android.os.Bundle;
 import android.view.Window;
 import android.view.View;
 import android.content.Intent;
@@ -14,7 +13,7 @@ public class WebViewActivity extends CordovaActivity {
     protected String url=null;
     protected String message="";
     protected Intent intent=null;
-    private final WebViewActivity webviewActivity=this;
+    private final WebViewActivity self=this;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -31,7 +30,8 @@ public class WebViewActivity extends CordovaActivity {
         
         this.cordovaInterface.getThreadPool().execute(new Runnable(){
             public void run(){
-                webviewActivity.loadHTML();
+                self.setStyle();
+                self.appView.loadUrl(url);
             }
         });
         this.setResult(WebViewActivity.RESULT_OK,intent);
@@ -60,17 +60,24 @@ public class WebViewActivity extends CordovaActivity {
         return WebView.getResourceId("animator",name);
     }
 
-    protected void loadHTML(){
-        setBackgroundColor();
+    protected void setStyle(){
+        final View webView=this.appView.getView();
+        webView.setBackgroundColor(getBackgroundColor());
+        setStatusBar();
+    }
+    protected int getBackgroundColor(){
+        final String backgroundColor=intent.getStringExtra("backgroundColor");
+        return WebView.getColor(backgroundColor);
+    }
+    protected void setStatusBar(){
         Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
         int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
         final Window window=getWindow();
         if(statusBarTranslucent){
-            View decorview=getWindow().getDecorView();
+            final View decorview=window.getDecorView();
             decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
         window.setStatusBarColor(statusBarColor);
-        appView.loadUrl(url);
     }
 
     @Override
@@ -86,10 +93,5 @@ public class WebViewActivity extends CordovaActivity {
     public void setMessage(String str){
         this.message=str;
         intent.putExtra("message",str);
-    }
-
-    protected void setBackgroundColor(){
-        String backgroundColor=intent.getStringExtra("backgroundColor");
-        appView.getView().setBackgroundColor(WebView.getColor(backgroundColor));
     }
 }
