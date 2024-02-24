@@ -6,7 +6,7 @@ interface WebView {
      * @param webviews 
      * @param fallback called when an error occurred
      */
-    defineWebViews(webviews:WebViewProps[],fallback:(message:String)=>void):void,
+    defineWebViews(webviews:WebViewProps[],fallback:(message:string)=>void):void,
     /**
     * Shows a new webview.
     * The shown webview will have access to all cordova plugins.
@@ -26,7 +26,7 @@ interface WebView {
         * @Note
         * If message is not of type string, JSON.stringify is called.
         */
-        message:String,
+        message:string,
         /**
         * Called when the new webview is closed. 
         */
@@ -37,7 +37,7 @@ interface WebView {
             * as the message passed in the message property when showing the new
             * webview. 
             */
-            message:String,
+            message:string,
             store:Object,
         }):void,
     }):void,
@@ -45,7 +45,7 @@ interface WebView {
     * Uses the message from the webview that showed
     * the current webview. 
     */
-    useMessage(handler:(message:String)=>void):void,
+    useMessage(handler:(message:string)=>void):void,
     /**
     * Sets the message value. 
     * @notice if message is a falsy value, is passed as an empty string.
@@ -217,7 +217,7 @@ type WebViewProps={
          * Sets the notch color.
          * The notch is shown only when the modal is dismissible
          */
-        notchColor:string,
+        notchColor:WebViewColor,
         /** @default true */
         roundedTopLeftCorner:boolean,
         /** @default true */

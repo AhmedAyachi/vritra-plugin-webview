@@ -88,6 +88,7 @@ public class ModalActivity extends WebViewActivity {
             Window window=this.getWindow();
             window.setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,LayoutParams.FLAG_NOT_TOUCH_MODAL);
             window.addFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+            this.setNotch();
         }
     }
     public boolean onTouchEvent(MotionEvent event){  
@@ -96,7 +97,18 @@ public class ModalActivity extends WebViewActivity {
             return true;
         }  
         return false;
-    }  
+    }
+    private void setNotch(){
+        final String notchColor=style.optString("notchColor","#1a000000");
+        final ViewGroup parentView=(ViewGroup)this.getWindow().getDecorView();
+        final View notch=new View(this);
+        final double fraction=0.125;
+        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*metrics.widthPixels),10);
+        parentView.addView(notch,LayoutParams);
+        notch.setX((int)((1-fraction)*metrics.widthPixels/2));
+        notch.setY(15);
+        notch.setBackgroundDrawable(new RoundedDrawable(true,true,true,true,WebView.getColor(notchColor)));
+    }
 
     private DisplayMetrics metrics=null;
     private void setLayout(Window window){
@@ -173,6 +185,7 @@ public class ModalActivity extends WebViewActivity {
             getBackgroundColor()
         ));
     }
+
     private static class RoundedDrawable extends ColorDrawable {
 
         static final float cornerRadius=35f;
