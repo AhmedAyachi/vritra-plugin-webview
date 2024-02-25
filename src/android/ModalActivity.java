@@ -18,6 +18,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import androidx.annotation.NonNull;
+import android.animation.ObjectAnimator;
+//import android.widget.Toast;
 
 
 public class ModalActivity extends WebViewActivity {
@@ -37,6 +39,10 @@ public class ModalActivity extends WebViewActivity {
     @Override
     protected void onStart(){
         super.onStart();
+        this.setSilent();
+    }
+
+    private void setSilent(){
         final Boolean silent=style.optBoolean("silent",false);
         if(!silent){
             final int audioId=WebView.getResourceId("raw","modal_shown");
@@ -71,13 +77,15 @@ public class ModalActivity extends WebViewActivity {
     protected void setStyle(){
         this.setStatusBar();
         final Window window=getWindow();
-        this.setLayout(window);
+        this.setLayout();
         final View decorView=window.getDecorView();
         final View rootView=decorView.getRootView();
         final int transparentColor=WebView.getColor("transparent");
         window.setBackgroundDrawable(new ColorDrawable(transparentColor));
         rootView.setBackgroundColor(transparentColor);
         decorView.setBackgroundColor(transparentColor);
+        rootView.setClipToOutline(true);
+        decorView.setClipToOutline(true);
         this.setCorners();
         this.setDismissible();
     }
@@ -85,72 +93,92 @@ public class ModalActivity extends WebViewActivity {
     private void setDismissible(){
         final Boolean dismissible=this.style.optBoolean("dismissible",true);
         if(dismissible){
-            Window window=this.getWindow();
-            window.setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,LayoutParams.FLAG_NOT_TOUCH_MODAL);
-            window.addFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
-            this.setNotch();
+            final View webView=this.appView.getView();
+            this.setNotch(webView);
+            this.setOutSlideClick(webView);
+            this.setupGestureRecognizer(webView);
         }
     }
-    public boolean onTouchEvent(MotionEvent event){  
-        if(event.getAction()==MotionEvent.ACTION_OUTSIDE){   
-            this.finish();
-            return true;
-        }  
-        return false;
+    public void setOutSlideClick(View view){  
+        final ModalActivity self=this;
+        final View rootView=view.getRootView();
+        rootView.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view,MotionEvent event){
+                final int action=event.getAction();
+                if(action==MotionEvent.ACTION_UP){self.finish();}
+                return true;
+            }
+        });
     }
-    private void setNotch(){
+    private void setNotch(View parentView){
         final String notchColor=style.optString("notchColor","#1a000000");
-        final ViewGroup parentView=(ViewGroup)this.getWindow().getDecorView();
         final View notch=new View(this);
-        final double fraction=0.125;
-        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*metrics.widthPixels),10);
-        parentView.addView(notch,LayoutParams);
-        notch.setX((int)((1-fraction)*metrics.widthPixels/2));
-        notch.setY(15);
+        final double fraction=0.1;
+        final int width=this.getWebViewWidth();
+        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*width),10);
+        ((ViewGroup)parentView).addView(notch,LayoutParams);
+        notch.setX((int)((1-fraction)*width/2));
+        notch.setY(25);
         notch.setBackgroundDrawable(new RoundedDrawable(true,true,true,true,WebView.getColor(notchColor)));
+    }
+    private void setupGestureRecognizer(View view){
+        final ModalActivity self=this;
+        final float viewY=view.getY();
+        final int threshold=(int)(0.6*this.getWebViewHeight());
+        view.setOnTouchListener(new View.OnTouchListener(){
+            float startY=0;
+            long startTime=0;
+            boolean dragEnabled=false;
+            @Override
+            public boolean onTouch(View view,MotionEvent event){
+                final int action=event.getAction();
+                final float y=event.getRawY();
+                if(action==MotionEvent.ACTION_DOWN){
+                    final float distance=y-viewY;
+                    if((distance>=0)&&(distance<=200)){
+                        dragEnabled=true;
+                        startY=y;
+                        startTime=event.getEventTime();
+                    }
+                }
+                else if(dragEnabled){
+                    final int dy=(int)(y-startY);
+                    if((action==MotionEvent.ACTION_UP)||(action==MotionEvent.ACTION_CANCEL)){
+                        final long duration=event.getEventTime()-startTime;
+                        final float velocity=dy/duration;
+                        if(dy>threshold||(velocity>=2)){self.finish();}
+                        else{
+                            dragEnabled=false;
+                            ObjectAnimator animator=ObjectAnimator.ofFloat(view,"translationY",viewY);
+                            animator.setDuration(100);
+                            animator.start();
+                        }
+                    }
+                    else if(dy>0){
+                        view.setTranslationY(viewY+dy);
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     private DisplayMetrics metrics=null;
-    private void setLayout(Window window){
+    private void setLayout(){
+        final Window window=this.getWindow();
         this.metrics=new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(this.metrics);
-        if(this.style==null){
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        }
-        else{
-            final LayoutParams layoutParams=window.getAttributes();
-            layoutParams.width=this.getWidth();
-            layoutParams.height=this.getHeight();
-            layoutParams.gravity=this.getGravity();
-            layoutParams.alpha=this.getAlpha();
-            layoutParams.x=this.getX();
-            layoutParams.y=this.getY();
-            window.setAttributes(layoutParams);
-        }
-    }
-    private int getWidth(){
-        double width=style.optDouble("width",1); 
-        if((width<0)||(width>1)){
-            width=1;
-        }
-        width=width*metrics.widthPixels;
-        return (int)width;
-    }
-    private int getHeight(){
-        double height=style.optDouble("height",0.85); 
-        if((height<0)||(height>1)){
-            height=1;
-        }
-        height=height*metrics.heightPixels;
-        return (int)height;
-    }
-    private int getGravity(){
-        String verticalAlign=style.optString("verticalAlign","bottom");
-        switch(verticalAlign){
-            case "top": return Gravity.TOP;
-            case "middle": return Gravity.CENTER;
-            case "bottom":
-            default: return Gravity.BOTTOM;
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        if(this.style!=null){
+            final View webView=this.appView.getView();
+            final ViewGroup.LayoutParams layoutParams=webView.getLayoutParams();
+            layoutParams.width=this.getWebViewWidth();
+            layoutParams.height=this.getWebViewHeight();
+            webView.setX(this.getX());
+            webView.setY(this.getY());
+            webView.setAlpha(this.getAlpha());
+            setverticalAlign(webView);
         }
     }
     private float getAlpha(){
@@ -169,6 +197,43 @@ public class ModalActivity extends WebViewActivity {
             y=y*metrics.heightPixels;
         }
         return (int)y;
+    }
+    private void setverticalAlign(View view){
+        String verticalAlign=style.optString("verticalAlign","bottom");
+        final float viewY=view.getY();
+        final float offset=metrics.heightPixels-this.getWebViewHeight();
+        switch(verticalAlign){
+            case "top":break;
+            case "middle":view.setY(viewY+offset/2);break;
+            case "bottom":
+            default: view.setY(viewY+offset);break;
+        }
+    }
+
+    int webViewWidth=-1;
+    private int getWebViewWidth(){
+        if(this.webViewWidth<0){
+            double width=style.optDouble("width",1); 
+            if((width<0)||(width>1)){
+                width=1;
+            }
+            width=width*metrics.widthPixels;
+            this.webViewWidth=(int)width;
+        }
+        return this.webViewWidth;
+    }
+
+    int webViewHeight=-1;
+    private int getWebViewHeight(){
+        if(this.webViewHeight<0){
+            double height=style.optDouble("height",0.85); 
+            if((height<0)||(height>1)){
+                height=1;
+            }
+            height=height*metrics.heightPixels;
+            this.webViewHeight=(int)height;
+        }
+        return this.webViewHeight;
     }
 
     private void setCorners(){
