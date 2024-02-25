@@ -146,7 +146,8 @@ type WebViewProps={
     statusBarColor?:WebViewColor,
     /** 
     * The webview background color before loading the html file.
-    * @default "white".
+    * @default "white"
+    * @notice "transparent" is only apllied for modals
     */
     backgroundColor?:WebViewColor,
     /**

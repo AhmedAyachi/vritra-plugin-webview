@@ -65,6 +65,7 @@ class ModalController:WebViewController {
     private func setDismissible(){
         let dismissible:Bool=style["dismissible"] as? Bool ?? true;
         if(dismissible){
+            self.setNotch();
             bgview.addGestureRecognizer(UITapGestureRecognizer(
                 target:self,
                 action:#selector(self.onBgViewTap)
@@ -76,18 +77,18 @@ class ModalController:WebViewController {
         self.remove();
     }
     private func setupGestureRecognizer(){
-        let _=self.getNotch();
+        
         let panGesture=UIPanGestureRecognizer(target:self,action:#selector(self.onPanGesture));
         self.webView?.addGestureRecognizer(panGesture);
     }
-    private func getNotch()->UIView{
+    private func setNotch(){
         let notch=UIView();
         if let webview=self.webView {
             let notchColor=style["notchColor"] as? String;
             let width=webview.frame.width;
-            let fraction=0.125;
+            let fraction=0.1;
             notch.frame=CGRect(
-                x:(1-fraction)*width/2.0,y:6.5,
+                x:(1-fraction)*width/2.0,y:7.5,
                 width:fraction*width,
                 height:4
             );
@@ -95,7 +96,6 @@ class ModalController:WebViewController {
             notch.backgroundColor=notchColor==nil ? UIColor(displayP3Red:0,green:0,blue:0,alpha:0.1) : getUIColorFromHex(notchColor!);
             webview.addSubview(notch);
         }
-        return notch;
     }
     var startY=CGFloat(),originY=CGFloat();
     @objc func onPanGesture(gesture:UIPanGestureRecognizer){
@@ -108,7 +108,7 @@ class ModalController:WebViewController {
         else if let webview=self.webView {
             let dy=y-startY;
             if(state==UIGestureRecognizer.State.ended){
-                let threshold=0.3*webview.frame.height;
+                let threshold=0.6*webview.frame.height;
                 let speedY=gesture.velocity(in:self.view).y;
                 if((speedY>1000)||(dy>threshold)){self.remove()}
                 else{
@@ -197,7 +197,7 @@ class ModalController:WebViewController {
     private func setBGView(){
         let mainview=self.view!;
         self.bgview.frame=mainview.frame;
-        bgview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.25);
+        bgview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.35);
         mainview.insertSubview(bgview,belowSubview:self.webView!);
         
     }
