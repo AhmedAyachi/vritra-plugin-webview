@@ -3,4 +3,9 @@
 A cordova plugin to open a new activity/viewController on android/iOS.
 Defines a global **WebView** object.
 
-[See documentation](https://vritrajs.github.io/#cordovaplugins#webview)
+# Modal Preview
+|android|iOS|
+|-------|---|
+|![enter image description here](https://raw.githubusercontent.com/AhmedAyachi/RepoIllustrations/main/vritra-plugin-webview/AndroidModal.gif)|![enter image description here](https://raw.githubusercontent.com/AhmedAyachi/RepoIllustrations/main/vritra-plugin-webview/IosModal.gif)|
+
+[See plugin documentation](https://vritrajs.github.io/#cordovaplugins#webview)
