@@ -6,18 +6,15 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import android.view.View;
 import android.view.Window;
-import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.MotionEvent;
+import android.view.ViewOutlineProvider;
 import android.view.WindowManager.LayoutParams;
 import android.util.DisplayMetrics;
-import android.graphics.Path;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.Canvas;
+import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
-import androidx.annotation.NonNull;
 import android.animation.ObjectAnimator;
 //import android.widget.Toast;
 
@@ -75,16 +72,13 @@ public class ModalActivity extends WebViewActivity {
 
     @Override
     protected void setStyle(){
-        this.setStatusBar();
-        final Window window=getWindow();
+        super.setStyle();
         this.setLayout();
+        final Window window=getWindow();
         final View decorView=window.getDecorView();
-        final View rootView=decorView.getRootView();
         final int transparentColor=WebView.getColor("transparent");
         window.setBackgroundDrawable(new ColorDrawable(transparentColor));
-        rootView.setBackgroundColor(transparentColor);
         decorView.setBackgroundColor(transparentColor);
-        rootView.setClipToOutline(true);
         decorView.setClipToOutline(true);
         this.setCorners();
         this.setDismissible();
@@ -114,13 +108,18 @@ public class ModalActivity extends WebViewActivity {
     private void setNotch(View parentView){
         final String notchColor=style.optString("notchColor","#1a000000");
         final View notch=new View(this);
+        final GradientDrawable gradientDrawable=new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(WebView.getColor(notchColor));
+        gradientDrawable.setCornerRadius(35); 
+        notch.setBackground(gradientDrawable);
         final double fraction=0.1;
         final int width=this.getWebViewWidth();
-        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*width),10);
+        final int height=this.getWebViewHeight();
+        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*width),(int)(0.0065*height));
         ((ViewGroup)parentView).addView(notch,LayoutParams);
         notch.setX((int)((1-fraction)*width/2));
-        notch.setY(25);
-        notch.setBackgroundDrawable(new RoundedDrawable(true,true,true,true,WebView.getColor(notchColor)));
+        notch.setY((int)(0.01*height));
     }
     private void setupGestureRecognizer(View view){
         final ModalActivity self=this;
@@ -168,7 +167,7 @@ public class ModalActivity extends WebViewActivity {
     private void setLayout(){
         final Window window=this.getWindow();
         this.metrics=new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(this.metrics);
+        WebView.context.getDisplay().getMetrics(this.metrics);
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         if(this.style!=null){
             final View webView=this.appView.getView();
@@ -200,13 +199,22 @@ public class ModalActivity extends WebViewActivity {
     }
     private void setverticalAlign(View view){
         String verticalAlign=style.optString("verticalAlign","bottom");
-        final float viewY=view.getY();
-        final float offset=metrics.heightPixels-this.getWebViewHeight();
-        switch(verticalAlign){
-            case "top":break;
-            case "middle":view.setY(viewY+offset/2);break;
-            case "bottom":
-            default: view.setY(viewY+offset);break;
+        if(!verticalAlign.equals("top")){
+            final float viewY=view.getY();
+            final float offset=metrics.heightPixels-this.getWebViewHeight();
+            if(verticalAlign.equals("bottom")){
+                int statusbarHeight=0;
+                if(!this.isStatusBarTranslucent()){
+                    final int resourceId=WebView.resources.getIdentifier("status_bar_height","dimen","android");
+                    if(resourceId>0){
+                        statusbarHeight=WebView.resources.getDimensionPixelSize(resourceId);
+                    }
+                }
+                view.setY(viewY+offset-statusbarHeight);
+            }
+            else{
+                view.setY(viewY+offset/2);
+            }
         }
     }
 
@@ -242,45 +250,32 @@ public class ModalActivity extends WebViewActivity {
         final Boolean roundedBottomLeftCorner=style.optBoolean("roundedBottomLeftCorner",false);
         final Boolean roundedBottomRightCorner=style.optBoolean("roundedBottomRightCorner",false);
         final View webView=this.appView.getView();
-        webView.setBackgroundColor(WebView.getColor("transparent"));
+        setViewRoundedCorners(webView,roundedTopLeftCorner,roundedTopRightCorner,roundedBottomLeftCorner,roundedBottomRightCorner);
         webView.setClipToOutline(true);
-        webView.setBackgroundDrawable(new RoundedDrawable(
-            roundedTopLeftCorner,roundedTopRightCorner,
-            roundedBottomLeftCorner,roundedBottomRightCorner,
-            getBackgroundColor()
-        ));
     }
 
-    private static class RoundedDrawable extends ColorDrawable {
-
-        static final float cornerRadius=35f;
-        
-        final private Paint paint=new Paint();
-        private float[] radii=new float[]{0,0,0,0,0,0,0,0};
-
-        RoundedDrawable(Boolean roundedTopLeftCorner,Boolean roundedTopRightCorner,Boolean roundedBottomLeftCorner,Boolean roundedBottomRightCorner,int backgroundColor){
-            super(WebView.getColor("transparent"));
-            if(roundedTopLeftCorner){radii[0]=cornerRadius;radii[1]=cornerRadius;};
-            if(roundedTopRightCorner){radii[2]=cornerRadius;radii[3]=cornerRadius;};
-            if(roundedBottomRightCorner){radii[4]=cornerRadius;radii[5]=cornerRadius;};
-            if(roundedBottomLeftCorner){radii[6]=cornerRadius;radii[7]=cornerRadius;};
-            paint.setStrokeWidth(0);
-            paint.setColor(backgroundColor);
-            paint.setStyle(Paint.Style.FILL);
-        }
-
-        @Override
-        public void draw(@NonNull Canvas canvas){
-            final RectF rectF=new RectF();
-            rectF.set(getBounds());
-            final Path path=new Path();
-            path.addRoundRect(rectF,radii,Path.Direction.CW);
-            canvas.drawPath(path,paint);
-        }
-
-        @Override
-        public int getOpacity(){
-            return 1;
+    private static void setViewRoundedCorners(View view,Boolean roundedTopLeftCorner,Boolean roundedTopRightCorner,Boolean roundedBottomLeftCorner,Boolean roundedBottomRightCorner){
+        if(roundedTopLeftCorner||roundedTopRightCorner||roundedBottomLeftCorner||roundedBottomRightCorner){
+            view.setOutlineProvider(new ViewOutlineProvider(){
+                @Override
+                public void getOutline(View view,Outline outline){
+                    final int radius=35;
+                    final Boolean roundedTop=roundedTopLeftCorner&&roundedTopRightCorner;
+                    final Boolean roundedBottom=roundedBottomLeftCorner&&roundedBottomRightCorner;
+                    if(roundedTop&&roundedBottom){
+                        outline.setRoundRect(0,0,view.getWidth(),view.getHeight(),radius);
+                    }
+                    else{
+                        outline.setRoundRect(
+                            ((roundedBottomRightCorner&&!roundedBottom)||(roundedTopRightCorner&&(!roundedTopLeftCorner)))?-radius:0,
+                            ((roundedBottomLeftCorner&&!roundedTopLeftCorner)||(roundedBottomRightCorner&&!roundedTopRightCorner))?-radius:0,
+                            view.getWidth()+(((roundedBottomLeftCorner&&!roundedBottom)||(roundedTopLeftCorner&&!roundedTop))?radius:0),
+                            view.getHeight()+((roundedBottomLeftCorner||roundedBottomRightCorner)?0:radius),
+                            radius
+                        );
+                    }
+                }
+            });
         }
     }
 }

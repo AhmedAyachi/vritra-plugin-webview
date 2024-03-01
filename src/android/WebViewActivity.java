@@ -62,22 +62,21 @@ public class WebViewActivity extends CordovaActivity {
 
     protected void setStyle(){
         final View webView=this.appView.getView();
-        webView.setBackgroundColor(getBackgroundColor());
-        setStatusBar();
-    }
-    protected int getBackgroundColor(){
         final String backgroundColor=intent.getStringExtra("backgroundColor");
-        return WebView.getColor(backgroundColor);
-    }
-    protected void setStatusBar(){
-        Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
-        int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
+        webView.setBackgroundColor(WebView.getColor(backgroundColor));
+        final Boolean statusBarTranslucent=this.isStatusBarTranslucent();
+        final int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
         final Window window=getWindow();
         if(statusBarTranslucent){
             final View decorview=window.getDecorView();
             decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
         window.setStatusBarColor(statusBarColor);
+    }
+
+    protected Boolean isStatusBarTranslucent(){
+        Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
+        return statusBarTranslucent;
     }
 
     @Override

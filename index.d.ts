@@ -113,10 +113,16 @@ interface WebView {
 
 type WebViewProps={
     /**
-     * The target webview's id.
-     * @requires file or url props in definition
+     * The webview's identifier.
+     * @requires file or url value in definition
      */
     id:string,
+    /**
+    * A filename with extension in your www folder.
+    * 
+    * More prioritized then the url prop.
+    */
+    file:string,
     /**
     * A http/https url to show external sites.
     * @warning
@@ -124,12 +130,6 @@ type WebViewProps={
     * the target url will have access to cordova plugins.
     */
     url:string,
-    /**
-    * A filename with extension in your www folder.
-    * 
-    * More prioritized then the url prop.
-    */
-    file:string,
     /** 
     * if True, the statusbar and the keybaord will overlay the webview.
     * 
