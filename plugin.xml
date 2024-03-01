@@ -55,10 +55,6 @@
         <source-file src="src/ios/Webview.swift"/>
         <source-file src="src/ios/Animations/HideAnimations.swift"/>
         <source-file src="src/ios/Animations/ShowAnimations.swift"/>
-        <dependency 
-            id="vritra-plugin-swift-support" 
-            url="https://github.com/AhmedAyachi/vritra-plugin-swift-support"
-        />
         <resource-file src="src/Assets/Audio/modal_shown.mp3"/>
     </platform>
     
@@ -70,5 +66,9 @@
             <runs/>
         </js-module>
     </platform>
-    
+
+    <dependency 
+        id="vritra-plugin-common" 
+        url="https://github.com/AhmedAyachi/vritra-plugin-common"
+    />
 </plugin>

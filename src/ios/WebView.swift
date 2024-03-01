@@ -1,7 +1,7 @@
 import Foundation;
 
 
-class Webview:CordovaPlugin {
+class Webview:VritraPlugin {
 
     static let store=Store();
     public var showCommand:CDVInvokedUrlCommand?=nil;

@@ -1,40 +1,28 @@
 package com.vritra.webview;
 
-import com.vritra.webview.WebViewActivity;
-import com.vritra.webview.ModalActivity;
-import com.vritra.webview.Store;
+import com.vritra.common.*;
+import com.vritra.webview.*;
 import org.apache.cordova.*;
-import androidx.appcompat.app.AppCompatActivity;
-import android.graphics.Color;
-import android.content.Intent;
-import android.content.Context;
-import android.content.res.Resources;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
-import java.lang.Runnable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.Random;
+import java.util.Objects;
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.lang.Runnable;
+import android.content.Intent;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import androidx.appcompat.app.AppCompatActivity;
 
 
-public class WebView extends CordovaPlugin {
-
-    static Context context;
-    static protected Resources resources;
-    static protected String packagename;
+public class WebView extends VritraPlugin {
 
     protected static final JSONObject callbacks=new JSONObject();
     private static final JSONObject webviews=new JSONObject();
     private static Store store=new Store();
-
-    @Override
-    public void initialize(CordovaInterface cordova,CordovaWebView webview){
-        WebView.context=cordova.getContext();
-        WebView.resources=WebView.context.getResources();
-        WebView.packagename=WebView.context.getPackageName();
-    }
 
     @Override
     public boolean execute(String action,JSONArray args,CallbackContext callbackContext) throws JSONException{
@@ -242,18 +230,4 @@ public class WebView extends CordovaPlugin {
         final String closeAnimation=props.optString("closeAnimation","fadeOut");
         intent.putExtra("closeAnimation",closeAnimation);
     }
-
-    static protected int getResourceId(String type,String name){
-        return resources.getIdentifier(name,type,WebView.packagename);
-    }
-
-    static protected int getColor(String name){
-        switch(name){
-            case "brown": return  Color.parseColor("#964B00");
-            case "orange": return  Color.parseColor("#FFA500");
-            case "transparent": return Color.TRANSPARENT;
-            default: return Color.parseColor(name);
-        }
-    }
-    
 }
