@@ -92,14 +92,14 @@ class WebViewController:CDVViewController {
     }
     
     func hide(_ onHidden:((Bool)->Void)?){
-        let animationId=options["closeAnimation"] as? String ?? "fadeOut";
+        let animationId=options["closeAnimation"] as? String;
         let mainview=self.view!;
         let options=["onFinish":onHidden as Any];
         let animation=({
             switch(animationId){
-                case "slideRight": return HideAnimation.slideRight;
+                case "fadeOut": return HideAnimation.fadeOut;
                 case "slideDown": return HideAnimation.slideDown;
-                default: return HideAnimation.fadeOut;
+                default: return HideAnimation.slideRight;
             }
         })();
         animation(mainview,options);

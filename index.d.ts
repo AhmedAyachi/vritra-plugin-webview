@@ -159,7 +159,7 @@ type WebViewProps={
     /**
      * The new webview animation when closed.
      * @notice Applied only for non-modal webviews.
-     * @default "fadeOut"
+     * @default "slideRight" on ios, "fadeOut" on android
      */
     closeAnimation?:"slideRight"|"slideDown"|"fadeOut",
     /**
