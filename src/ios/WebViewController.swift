@@ -36,7 +36,7 @@ class WebViewController:CDVViewController {
         let showCommand:CDVInvokedUrlCommand?=plugin!.showCommand;
         if(!(showCommand==nil)){
             let data:[AnyHashable:Any]=[
-                "message":self.message as Any,
+                "message":self.message ?? "",
                 "store":Webview.store.toObject(),
             ];
             plugin!.success(showCommand!,data);
@@ -74,9 +74,9 @@ class WebViewController:CDVViewController {
         let animation=({
             let animationId=options["showAnimation"] as? String;
             switch(animationId){
-                case "fadeIn": return fadeIn;
-                case "slideUp": return slideUp;
-                default: return slideLeft;
+            case "fadeIn": return ShowAnimation.fadeIn;
+            case "slideUp": return ShowAnimation.slideUp;
+            default: return ShowAnimation.slideLeft;
             }
         })();
         let mainview=self.view!;
@@ -88,17 +88,21 @@ class WebViewController:CDVViewController {
             scrollView.backgroundColor=getUIColorFromHex(statusBarColor);
             scrollView.frame.size.height=UIApplication.shared.statusBarFrame.height;
         }
-        animation(mainview,0.5);
+        animation(mainview,nil);
     }
     
     func hide(_ onHidden:((Bool)->Void)?){
-        let closeAnimation=options["closeAnimation"] as? String ?? "fadeOut";
+        let animationId=options["closeAnimation"] as? String ?? "fadeOut";
         let mainview=self.view!;
         let options=["onFinish":onHidden as Any];
-        switch(closeAnimation){
-            case "slideDown": slideDown(mainview,options);break;
-            default: fadeOut(mainview,options);break;
-        }
+        let animation=({
+            switch(animationId){
+                case "slideRight": return HideAnimation.slideRight;
+                case "slideDown": return HideAnimation.slideDown;
+                default: return HideAnimation.fadeOut;
+            }
+        })();
+        animation(mainview,options);
     }
 
     func remove(){

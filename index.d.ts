@@ -161,7 +161,7 @@ type WebViewProps={
      * @notice Applied only for non-modal webviews.
      * @default "fadeOut"
      */
-    closeAnimation?:"slideDown"|"fadeOut",
+    closeAnimation?:"slideRight"|"slideDown"|"fadeOut",
     /**
     * If true, shows the new webview with a modal animation.
     * @default false.
@@ -236,4 +236,3 @@ type WebViewColor=(
     "magenta"|"orange"|"purple"|"red"|
     "yellow"|"white"|"transparent"|"#"
 )
-

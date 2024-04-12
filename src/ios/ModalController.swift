@@ -34,17 +34,17 @@ class ModalController:WebViewController {
     
     override func show(){
         let duration=0.25;
-        fadeIn(self.view,duration);
-        slideUp(self.webView!,duration);
+        ShowAnimation.fadeIn(self.view,duration);
+        ShowAnimation.slideUp(self.webView!,duration);
     }
 
     override func hide(_ onHidden:((Bool)->Void)?){
         let duration=0.15;
-        slideDown(self.webView!,[
+        HideAnimation.slideDown(self.webView!,[
             "duration":duration,
             "onFinish":onHidden as Any,
         ]);
-        fadeOut(self.bgview,["duration":duration]);
+        HideAnimation.fadeOut(self.bgview,["duration":duration]);
     }
 
     var audioPlayer:AVAudioPlayer?=nil;
