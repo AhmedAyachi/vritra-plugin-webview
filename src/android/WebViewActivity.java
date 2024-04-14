@@ -46,7 +46,7 @@ public class WebViewActivity extends CordovaActivity {
             case "slideLeft":
             default: name="slide_left";break; 
         }
-        return WebView.getResourceId("animator",name);
+        return WebView.getResourceId("animator","showanim_"+name);
     }
 
     protected int getCloseAnimation(){
@@ -54,10 +54,11 @@ public class WebViewActivity extends CordovaActivity {
         String name=null;
         switch(animationId){
             case "slideDown": name="slide_down";break;
+            case "slideRight": name="slide_right";break;
             case "fadeOut":
             default: name="fade_out";break; 
         }
-        return WebView.getResourceId("animator",name);
+        return WebView.getResourceId("animator","hideanim_"+name);
     }
 
     protected void setStyle(){

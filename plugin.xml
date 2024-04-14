@@ -35,11 +35,12 @@
         <source-file src="src/android/Store.java" target-dir="src/com/vritra/WebView"/>
         <source-file src="src/android/Xml/WebViewTheme.xml" target-dir="res/values"/>
         <source-file src="src/android/Xml/ModalTheme.xml" target-dir="res/values"/>
-        <source-file src="src/android/Xml/slide_up.xml" target-dir="res/animator"/>
-        <source-file src="src/android/Xml/slide_down.xml" target-dir="res/animator"/>
-        <source-file src="src/android/Xml/slide_left.xml" target-dir="res/animator"/>
-        <source-file src="src/android/Xml/fade_out.xml" target-dir="res/animator"/>
-        <source-file src="src/android/Xml/fade_in.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/ShowAnimations/showanim_fade_in.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/ShowAnimations/showanim_slide_up.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/ShowAnimations/showanim_slide_left.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/HideAnimations/hideanim_fade_out.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/HideAnimations/hideanim_slide_down.xml" target-dir="res/animator"/>
+        <source-file src="src/android/Xml/HideAnimations/hideanim_slide_right.xml" target-dir="res/animator"/>
         <source-file src="src/Assets/Audio/modal_shown.mp3" target-dir="res/raw"/>
     </platform>
 
