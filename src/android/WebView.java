@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
 
 public class WebView extends VritraPlugin {
@@ -176,6 +177,9 @@ public class WebView extends VritraPlugin {
     }
 
     private static JSONObject mergeJSONObjects(JSONObject object1,JSONObject object2){
+        return WebView.mergeJSONObjects(object1,object2,true);
+    }
+    private static JSONObject mergeJSONObjects(JSONObject object1,JSONObject object2,Boolean nestedMerge){
         JSONObject merged=null;
         try{
             final Iterator<String> keys1=object1.keys();
@@ -185,7 +189,19 @@ public class WebView extends VritraPlugin {
             final Iterator<String> keys2=object2.keys();
             while(keys2.hasNext()){
                 final String key=keys2.next();
-                merged.put(key,object2.opt(key));
+                final Object value=object2.opt(key);
+                if(nestedMerge&&(value instanceof JSONObject)){
+                    final JSONObject defaultValue=object1.optJSONObject(key);
+                    if(defaultValue!=null){
+                        merged.put(key,WebView.mergeJSONObjects(defaultValue,object2.optJSONObject(key),true));
+                    }
+                    else{
+                        merged.put(key,value);
+                    }
+                }
+                else{
+                    merged.put(key,value);
+                }
             }
         }
         catch(Exception exception){}
