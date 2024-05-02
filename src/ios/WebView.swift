@@ -39,8 +39,9 @@ class Webview:VritraPlugin {
         var props:[String:Any]=options;
         if let id=options["id"] as? String,!id.isEmpty,
            let defaults=Webview.webviews[id] {
-            props.merge(defaults){(current,_) in current}
+            props=Webview.mergeObjects(defaults,options);
         }
+        print("log:WebView Props",props);
         return props;
     }
 
@@ -92,5 +93,23 @@ class Webview:VritraPlugin {
         else{
             UIControl().sendAction(#selector(URLSessionTask.suspend),to:UIApplication.shared,for:nil);
         }
+    }
+    
+    static func mergeObjects(_ object1:[String:Any],_ object2:[String:Any])->[String:Any]{
+        var merged:[String:Any]=[:];
+        merged.merge(object1){(current,_) in current};
+        merged.merge(object2){(currentValue,newValue) in
+            if(newValue is Dictionary<String,Any>){
+                if(currentValue is Dictionary<String,Any>){
+                    return mergeObjects(
+                        currentValue as! Dictionary<String,Any>,
+                        newValue as! Dictionary<String,Any>
+                    );
+                }
+                else{return newValue};
+            }
+            else{return newValue};
+        }
+        return merged;
     }
 }

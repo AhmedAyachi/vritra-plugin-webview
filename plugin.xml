@@ -53,7 +53,7 @@
         <source-file src="src/ios/Store.swift"/>
         <source-file src="src/ios/WebViewController.swift"/>
         <source-file src="src/ios/ModalController.swift"/>
-        <source-file src="src/ios/Webview.swift"/>
+        <source-file src="src/ios/WebView.swift"/>
         <source-file src="src/ios/Animations/HideAnimations.swift"/>
         <source-file src="src/ios/Animations/ShowAnimations.swift"/>
         <resource-file src="src/Assets/Audio/modal_shown.mp3"/>
