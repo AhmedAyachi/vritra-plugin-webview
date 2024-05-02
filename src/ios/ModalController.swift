@@ -53,6 +53,7 @@ class ModalController:WebViewController {
         if(!silent){
             if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3"){
                 do{
+                    try AVAudioSession.sharedInstance().setCategory(.playback,options:.mixWithOthers);
                     audioPlayer=try AVAudioPlayer(contentsOf:audioURL);
                     audioPlayer?.volume=0.1;
                     audioPlayer?.play();
