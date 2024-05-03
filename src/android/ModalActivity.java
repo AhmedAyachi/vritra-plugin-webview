@@ -145,7 +145,7 @@ public class ModalActivity extends WebViewActivity {
                     final int dy=(int)(y-startY);
                     if((action==MotionEvent.ACTION_UP)||(action==MotionEvent.ACTION_CANCEL)){
                         final long duration=event.getEventTime()-startTime;
-                        final float velocity=dy/duration;
+                        final float velocity=duration>0?(dy/duration):10;
                         if(dy>threshold||(velocity>=2)){self.finish();}
                         else{
                             dragEnabled=false;
