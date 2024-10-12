@@ -41,7 +41,6 @@ class Webview:VritraPlugin {
            let defaults=Webview.webviews[id] {
             props=Webview.mergeObjects(defaults,options);
         }
-        print("log:WebView Props",props);
         return props;
     }
 
