@@ -99,32 +99,40 @@ class ModalController:WebViewController {
         }
     }
     var startY=CGFloat(),originY=CGFloat();
+    var dragging=false;
     @objc func onPanGesture(gesture:UIPanGestureRecognizer){
         let state=gesture.state;
         let y=gesture.location(in:self.view).y;
         if(state==UIGestureRecognizer.State.began){
-            startY=y;
-            originY=self.webView?.frame.origin.y ?? 0;
-        }
-        else if let webview=self.webView {
-            let dy=y-startY;
-            if(state==UIGestureRecognizer.State.ended){
-                let threshold=0.6*webview.frame.height;
-                let speedY=gesture.velocity(in:self.view).y;
-                if((speedY>1000)||(dy>threshold)){self.remove()}
-                else{
-                    UIView.animate(
-                        withDuration:0.1,
-                        delay:0,
-                        options:.curveEaseOut,
-                        animations:{
-                            webview.frame.origin.y=self.originY;
-                        }
-                    );
-                };
+            let distance=gesture.location(in:self.webView).y;
+            if(distance<=100){
+                dragging=true;
+                startY=y;
+                originY=self.webView?.frame.origin.y ?? 0;
             }
-            else if(dy>0){
-                webview.frame.origin.y=originY+dy;
+        }
+        else if(dragging){
+            if let webview=self.webView {
+                var dy=y-startY;
+                if(state==UIGestureRecognizer.State.ended){
+                    dragging=false;
+                    let threshold=0.6*webview.frame.height;
+                    let speedY=gesture.velocity(in:self.view).y;
+                    if((speedY>1000)||(dy>threshold)){self.remove()}
+                    else{
+                        UIView.animate(
+                            withDuration:0.1,
+                            delay:0,
+                            options:.curveEaseOut,
+                            animations:{
+                                webview.frame.origin.y=self.originY;
+                            }
+                        );
+                    };
+                }
+                else if(dy>0){
+                    webview.frame.origin.y=originY+dy;
+                }
             }
         }
     }

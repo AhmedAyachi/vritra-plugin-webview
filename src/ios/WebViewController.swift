@@ -31,16 +31,8 @@ class WebViewController:CDVViewController {
         self.setBackgroundColor();
     }
 
-    override func viewDidDisappear(_ animated:Bool){
-        super.viewDidDisappear(animated);
-        let showCommand:CDVInvokedUrlCommand?=plugin!.showCommand;
-        if(!(showCommand==nil)){
-            let data:[AnyHashable:Any]=[
-                "message":self.message ?? "",
-                "store":Webview.store.toObject(),
-            ];
-            plugin!.success(showCommand!,data);
-        }
+    override func viewWillDisappear(_ animated:Bool){
+        super.viewWillDisappear(animated);
     }
 
     func setUrl(){
@@ -107,10 +99,19 @@ class WebViewController:CDVViewController {
 
     func remove(){
         DispatchQueue.main.asyncAfter(deadline:.now()+0.025,execute:{
+            let plugin=self.plugin!;
             self.hide({_ in
                 self.view.removeFromSuperview();
                 self.removeFromParent();
             });
+            let showCommand:CDVInvokedUrlCommand?=plugin.showCommand;
+            if(showCommand != nil){
+                let data:[AnyHashable:Any]=[
+                    "message":self.message ?? "",
+                    "store":Webview.store.toObject(),
+                ];
+                plugin.success(showCommand!,data);
+            }
         });
     };
 }
