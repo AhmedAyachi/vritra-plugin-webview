@@ -1,14 +1,21 @@
-const JsParser=cordova.require("vritra-plugin-webview.WebViewJsParser");
+const Store=cordova.require("vritra-plugin-webview.Store");
 const timeout=40;
 const data=[];
-
+    
 module.exports={
     defineWebViews:(webviews=[],fallback)=>{setTimeout(()=>{
-        webviews.forEach(webview=>{
-            if(webview.id&&(webview.file||webview.url)){
-                data.push(webview);
-            }
-        });
+        try{
+            webviews.forEach(webview=>{
+                if(webview.id&&(webview.file||webview.url)){
+                    data.push(webview);
+                }
+                else throw new Error("invalid webview definition");
+            });
+        }
+        catch(error){
+            console.error();
+            fallback&&fallback(error);
+        }
     },timeout)},
     show:(options)=>{setTimeout(()=>{
         let props,{id}=options;
@@ -47,24 +54,38 @@ module.exports={
         else throw new Error("store needs to be an object");
         callback&&this.useStore(callback);
     },timeout)},
-    useStore:(callback)=>{setTimeout(()=>{
-        if(typeof(callback)==="function"){
-            let store=localStorage.getItem("store");
-            if(store){
-                store=JSON.parse(localStorage.getItem("store"));
+    useStore:(path,callback,fallback)=>{setTimeout(()=>{
+        try{
+            if(typeof(path)==="function"){
+                fallback=callback;
+                callback=path;
+                path="";
             }
-            else{
-                localStorage.setItem("store","{}");
-                store={};
-            } 
-            callback(store);
+           callback&&callback(Store.get(path));
+        }
+        catch(error){
+            console.error(error);
+            fallback&&fallback(error);
         }
     },timeout)},
-    setStore:(key,value,callback)=>{setTimeout(()=>{
-        const store=JSON.parse(localStorage.getItem("store"))||{};
-        JsParser(store,key,value);
-        localStorage.setItem("store",stringify(store));
-        callback&&callback(store);
+    setStore:(path,value,callback,fallback)=>{setTimeout(()=>{
+        try{
+            if(Array.isArray(path)){
+                fallback=callback;
+                callback=value;
+                value=undefined;
+            }
+            else if(typeof(value)==="function"){
+                fallback=callback;
+                callback=value;
+            }
+            const store=Store.set(path,value);
+            callback&&callback(store);
+        }
+        catch(error){
+            console.error(error);
+            fallback&&fallback(error);
+        }
     },timeout)},
     useMessage:(callback)=>{setTimeout(()=>{
         if(typeof(callback)==="function"){
@@ -91,9 +112,10 @@ module.exports={
             });
         }
         else{
-            alert("Can't close the main WebView. The app will be minimized on android/ios.");
+            alert("Can't close the main WebView. The app will be minimized on android/iOS.");
         }
     },
 }
 
 const stringify=(message)=>message?((typeof(message)==="string")?message:JSON.stringify(message)):"";
+    

@@ -4,6 +4,7 @@ import org.apache.cordova.*;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.View;
+import android.view.ViewGroup;
 import android.content.Intent;
 import java.lang.Runnable;
 
@@ -13,28 +14,42 @@ public class WebViewActivity extends CordovaActivity {
     protected String url=null;
     protected String message="";
     protected Intent intent=null;
+    protected Boolean dismissible=null;
     private final WebViewActivity self=this;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         this.intent=this.getIntent();
         this.overridePendingTransition(getShowAnimation(),0);
         super.init();
-        
+
         url=intent.getStringExtra("file");
         if(url==null||url.isEmpty()){
             url=intent.getStringExtra("url");
         }
         message=intent.getStringExtra("message");
-        
+        this.dismissible=this.intent.getBooleanExtra("dismissible",true);
         this.cordovaInterface.getThreadPool().execute(new Runnable(){
             public void run(){
-                self.setStyle();
                 self.appView.loadUrl(url);
             }
         });
         this.setResult(WebViewActivity.RESULT_OK,intent);
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        self.setStyle();
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(this.dismissible){
+            super.onBackPressed();
+        }
     }
 
     protected int getShowAnimation(){
@@ -78,6 +93,22 @@ public class WebViewActivity extends CordovaActivity {
     protected Boolean isStatusBarTranslucent(){
         Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
         return statusBarTranslucent;
+    }
+
+    @Override
+    public void onDestroy(){
+        final CordovaWebView appView=this.appView;
+        appView.loadUrlIntoView("about:blank",false);
+        if(appView!=null){
+            final View view=appView.getView();
+            if(view!=null){
+                ViewGroup parent=(ViewGroup)view.getParent();
+                if(parent!=null){
+                    parent.removeView(view);
+                }
+            }
+        }
+        super.onDestroy();
     }
 
     @Override

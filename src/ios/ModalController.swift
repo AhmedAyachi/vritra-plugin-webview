@@ -49,7 +49,7 @@ class ModalController:WebViewController {
 
     var audioPlayer:AVAudioPlayer?=nil;
     private func setSilent(){
-        let silent:Bool=style["silent"] as? Bool ?? false;
+        let silent:Bool=style["silent"] as? Bool ?? true;
         if(!silent){
             if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3"){
                 do{
@@ -146,7 +146,7 @@ class ModalController:WebViewController {
         let screenWidth=availableSize.width;
         let screenHeight=availableSize.height;
         let width=self.getDimension("width")*screenWidth;
-        let height=self.getDimension("height",0.85)*screenHeight;
+        let height=self.getDimension("height",0.85)*(screenHeight-(isStatusBarTranslucent() ? 0 : UIApplication.shared.statusBarFrame.height));
         let marginLeft=self.getMargin("Left")*screenWidth;
         var marginTop=self.getMargin("Top")*screenHeight;
         let verticalAlign=self.getVerticalAlign();

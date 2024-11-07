@@ -72,8 +72,7 @@ class WebViewController:CDVViewController {
             }
         })();
         let mainview=self.view!;
-        let statusBarTranslucent=options["statusBarTranslucent"] as? Bool ?? false;
-        if(statusBarTranslucent){}
+        if(isStatusBarTranslucent()){}
         else{
             let statusBarColor=options["statusBarColor"] as? String ?? "white";
             let scrollView=mainview.subviews.first!;
@@ -81,6 +80,10 @@ class WebViewController:CDVViewController {
             scrollView.frame.size.height=UIApplication.shared.statusBarFrame.height;
         }
         animation(mainview,nil);
+    }
+    
+    func isStatusBarTranslucent()->Bool{
+        return options["statusBarTranslucent"] as? Bool ?? false;
     }
     
     func hide(_ onHidden:((Bool)->Void)?){

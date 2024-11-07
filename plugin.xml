@@ -63,7 +63,7 @@
         <js-module src="src/browser/WebView.js" name="WebView">
             <clobbers target="WebView"/>
         </js-module>
-        <js-module src="src/browser/JsParser.js" name="WebViewJsParser">
+        <js-module src="src/browser/Store.js" name="Store">
             <runs/>
         </js-module>
     </platform>

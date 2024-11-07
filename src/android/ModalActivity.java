@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.ViewGroup;
 import android.view.MotionEvent;
 import android.view.ViewOutlineProvider;
-import android.view.WindowManager.LayoutParams;
+import android.view.WindowManager;
 import android.util.DisplayMetrics;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
@@ -29,6 +29,9 @@ public class ModalActivity extends WebViewActivity {
         try{
             String stylejson=intent.getStringExtra("modalStyle");
             this.style=(stylejson==null)?new JSONObject():new JSONObject(stylejson);
+            if(this.dismissible){
+                this.dismissible=this.style.optBoolean("dismissible",true);
+            }
         }
         catch(JSONException exception){}
     }
@@ -40,7 +43,7 @@ public class ModalActivity extends WebViewActivity {
     }
 
     private void setSilent(){
-        final Boolean silent=style.optBoolean("silent",false);
+        final Boolean silent=style.optBoolean("silent",true);
         if(!silent){
             final int audioId=WebView.getResourceId("raw","modal_shown");
             MediaPlayer mediaplayer=MediaPlayer.create(this,audioId);
@@ -74,24 +77,24 @@ public class ModalActivity extends WebViewActivity {
     protected void setStyle(){
         super.setStyle();
         this.setLayout();
-        final Window window=getWindow();
-        final View decorView=window.getDecorView();
         final int transparentColor=WebView.getColor("transparent");
+        final Window window=getWindow();
         window.setBackgroundDrawable(new ColorDrawable(transparentColor));
+        final View decorView=window.getDecorView();
         decorView.setBackgroundColor(transparentColor);
         decorView.setClipToOutline(true);
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         this.setCorners();
-        this.setDismissible();
+        if(this.dismissible){
+            this.setDismissible();
+        }
     }
 
     private void setDismissible(){
-        final Boolean dismissible=this.style.optBoolean("dismissible",true);
-        if(dismissible){
-            final View webView=this.appView.getView();
-            this.setNotch(webView);
-            this.setOutSlideClick(webView);
-            this.setupGestureRecognizer(webView);
-        }
+        final View webView=this.appView.getView();
+        this.setNotch(webView);
+        this.setOutSlideClick(webView);
+        this.setupGestureRecognizer(webView);
     }
     public void setOutSlideClick(View view){  
         final ModalActivity self=this;
@@ -116,10 +119,10 @@ public class ModalActivity extends WebViewActivity {
         final double fraction=0.1;
         final int width=this.getWebViewWidth();
         final int height=this.getWebViewHeight();
-        final ViewGroup.LayoutParams LayoutParams=new ViewGroup.LayoutParams((int)(fraction*width),(int)(0.0065*height));
-        ((ViewGroup)parentView).addView(notch,LayoutParams);
+        final ViewGroup.LayoutParams layoutParams=new ViewGroup.LayoutParams((int)(fraction*width),10);
+        ((ViewGroup)parentView).addView(notch,layoutParams);
         notch.setX((int)((1-fraction)*width/2));
-        notch.setY((int)(0.01*height));
+        notch.setY(20);
     }
     private void setupGestureRecognizer(View view){
         final ModalActivity self=this;
@@ -177,7 +180,7 @@ public class ModalActivity extends WebViewActivity {
             webView.setX(this.getX());
             webView.setY(this.getY());
             webView.setAlpha(this.getAlpha());
-            setverticalAlign(webView);
+            setVerticalAlign(webView);
         }
     }
     private float getAlpha(){
@@ -197,20 +200,13 @@ public class ModalActivity extends WebViewActivity {
         }
         return (int)y;
     }
-    private void setverticalAlign(View view){
+    private void setVerticalAlign(View view){
         String verticalAlign=style.optString("verticalAlign","bottom");
         if(!verticalAlign.equals("top")){
             final float viewY=view.getY();
             final float offset=metrics.heightPixels-this.getWebViewHeight();
             if(verticalAlign.equals("bottom")){
-                int statusbarHeight=0;
-                if(!this.isStatusBarTranslucent()){
-                    final int resourceId=WebView.resources.getIdentifier("status_bar_height","dimen","android");
-                    if(resourceId>0){
-                        statusbarHeight=WebView.resources.getDimensionPixelSize(resourceId);
-                    }
-                }
-                view.setY(viewY+offset-statusbarHeight);
+                view.setY(viewY+offset);
             }
             else{
                 view.setY(viewY+offset/2);
@@ -238,7 +234,14 @@ public class ModalActivity extends WebViewActivity {
             if((height<0)||(height>1)){
                 height=1;
             }
-            height=height*metrics.heightPixels;
+            int statusbarHeight=0;
+            if(!this.isStatusBarTranslucent()){
+                final int resourceId=WebView.resources.getIdentifier("status_bar_height","dimen","android");
+                if(resourceId>0){
+                    statusbarHeight=WebView.resources.getDimensionPixelSize(resourceId);
+                }
+            }
+            height=height*(metrics.heightPixels-statusbarHeight);
             this.webViewHeight=(int)height;
         }
         return this.webViewHeight;

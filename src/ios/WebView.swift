@@ -70,15 +70,58 @@ class Webview:VritraPlugin {
 
     @objc(useStore:)
     func useStore(command:CDVInvokedUrlCommand){
-        success(command,Webview.store.toObject());
+        do{
+            let path=command.arguments[0] as? String ?? "";
+            if(path.isEmpty){
+                success(command,Webview.store.toObject());
+            }
+            else{
+                success(command,try Webview.store.get(path));
+            }
+        }
+        catch{
+            self.error(command,Webview.Error(error.localizedDescription).toObject());
+        }
     }
 
     @objc(setStore:)
     func setStore(command:CDVInvokedUrlCommand){
-        let key=command.arguments[0] as! String;
-        let value=command.arguments[1];
-        Webview.store.mutate(key,value);
-        success(command,Webview.store.toObject());
+        do{
+            let deletables=command.arguments[3] as! [String];
+            let deletableCount=deletables.count;
+            try deletables.forEach({ path in
+                try Webview.store.delete(path);
+            });
+            let multiSetting=command.arguments[2] as! Bool;
+            if(multiSetting){
+                if let pairs=command.arguments[0] as? [Any?] {
+                    let length=pairs.count;
+                    if(length%2==0){
+                        for i in stride(from:0,to:length,by:2){
+                            if let key=pairs[i] as? String {
+                                try Webview.store.set(key,pairs[i+1]);
+                            }
+                        }
+                    }
+                    else{
+                        throw Error("array length should be even");
+                    };
+                }
+                else{
+                    throw Error("param is not of type string|array");
+                }
+            }
+            else if(deletableCount<1){
+                if let key=command.arguments[0] as? String {
+                    let value=command.arguments[1];
+                    try Webview.store.set(key,value);
+                };
+            }
+            success(command,Webview.store.toObject());
+        }
+        catch{
+            self.error(command,Webview.Error(error.localizedDescription).toObject());
+        }
     }
 
     @objc(close:)

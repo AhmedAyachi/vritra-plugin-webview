@@ -41,7 +41,7 @@ public class WebView extends VritraPlugin {
             this.initiateStore(state,callbackContext);
         }
         else if(action.equals("useStore")){
-            this.useStore(callbackContext);
+            this.useStore(args,callbackContext);
         }
         else if(action.equals("setStore")){
             this.setStore(args,callbackContext);
@@ -138,15 +138,68 @@ public class WebView extends VritraPlugin {
         store.initiate(state);
         callbackContext.success(store.toJSONObject());
     }
-    private void useStore(CallbackContext callbackContext){
-        callbackContext.success(store.toJSONObject());
+    private void useStore(JSONArray args,CallbackContext callbackContext){
+        try{
+            final String path=args.optString(0);
+            if(path.isEmpty()){
+                callbackContext.success(store.toJSONObject());
+            }
+            else{
+                final ArrayList<Object> values=store.get(path);
+                final JSONArray array=new JSONArray();
+                final int length=values.size();
+                for(int i=0;i<length;i++){
+                    array.put(values.get(i));
+                }
+                callbackContext.success(array); 
+            }
+        }
+        catch(Exception exception){
+            callbackContext.error(new VritraError(exception.getMessage()));
+        }
     }
 
-    private void setStore(JSONArray args,CallbackContext callbackContext) throws JSONException{
-        final String key=args.getString(0);
-        final Object value=args.get(1);
-        store.set(key,value);
-        callbackContext.success(store.toJSONObject());
+    private void setStore(JSONArray args,CallbackContext callbackContext){
+        try{
+            final JSONArray deletables=args.optJSONArray(3);
+            final int deletableCount=deletables.length();
+            for(int i=0;i<deletableCount;i++){
+                this.setStoreValue(deletables.optString(i));
+            }
+            final Boolean multiSetting=args.optBoolean(2);
+            if(multiSetting){
+                final JSONArray pairs=args.optJSONArray(0);
+                if(pairs!=null){
+                    int length=pairs.length();
+                    if(length%2==0){
+                        for(int i=0;i<length;i+=2){
+                            this.setStoreValue(pairs.getString(i),pairs.get(i+1));
+                        }
+                    }
+                    else throw new Exception("array length should be even");
+                }
+                else throw new Exception("param is not of type string|array");
+            }
+            else if(deletableCount<1){
+                this.setStoreValue(args.getString(0),args.get(1));
+            }
+            callbackContext.success(store.toJSONObject());
+        }
+        catch(Exception exception){
+            callbackContext.error(new VritraError(exception.getMessage()));
+        }
+    }
+    private void setStoreValue(String path) throws Exception {
+        if(path.isEmpty()) throw new Exception("invalid key");
+        else{
+            store.delete(path);
+        }
+    }
+    private void setStoreValue(String path,Object value) throws Exception {
+        if(path.isEmpty()) throw new Exception("invalid key");
+        else{
+            store.set(path,value);
+        }
     }
     
     private void useMessage(CallbackContext callbackContext){
@@ -166,7 +219,11 @@ public class WebView extends VritraPlugin {
             if(!isUndefined){
                 wvactivity.setMessage(params.optString(0));
             }
-            wvactivity.finish();
+            this.cordova.getThreadPool().execute(new Runnable(){
+                public void run(){
+                    wvactivity.finish();
+                }
+            });
         }
         else{
             Intent intent=new Intent(Intent.ACTION_MAIN);
@@ -217,7 +274,7 @@ public class WebView extends VritraPlugin {
             String url=props.optString("url");
             intent.putExtra("url",url);
         }
-        String message=props.optString("message");
+        String message=props.optString("message",null);
         if(message!=null){
             intent.putExtra("message",message);
         }
@@ -236,6 +293,9 @@ public class WebView extends VritraPlugin {
             String statusBarColor=props.optString("statusBarColor","black");
             intent.putExtra("statusBarColor",statusBarColor);
         }
+
+        Boolean dismissible=props.optBoolean("dismissible",true);
+        intent.putExtra("dismissible",dismissible);
 
         String backgroundColor=props.optString("backgroundColor","white");
         intent.putExtra("backgroundColor",backgroundColor);

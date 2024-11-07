@@ -6,7 +6,7 @@ interface WebView {
      * @param webviews 
      * @param fallback called when an error occurred
      */
-    defineWebViews(webviews:WebViewProps[],fallback:(message:string)=>void):void,
+    defineWebViews(webviews:WebViewProps[],fallback?:(error:Error)=>void):void,
     /**
     * Shows a new webview.
     * The shown webview will have access to all cordova plugins.
@@ -38,7 +38,7 @@ interface WebView {
             * webview. 
             */
             message:string,
-            store:Object,
+            store:object,
         }):void,
     }):void,
     /**
@@ -60,7 +60,7 @@ interface WebView {
      * @param callback 
      * Called when the store is successfully set. 
      */
-    initiateStore(store:object,callback:(store:Object)=>void):void,
+    initiateStore(store:object,callback?:(store:object)=>void):void,
     /**
     * Uses the store object.
     * @note
@@ -68,7 +68,21 @@ interface WebView {
     * Setting it will not affect the store unless initiateStore is used
     * or call setStore instead.  
     */
-    useStore(handler:(store:Object)=>void):void,
+    useStore(
+        callback?:(store:object)=>void,
+        fallback?:(error:Error)=>void,
+    ):void,
+    /**
+     * 
+     * @param path value path
+     * @param callback 
+     * @param fallback 
+     */
+    useStore(
+        path:string,
+        callback?:(value:any)=>void,
+        fallback?:(error:Error)=>void,
+    ):void,
     /**
      * @param key 
      * the path to the value you want to set.
@@ -93,16 +107,44 @@ interface WebView {
      * "object.array[*][*].object.array[last]"
      * "object.array[*].object.array[*].property"
      * "object.array[0].array[4].array[last].property"
-     * @param value 
+     * @param value if undefined, the property is deleted
      * @param callback 
+     * @param fallback
      */
     setStore(
         key:string,
         value:any,
-        callback:(store:Object)=>void,
+        callback?:(store:object)=>void,
+        fallback?:(error:Error)=>void,
     ):void,
     /**
-    * Close the current webview.
+     * Multi sets the store
+     * @param entries Should be string-any successive items
+     * @param callback 
+     * @param fallback 
+     * @example setStore([
+     *  "items",null,
+     *  "user.age",24,
+     * ],callback,fallback);
+     */
+    setStore(
+        entries:[any],
+        callback?:(store:object)=>void,
+        fallback?:(error:Error)=>void,
+    ):void,
+    /**
+     * Deletes the property, equivalent to setStore(path,undefined,callback,fallback);
+     * @param path 
+     * @param callback 
+     * @param fallback 
+     */
+    setStore(
+        path:string,
+        callback?:(store:object)=>void,
+        fallback?:(error:Error)=>void,
+    ):void,
+    /**
+    * Closes the current webview.
     * @param message The message to pass to the previous webview.
     * If message is undefined, the value is ignored.
     * If message is not a string, JSON.stringify is called.
@@ -150,6 +192,11 @@ type WebViewProps={
     * @notice "transparent" is only apllied for modals
     */
     backgroundColor?:WebViewColor,
+    /**
+    * If true, the webview is dismissible via touch interactions or back press
+    * @default true
+    */
+    dismissible:boolean,
     /**
      * The new webview animation when shown.
      * @notice Applied only for non-modal webviews.
@@ -206,12 +253,13 @@ type WebViewProps={
          */
         opacity:number,
         /**
-         * @default false
+         * @default true
          */
         silent:boolean,
         /**
          * If true, the modal is dismissible via touch interactions
          * @default true
+         * @deprecated should be specified directly in the props object
          */
         dismissible:boolean,
         /**
