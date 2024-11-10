@@ -19,7 +19,9 @@ class Store {
         try keys.forEach({key in
             data=try data.flatMap({item in try Store.getProperties(key,item)});
         });
-        try self.mutate(Store.getKeysPath(keys),data);
+        if(path.contains("shift")||path.contains("pop")){
+            try self.mutate(Store.getKeysPath(keys),data);
+        }
         return data;
     }
     
@@ -78,44 +80,38 @@ class Store {
     
     static func getProperties(_ key:String,_ data:Any)throws->[Any]{
         if let value=data as? Bool,value==false {
-            throw Webview.Error("cannot get properties of falsy (getting \""+key+"\")");
+            throw Webview.Error("cannot read properties of falsy (reading \""+key+"\")");
         }
         var props:[Any]=[];
         let index=key.firstIndex(of:"]");
         if let bracketIndex=index {
-            if var array=data as? [Any?] {
+            if var array=data as? [Any] {
                 let symbol=key.prefix(upTo:bracketIndex);
                 switch(symbol){
                     case "*":
                         array.forEach({item in
-                            props.append(item ?? false);
+                            props.append(item);
                         });
                         break;
                     case "pop":
-                        props.append(array.removeLast() ?? false);
+                        props.append(array.removeLast());
                         break;
                     case "shift":
-                        if(array.isEmpty){
-                            props.append(false);
-                        }
-                        else{
-                            props.append(array.removeFirst() ?? false);
-                        }
+                        if(array.isEmpty){props.append(false)}
+                        else{props.append(array.removeFirst())};
                         break;
                     case "last":
                         let index=array.count-1;
-                        if(index > -1){
-                            props.append(array[index] ?? false);
-                        }
+                        if((0..<array.count).contains(index)){props.append(array[index])}
+                        else{props.append(false)};
                         break;
                     default:
-                        let index=Int(symbol) ?? -1;
-                        if((0..<array.count).contains(index)){
-                            props.append(array[index] ?? false);
+                        if(array.isEmpty){props.append(false)}
+                        else if let index=Int(symbol){
+                            if((0..<array.count).contains(index)){props.append(array[index])}
+                            else{props.append(false)};
                         }
-                        else{
-                            props.append(false);
-                        }
+                        else{throw UnrecognizedSymbolError(key)};
                         break;
                 }
             }
@@ -160,8 +156,13 @@ class Store {
                         }
                         break;
                     default:
-                        let index=Int(symbol)!;
-                        array[index]=value ?? false;
+                        if let index=Int(symbol){
+                            if((0..<array.count).contains(index)){
+                                array[index]=value;
+                            }
+                            else{throw Webview.Error("index out of range")};
+                        }
+                        else{throw UnrecognizedSymbolError(key)};
                         break;
                 }
                 data=array;
@@ -197,9 +198,12 @@ class Store {
                 case "unshift":array.insert(nil,at:0);break;
                 case "*":array.removeAll();break;
                 default:
-                    if let index=Int(symbol) {
-                        array.remove(at:index);
-                    };
+                    if let index=Int(symbol){
+                        if((0..<array.count).contains(index)){
+                            array.remove(at:index);
+                        }
+                    }
+                    else{throw UnrecognizedSymbolError(key)};
                     break;
             }
             data=array;
@@ -219,3 +223,6 @@ class Store {
 }
 
 let ObjectCastError=Webview.Error("cast to object failed");
+func UnrecognizedSymbolError(_ symbol:String)->Webview.Error{
+    return Webview.Error("unrecognized symbol \"\(symbol)\"");
+}

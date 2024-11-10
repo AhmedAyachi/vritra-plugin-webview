@@ -16,7 +16,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.animation.ObjectAnimator;
-//import android.widget.Toast;
 
 
 public class ModalActivity extends WebViewActivity {
@@ -153,7 +152,7 @@ public class ModalActivity extends WebViewActivity {
                         else{
                             dragEnabled=false;
                             ObjectAnimator animator=ObjectAnimator.ofFloat(view,"translationY",viewY);
-                            animator.setDuration(100);
+                            animator.setDuration(250);
                             animator.start();
                         }
                     }

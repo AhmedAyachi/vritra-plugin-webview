@@ -63,22 +63,20 @@ public class WebView extends VritraPlugin {
     }
 
     private void defineWebViews(JSONArray webviews,CallbackContext callbackContext){
-        final int length=webviews.length();
-        for(int i=0;i<length;i++){
-            final JSONObject webview=webviews.optJSONObject(i);
-            final String id=webview.optString("id");
-            final boolean validId=!id.isEmpty();
-            try{
+        try{
+            final int length=webviews.length();
+            for(int i=0;i<length;i++){
+                final JSONObject webview=webviews.optJSONObject(i);
+                final String id=webview.optString("id");
+                final boolean validId=!id.isEmpty();
                 if(validId&&(webview.has("file")||webview.has("url"))){
                     WebView.webviews.put(id,webview);
                 }
-                else{
-                    throw new Exception("Invalid WebView props");
-                }
-            }
-            catch(Exception exception){
-                callbackContext.error(exception.getMessage());
-            }
+                else throw new Exception("Invalid WebView props, id and file or path are required");
+            }       
+        }
+        catch(Exception exception){
+            callbackContext.error(new VritraError(exception.getMessage()));
         }
     }
 

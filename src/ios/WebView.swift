@@ -9,17 +9,26 @@ class Webview:VritraPlugin {
 
     @objc(defineWebViews:)
     func defineWebViews(command:CDVInvokedUrlCommand){
-        if let webviews=command.arguments[0] as? [[String:Any]] {
-            for webview in webviews {
-                if let id=webview["id"] as? String,!id.isEmpty {
-                    let file=webview["file"] as? String;
-                    let url=webview["url"] as? String;
-                    if((file != nil)||(url != nil)){
-                        Webview.webviews[id]=webview;
+        do{
+            if let webviews=command.arguments[0] as? [[String:Any]] {
+                for webview in webviews {
+                    if let id=webview["id"] as? String,!id.isEmpty {
+                        let file=webview["file"] as? String;
+                        let url=webview["url"] as? String;
+                        if((file != nil)||(url != nil)){
+                            Webview.webviews[id]=webview;
+                        }
+                        else{throw Webview.Error("webview's path or file prop is required")};
                     }
-                };
+                    else{throw Webview.Error("webview's id is required")};
+                }
             }
+            else{throw Webview.Error("invalid webviews definition")};
         }
+        catch let error as Webview.Error {
+            self.error(command,error.toObject());
+        }
+        catch{};
     }
 
     @objc(show:)
@@ -79,9 +88,9 @@ class Webview:VritraPlugin {
                 success(command,try Webview.store.get(path));
             }
         }
-        catch{
-            self.error(command,Webview.Error(error.localizedDescription).toObject());
-        }
+        catch let error as Webview.Error {
+            self.error(command,error.toObject());
+        }catch{};
     }
 
     @objc(setStore:)
@@ -103,13 +112,9 @@ class Webview:VritraPlugin {
                             }
                         }
                     }
-                    else{
-                        throw Error("array length should be even");
-                    };
+                    else{throw Error("array length should be even")};
                 }
-                else{
-                    throw Error("param is not of type string|array");
-                }
+                else{throw Error("param is not of type string|array")};
             }
             else if(deletableCount<1){
                 if let key=command.arguments[0] as? String {
@@ -119,9 +124,9 @@ class Webview:VritraPlugin {
             }
             success(command,Webview.store.toObject());
         }
-        catch{
-            self.error(command,Webview.Error(error.localizedDescription).toObject());
-        }
+        catch let error as Webview.Error {
+            self.error(command,error.toObject());
+        }catch{};
     }
 
     @objc(close:)

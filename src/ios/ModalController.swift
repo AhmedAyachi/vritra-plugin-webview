@@ -64,7 +64,7 @@ class ModalController:WebViewController {
     }
     
     private func setDismissible(){
-        let dismissible:Bool=style["dismissible"] as? Bool ?? true;
+        let dismissible=options["dismissible"] as? Bool ?? (style["dismissible"] as? Bool ?? true);
         if(dismissible){
             self.setNotch();
             bgview.addGestureRecognizer(UITapGestureRecognizer(
@@ -113,7 +113,7 @@ class ModalController:WebViewController {
         }
         else if(dragging){
             if let webview=self.webView {
-                var dy=y-startY;
+                let dy=y-startY;
                 if(state==UIGestureRecognizer.State.ended){
                     dragging=false;
                     let threshold=0.6*webview.frame.height;
@@ -121,7 +121,7 @@ class ModalController:WebViewController {
                     if((speedY>1000)||(dy>threshold)){self.remove()}
                     else{
                         UIView.animate(
-                            withDuration:0.1,
+                            withDuration:0.25,
                             delay:0,
                             options:.curveEaseOut,
                             animations:{

@@ -193,7 +193,8 @@ type WebViewProps={
     */
     backgroundColor?:WebViewColor,
     /**
-    * If true, the webview is dismissible via touch interactions or back press
+    * If true, the webview is dismissible via touch interactions or back press.
+    * @notice affects only android webview and android/ios modals.
     * @default true
     */
     dismissible:boolean,

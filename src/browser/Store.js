@@ -3,20 +3,26 @@
 module.exports={
     get:function(path){
         const store=JSON.parse(localStorage.getItem("store"))||{};
-        if(path===undefined) return store;
-        else if(typeof(path)==="string"){
-            const keys=path.split(/\.|\[/g).filter(key=>key);
-            let objects=[store];
-            for(const key of keys){
-                objects=objects.flatMap(object=>{
-                    const value=getProperty(key,object);
-                    return key==="*]"?value:[value];
-                });
+        const value=(()=>{
+            if(path===undefined) return store;
+            else if(typeof(path)==="string"){
+                const keys=path.split(/\.|\[/g).filter(key=>key);
+                let objects=[store];
+                for(const key of keys){
+                    objects=objects.flatMap(object=>{
+                        const value=getProperty(key,object);
+                        return key==="*]"?value:[value];
+                    });
+                }
+                if(objects.length>1) return objects;
+                else return objects[0];
             }
-            if(objects.length>1) return objects;
-            else return objects[0];
+            else throw new Error("invalid path");
+        })();
+        if(path.includes("shift")||path.includes("pop")){
+            localStorage.setItem("store",JSON.stringify(store));
         }
-        else throw new Error("invalid path");
+        return value;
     },
     set:function(path,value){
         let store;
@@ -81,7 +87,11 @@ const getProperty=(key,data)=>{
                 case "last": value=data[data.length-1];break;
                 case "pop": value=data.pop();break;
                 case "shift": value=data.shift();break;
-                default: value=data[parseInt(index)];break;
+                default: 
+                    const int=parseInt(index);
+                    if(int>=0) value=data[int];
+                    else throw UnrecognizedSymbol(index);
+                break;
             }
         }
         else throw ArrayCastError;
@@ -111,10 +121,10 @@ const setProperty=(data,key,value)=>{
                 case "push": data.push(value);break;
                 case "unshift": data.unshift(value);break;
                 default: 
-                    const index=parseInt(index);
-                    if(isNaN(index)) throw new Error("");
-                    else data[index]=value;
-                    break;
+                    const int=parseInt(index);
+                    if(int>=0) data[i]=value;
+                    else throw UnrecognizedSymbol(index);
+                break;
             }
         }
         else throw ArrayCastError;
@@ -137,7 +147,11 @@ const deleteProperty=(data,key)=>{
                 case "push": data.push(null);break;
                 case "unshift": data.unshift(null);break;
                 case "*":data.splice(0,data.length);break;
-                default: data.splice(parseInt(index),1);break;
+                default:
+                    const int=parseInt(index);
+                    if(int>=0) data.splice(int,1);
+                    else throw UnrecognizedSymbol(index);
+                break;
             }
         }
         else throw ArrayCastError;
@@ -150,4 +164,5 @@ const deleteProperty=(data,key)=>{
 
 const ArrayCastError=new Error("cast to array failed");
 const ObjectCastError=new Error("cast to object failed");
+const UnrecognizedSymbol=(symbol)=>new Error(`unrecognized symbol "${symbol}"`);
   

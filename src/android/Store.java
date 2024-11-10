@@ -119,9 +119,7 @@ public class Store {
                 return object.opt(token);
             }
         }
-        else{
-            throw new Exception("cannot read properties of null (reading \""+token+"\")");
-        }
+        else throw new Exception("cannot read properties of null (reading \""+token+"\")");
     }
 
     static private void setProperty(Object source,String token,Object value) throws Exception {
@@ -165,21 +163,15 @@ public class Store {
                 object.put(token,value);
             }
         }
-        else{
-            throw new Exception("cannot set properties of null (setting \""+token+"\")");
-        }
+        else throw new Exception("cannot set properties of null (setting \""+token+"\")");
     }
 
     static private void deleteProperty(Object source,String token) throws Exception {
-        int bracketindex=token.indexOf("]");
-        if(bracketindex>0){
-            final JSONArray array=(JSONArray)source;
-            String indexStr=token.subSequence(0,bracketindex).toString().trim();
-            try{
-                int index=Integer.parseInt(indexStr);
-                array.remove(index);
-            }
-            catch(Exception exception){
+        if(source!=null){
+            int bracketindex=token.indexOf("]");
+            if(bracketindex>0){
+                final JSONArray array=(JSONArray)source;
+                String indexStr=token.subSequence(0,bracketindex).toString().trim();
                 if(indexStr.equals("*")){
                     final int length=array.length();
                     for(int i=0;i<length;i++){
@@ -207,13 +199,17 @@ public class Store {
                         array.remove(length-1);
                     }
                 }
-                else throw exception;
+                else{
+                    int index=Integer.parseInt(indexStr);
+                    array.remove(index);
+                }
+            }
+            else{
+                final JSONObject object=(JSONObject)source;
+                object.remove(token);
             }
         }
-        else{
-            final JSONObject object=(JSONObject)source;
-            object.remove(token);
-        }
+        else throw new Exception("cannot delete properties of null (deleting \""+token+"\")");
     }
 
     static private void flatMap(ArrayList<Object> array,Object target,ArrayList<Object> items){
