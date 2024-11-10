@@ -94,12 +94,12 @@ const getProperty=(key,data)=>{
                 break;
             }
         }
-        else throw ArrayCastError;
+        else throw ArrayCastError(key);
     }
     else if(typeof(data)==="object"){
         value=data[key];
     }
-    else throw ObjectCastError;
+    else throw ObjectCastError(key);
     return value;
 }
 
@@ -127,12 +127,12 @@ const setProperty=(data,key,value)=>{
                 break;
             }
         }
-        else throw ArrayCastError;
+        else throw ArrayCastError(key);
     }
     else if(typeof(data)==="object"){
         data[key]=value;
     }
-    else throw ObjectCastError;
+    else throw ObjectCastError(key);
 }
 
 const deleteProperty=(data,key)=>{
@@ -154,15 +154,15 @@ const deleteProperty=(data,key)=>{
                 break;
             }
         }
-        else throw ArrayCastError;
+        else throw ArrayCastError(key);
     }
     else if(typeof(data)==="object"){
         delete data[key];
     }
-    else throw ObjectCastError;
+    else throw ObjectCastError(key);
 }
 
-const ArrayCastError=new Error("cast to array failed");
-const ObjectCastError=new Error("cast to object failed");
+const ArrayCastError=(key="")=>new Error(`cast to array failed at "${key}"`);
+const ObjectCastError=(key="")=>new Error(`cast to object failed at "${key}"`);
 const UnrecognizedSymbol=(symbol)=>new Error(`unrecognized symbol "${symbol}"`);
   
