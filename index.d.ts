@@ -84,8 +84,8 @@ interface WebView {
         fallback?:(error:Error)=>void,
     ):void,
     /**
-     * @param key 
-     * the path to the value you want to set.
+     * @param path 
+     * the path to the value to set.
      * @ForArrays
      * 
      * array[*] will target all the array items.
@@ -112,14 +112,14 @@ interface WebView {
      * @param fallback
      */
     setStore(
-        key:string,
+        path:string,
         value:any,
         callback?:(store:object)=>void,
         fallback?:(error:Error)=>void,
     ):void,
     /**
      * Multi sets the store
-     * @param entries Should be string-any successive items
+     * @param entries Should contain string-any successive items
      * @param callback 
      * @param fallback 
      * @example setStore([
@@ -128,7 +128,7 @@ interface WebView {
      * ],callback,fallback);
      */
     setStore(
-        entries:[any],
+        entries:[]|[string,any,...([string,any]|[])],
         callback?:(store:object)=>void,
         fallback?:(error:Error)=>void,
     ):void,
