@@ -18,7 +18,7 @@ interface WebView {
          * 
          * More prioritized then url prop, less prioritized than file prop.
          */
-        id:string,
+        id?:string,
         /**
         * A message to pass to the new webiew.
         * This message is freed when the new webview is closed
@@ -26,7 +26,7 @@ interface WebView {
         * @Note
         * If message is not of type string, JSON.stringify is called.
         */
-        message:string,
+        message?:string,
         /**
         * Called when the new webview is closed. 
         */
@@ -164,14 +164,14 @@ type WebViewProps={
     * 
     * More prioritized then the url prop.
     */
-    file:string,
+    file?:string,
     /**
     * A http/https url to show external sites.
     * @warning
     * Please be careful when using this property because
     * the target url will have access to cordova plugins.
     */
-    url:string,
+    url?:string,
     /** 
     * if True, the statusbar and the keybaord will overlay the webview.
     * 
@@ -197,7 +197,7 @@ type WebViewProps={
     * @notice affects only android webview and android/ios modals.
     * @default true
     */
-    dismissible:boolean,
+    dismissible?:boolean,
     /**
      * The new webview animation when shown.
      * @notice Applied only for non-modal webviews.
@@ -225,57 +225,57 @@ type WebViewProps={
          * Value between 0 and 1.
          * @default 1
          */
-        width:number,
+        width?:number,
         /**
          * height of the modal relative to the window height.
          * 
          * Value between 0 and 1.
          * @default 0.85
          */
-        height:number,
+        height?:number,
         /**
          * Left margin of the modal relative to the window width.
          * 
          * Value between -1 and 1.
          */
-        marginLeft:number,
+        marginLeft?:number,
         /**
          * Top margin of the modal relative to the window height.
          * 
          * Value between -1 and 1.
          */
-        marginTop:number,
+        marginTop?:number,
         /**
          * @default "bottom"
          */
-        verticalAlign:"bottom"|"top"|"middle",
+        verticalAlign?:"bottom"|"top"|"middle",
         /**
          * @default 1
          */
-        opacity:number,
+        opacity?:number,
         /**
          * @default true
          */
-        silent:boolean,
+        silent?:boolean,
         /**
          * If true, the modal is dismissible via touch interactions
          * @default true
          * @deprecated should be specified directly in the props object
          */
-        dismissible:boolean,
+        dismissible?:boolean,
         /**
          * Sets the notch color.
          * The notch is shown only when the modal is dismissible
          */
-        notchColor:WebViewColor,
+        notchColor?:WebViewColor,
         /** @default true */
-        roundedTopLeftCorner:boolean,
+        roundedTopLeftCorner?:boolean,
         /** @default true */
-        roundedTopRightCorner:boolean,
+        roundedTopRightCorner?:boolean,
         /** @default false */
-        roundedBottomLeftCorner:boolean,
+        roundedBottomLeftCorner?:boolean,
         /** @default false */
-        roundedBottomRightCorner:boolean,
+        roundedBottomRightCorner?:boolean,
     },
 }
 
