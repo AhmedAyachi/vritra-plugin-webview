@@ -82,19 +82,19 @@ public class WebView extends VritraPlugin {
 
     private void show(JSONObject options,CallbackContext callbackContext){
         final AppCompatActivity activity=this.cordova.getActivity();
-        final CordovaPlugin plugin=this;
-        this.cordova.getThreadPool().execute(new Runnable(){
+        final CordovaPlugin self=this;
+        activity.runOnUiThread(new Runnable(){
             public void run(){
                 final int ref=new Random().nextInt(999);
                 final JSONObject props=WebView.getWebViewProps(options);
                 Boolean asModal=props.optBoolean("asModal");
                 final Intent intent=new Intent(activity,asModal?ModalActivity.class:WebViewActivity.class);
                 WebView.setIntentExtras(props,intent);
-                try{
+                try {
                     WebView.callbacks.put(Integer.toString(ref),callbackContext);
                 }
                 catch(JSONException exception){}
-                plugin.cordova.startActivityForResult(plugin,intent,ref);
+                self.cordova.startActivityForResult(self,intent,ref);
             }
         });
     }
@@ -301,7 +301,7 @@ public class WebView extends VritraPlugin {
         final String showAnimation=props.optString("showAnimation","slideLeft");
         intent.putExtra("showAnimation",showAnimation);
 
-        final String closeAnimation=props.optString("closeAnimation","fadeOut");
+        final String closeAnimation=props.optString("closeAnimation","slideRight");
         intent.putExtra("closeAnimation",closeAnimation);
     }
 }

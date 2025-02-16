@@ -203,13 +203,13 @@ type WebViewProps={
      * @notice Applied only for non-modal webviews.
      * @default "slideLeft"
      */
-    showAnimation?:"slideLeft"|"slideUp"|"fadeIn",
+    showAnimation?:"translateLeft"|"translateUp"|"fadeIn"|"slideLeft",
     /**
      * The new webview animation when closed.
      * @notice Applied only for non-modal webviews.
-     * @default "slideRight" on ios, "fadeOut" on android
+     * @default "translateRight" on ios, "slideRight" on android
      */
-    closeAnimation?:"slideRight"|"slideDown"|"fadeOut",
+    closeAnimation?:"translateRight"|"translateDown"|"fadeOut"|"slideRight",
     /**
     * If true, shows the new webview with a modal animation.
     * @default false.

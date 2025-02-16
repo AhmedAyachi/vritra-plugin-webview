@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
 import java.lang.Runnable;
+import android.util.Log;
 
 
 public class WebViewActivity extends CordovaActivity {
@@ -20,9 +21,8 @@ public class WebViewActivity extends CordovaActivity {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
         this.intent=this.getIntent();
-        this.overridePendingTransition(getShowAnimation(),0);
+        this.overridePendingTransition(getShowAnimation(),getPreActivityCloseAnimation());
         super.init();
 
         url=intent.getStringExtra("file");
@@ -53,27 +53,49 @@ public class WebViewActivity extends CordovaActivity {
     }
 
     protected int getShowAnimation(){
-        String animationId=intent.getStringExtra("showAnimation");
+        final String animationId=intent.getStringExtra("showAnimation");
         String name=null;
         switch(animationId){
-            case "slideUp": name="slide_up";break;
             case "fadeIn": name="fade_in";break;
+            case "translateUp": name="translate_up";break;
+            case "translateLeft": name="translate_left";break;
             case "slideLeft":
             default: name="slide_left";break; 
         }
-        return WebView.getResourceId("animator","showanim_"+name);
+        return WebView.getResourceId("anim","showanim_"+name);
+    }
+    protected int getPreActivityCloseAnimation(){
+        final String animationId=intent.getStringExtra("showAnimation");
+        String name=null;
+        switch(animationId){
+            case "slideLeft": name="slide_left";break;
+            default: name="idle";break; 
+        }
+        if(name==null) return 0;
+        else return WebView.getResourceId("anim","hideanim_"+name);
     }
 
     protected int getCloseAnimation(){
-        String animationId=intent.getStringExtra("closeAnimation");
+        final String animationId=intent.getStringExtra("closeAnimation");
         String name=null;
         switch(animationId){
-            case "slideDown": name="slide_down";break;
-            case "slideRight": name="slide_right";break;
-            case "fadeOut":
-            default: name="fade_out";break; 
+            case "translateDown": name="translate_down";break;
+            case "translateRight": name="translate_right";break;
+            case "fadeOut": name="fade_out";break;
+            case "slideRight":
+            default: name="slide_right";break; 
         }
-        return WebView.getResourceId("animator","hideanim_"+name);
+        return WebView.getResourceId("anim","hideanim_"+name);
+    }
+    protected int getPreActivityShowAnimation(){
+        final String animationId=intent.getStringExtra("closeAnimation");
+        String name=null;
+        switch(animationId){
+            case "slideRight": name="slide_right";break;
+            default: name="idle";break; 
+        }
+        if(name==null) return 0;
+        else return WebView.getResourceId("anim","showanim_"+name);
     }
 
     protected void setStyle(){
@@ -114,7 +136,7 @@ public class WebViewActivity extends CordovaActivity {
     @Override
     public void finish(){
         super.finish();
-        this.overridePendingTransition(0,getCloseAnimation());
+        this.overridePendingTransition(getPreActivityShowAnimation(),getCloseAnimation());
     }
 
     public String getMessage(){

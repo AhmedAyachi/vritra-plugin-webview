@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="WebViewTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowAnimationStyle">@style/WebViewAnimation</item>
     </style>
     <style name="WebViewAnimation">
-        <item name="android:windowEnterAnimation">@animator/showanim_slide_left</item>
-        <item name="android:windowExitAnimation">@animator/hideanim_fade_out</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowEnterAnimation">@anim/showanim_slide_left</item>
+        <item name="android:windowExitAnimation">@anim/hideanim_slide_right</item>
     </style>
 </resources>

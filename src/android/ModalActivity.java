@@ -64,12 +64,20 @@ public class ModalActivity extends WebViewActivity {
 
     @Override
     protected int getShowAnimation(){
-        return WebView.getResourceId("animator","showanim_slide_up");
+        return WebView.getResourceId("anim","showanim_translate_up");
+    }
+    @Override
+    protected int getPreActivityCloseAnimation(){
+        return 0;
     }
 
     @Override
     protected int getCloseAnimation(){
-        return WebView.getResourceId("animator","hideanim_slide_down");
+        return WebView.getResourceId("anim","hideanim_translate_down");
+    }
+    @Override
+    protected int getPreActivityShowAnimation(){
+        return 0;
     }
 
     @Override
