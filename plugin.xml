@@ -39,15 +39,19 @@
         <!-- Hide Animations -->
         <source-file src="src/android/Xml/HideAnimations/hideanim_fade_out.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/HideAnimations/hideanim_idle.xml" target-dir="res/anim"/>
+        <source-file src="src/android/Xml/HideAnimations/hideanim_slide_down.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/HideAnimations/hideanim_slide_left.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/HideAnimations/hideanim_slide_right.xml" target-dir="res/anim"/>
+        <source-file src="src/android/Xml/HideAnimations/hideanim_slide_up.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/HideAnimations/hideanim_translate_down.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/HideAnimations/hideanim_translate_right.xml" target-dir="res/anim"/>
         <!-- Show Animations -->
         <source-file src="src/android/Xml/ShowAnimations/showanim_fade_in.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/ShowAnimations/showanim_idle.xml" target-dir="res/anim"/>
+        <source-file src="src/android/Xml/ShowAnimations/showanim_slide_down.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/ShowAnimations/showanim_slide_left.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/ShowAnimations/showanim_slide_right.xml" target-dir="res/anim"/>
+        <source-file src="src/android/Xml/ShowAnimations/showanim_slide_up.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/ShowAnimations/showanim_translate_left.xml" target-dir="res/anim"/>
         <source-file src="src/android/Xml/ShowAnimations/showanim_translate_up.xml" target-dir="res/anim"/>
     </platform>

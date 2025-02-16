@@ -54,22 +54,15 @@ public class WebViewActivity extends CordovaActivity {
 
     protected int getShowAnimation(){
         final String animationId=intent.getStringExtra("showAnimation");
-        String name=null;
-        switch(animationId){
-            case "fadeIn": name="fade_in";break;
-            case "translateUp": name="translate_up";break;
-            case "translateLeft": name="translate_left";break;
-            case "slideLeft":
-            default: name="slide_left";break; 
-        }
-        return WebView.getResourceId("anim","showanim_"+name);
+        return WebView.getResourceId("anim","showanim_"+WebViewActivity.camelToSnakeCased(animationId));
     }
     protected int getPreActivityCloseAnimation(){
         final String animationId=intent.getStringExtra("showAnimation");
         String name=null;
         switch(animationId){
             case "slideLeft": name="slide_left";break;
-            default: name="idle";break; 
+            case "slideUp": name="slide_up";break;
+            default: name="idle";break;
         }
         if(name==null) return 0;
         else return WebView.getResourceId("anim","hideanim_"+name);
@@ -77,21 +70,14 @@ public class WebViewActivity extends CordovaActivity {
 
     protected int getCloseAnimation(){
         final String animationId=intent.getStringExtra("closeAnimation");
-        String name=null;
-        switch(animationId){
-            case "translateDown": name="translate_down";break;
-            case "translateRight": name="translate_right";break;
-            case "fadeOut": name="fade_out";break;
-            case "slideRight":
-            default: name="slide_right";break; 
-        }
-        return WebView.getResourceId("anim","hideanim_"+name);
+        return WebView.getResourceId("anim","hideanim_"+WebViewActivity.camelToSnakeCased(animationId));
     }
     protected int getPreActivityShowAnimation(){
         final String animationId=intent.getStringExtra("closeAnimation");
         String name=null;
         switch(animationId){
             case "slideRight": name="slide_right";break;
+            case "slideDown": name="slide_down";break;
             default: name="idle";break; 
         }
         if(name==null) return 0;
@@ -146,5 +132,20 @@ public class WebViewActivity extends CordovaActivity {
     public void setMessage(String str){
         this.message=str;
         intent.putExtra("message",str);
+    }
+
+    public static String camelToSnakeCased(String camelCased){
+        String snakeCased="";
+        final int charCount=camelCased.length();
+        for(int i=0;i<charCount;i++){
+            final Character c=camelCased.charAt(i);
+            if(Character.isUpperCase(c)){
+                snakeCased+="_"+Character.toLowerCase(c);
+            }
+            else{
+                snakeCased+=c;
+            }
+        }
+        return snakeCased;
     }
 }
