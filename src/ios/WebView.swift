@@ -6,10 +6,22 @@ class Webview:VritraPlugin {
     static let store=Store();
     public var showCommand:CDVInvokedUrlCommand?=nil;
     private static var webviews:[String:[String:Any]]=[:];
+    private static var isAppInitialized=false;
+    private static let rootViewController=RootController();
+    
+    override func pluginInitialize() {
+        super.pluginInitialize();
+        if #available(iOS 13.0, *),!Webview.isAppInitialized {
+            Webview.isAppInitialized=true;
+            guard let window=UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).flatMap({ $0.windows }).first(where: { $0.isKeyWindow }) else { return };
+            window.rootViewController=Webview.rootViewController;
+            Webview.rootViewController.addViewController(self.viewController);
+        }
+    }
 
     @objc(defineWebViews:)
     func defineWebViews(command:CDVInvokedUrlCommand){
-        do{
+        do {
             if let webviews=command.arguments[0] as? [[String:Any]] {
                 for webview in webviews {
                     if let id=webview["id"] as? String,!id.isEmpty {
@@ -18,12 +30,12 @@ class Webview:VritraPlugin {
                         if((file != nil)||(url != nil)){
                             Webview.webviews[id]=webview;
                         }
-                        else{throw Webview.Error("webview's path or file prop is required")};
+                        else { throw Webview.Error("webview's path or file prop is required") };
                     }
-                    else{throw Webview.Error("webview's id is required")};
+                    else { throw Webview.Error("webview's id is required") };
                 }
             }
-            else{throw Webview.Error("invalid webviews definition")};
+            else { throw Webview.Error("invalid webviews definition") };
         }
         catch let error as Webview.Error {
             self.error(command,error.toObject());
@@ -33,16 +45,14 @@ class Webview:VritraPlugin {
 
     @objc(show:)
     func show(command:CDVInvokedUrlCommand){
-        if var options=command.arguments[0] as? [String:Any] {
-            DispatchQueue.main.async(execute:{[self] in
-                options=getWebViewProps(options);
-                let asModal=(options["asModal"] as? Bool) ?? false;
-                let viewcontroller=asModal ? ModalController(options,self) : WebViewController(options,self);
-                viewcontroller.addTo(self.viewController!);
-                //viewcontroller.present(childvc,animated:true);
-                self.showCommand=command;
-            });
-        }
+        guard var options=command.arguments[0] as? [String:Any] else { return };
+        DispatchQueue.main.async(execute:{[self] in
+            options=getWebViewProps(options);
+            let asModal=(options["asModal"] as? Bool) ?? false;
+            let viewController=asModal ? ModalController(options,self) : WebViewController(options,self);
+            Webview.rootViewController.addViewController(viewController);
+            self.showCommand=command;
+        });
     }
     func getWebViewProps(_ options:[String:Any])->[String:Any]{
         var props:[String:Any]=options;
@@ -131,10 +141,9 @@ class Webview:VritraPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if let viewcontroller=self.viewController as? WebViewController,
-            viewcontroller.parent != nil {
+        if let viewcontroller=self.viewController as? WebViewController {
             let isUndefined=command.arguments[1] as! Bool;
-            if(!isUndefined){self.setMessage(command:command)};
+            if(!isUndefined){ self.setMessage(command:command); };
             viewcontroller.remove();
         }
         else{

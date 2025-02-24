@@ -13,7 +13,7 @@ class Store {
         }
     }
     
-    func get(_ path:String)throws->[Any]{
+    func get(_ path:String) throws->[Any] {
         let keys=path.replacingOccurrences(of:" ",with:"").components(separatedBy:[".","["]);
         var data:[Any]=[store];
         try keys.forEach({key in

@@ -2,11 +2,11 @@
 
 class WebViewController:CDVViewController {
 
-    var plugin:Webview?=nil;
+    var plugin:Webview?;
     var options:[String:Any]=[:];
-    var message:String?=nil;
+    var message:String?;
     var isModal:Bool {
-        get {return false}
+        get { return false }
     };
 
     init(_ options:[String:Any],_ plugin:Webview?){
@@ -44,77 +44,98 @@ class WebViewController:CDVViewController {
         else{
             self.wwwFolderName="www";
         }
-        self.startPage=url!;
+        self.startPage=url ?? "";
     }
 
     func setBackgroundColor(){
         let webview=self.webView!;
         self.view.clipsToBounds=false;
         let backgroundColor=options["backgroundColor"] as? String;
-        let color=backgroundColor==nil ? UIColor.white:getUIColorFromHex(backgroundColor!);
+        let color=backgroundColor==nil ? UIColor.white : getUIColorFromHex(backgroundColor!);
         webview.isOpaque=false;
         webview.backgroundColor=color;
     }
-
-    func addTo(_ parentController:UIViewController){
-        parentController.addChild(self);
-        parentController.view.addSubview(self.view);
-        self.show();
+        
+    func isStatusBarTranslucent()->Bool{
+        return options["statusBarTranslucent"] as? Bool ?? false;
     }
-
+    
     func show(){
-        let animation=({
-            let animationId=options["showAnimation"] as? String;
-            switch(animationId){
-            case "fadeIn": return ShowAnimation.fadeIn;
-            case "slideUp": return ShowAnimation.slideUp;
-            default: return ShowAnimation.slideLeft;
-            }
-        })();
-        let mainview=self.view!;
-        if(isStatusBarTranslucent()){}
-        else{
+        guard let mainview=self.view else { return };
+        let animationId=options["showAnimation"] as? String;
+        if(!isStatusBarTranslucent()){
             let statusBarColor=options["statusBarColor"] as? String ?? "white";
             let scrollView=mainview.subviews.first!;
             scrollView.backgroundColor=getUIColorFromHex(statusBarColor);
             scrollView.frame.size.height=UIApplication.shared.statusBarFrame.height;
         }
-        animation(mainview,nil);
-    }
-    
-    func isStatusBarTranslucent()->Bool{
-        return options["statusBarTranslucent"] as? Bool ?? false;
+        let animation=({
+            switch(animationId){
+                case "fadeIn": return ShowAnimation.fadeIn;
+                case "slideUp": return ShowAnimation.slideUp;
+                case "slideLeft": return ShowAnimation.slideLeft;
+                case "translateUp": return ShowAnimation.translateUp;
+                case "translateLeft": return ShowAnimation.translateLeft;
+                default: return ShowAnimation.defaultAnim;
+            }
+        })();
+        if let prevControllerAnimation=({
+            switch(animationId){
+                case "slideUp": return HideAnimation.slideUp;
+                case "slideLeft": return HideAnimation.slideLeft;
+                default: return animationId==nil ? HideAnimation.prodLeft : nil;
+            }
+        })(){
+            DispatchQueue.main.asyncAfter(deadline:.now()+ShowAnimation.delay,execute:{
+                guard let preview=self.plugin!.viewController.view else { return };
+                prevControllerAnimation(preview,[:]){ _ in
+                    preview.transform = .identity;
+                };
+            });
+            
+        };
+        animation(mainview,[:]);
     }
     
     func hide(_ onHidden:((Bool)->Void)?){
         let animationId=options["closeAnimation"] as? String;
         let mainview=self.view!;
-        let options=["onFinish":onHidden as Any];
         let animation=({
             switch(animationId){
                 case "fadeOut": return HideAnimation.fadeOut;
                 case "slideDown": return HideAnimation.slideDown;
-                default: return HideAnimation.slideRight;
+                case "slideRight": return HideAnimation.slideRight;
+                case "translateDown": return HideAnimation.translateDown;
+                case "translateRight": return HideAnimation.translateRight;
+                default: return HideAnimation.defaultAnim;
             }
         })();
-        animation(mainview,options);
+        if let prevControllerAnimation=({
+            switch(animationId){
+                case "slideDown": return ShowAnimation.slideDown;
+                case "slideRight": return ShowAnimation.slideRight;
+                default: return animationId==nil ? ShowAnimation.prodRight : nil;
+            }
+        })(){
+            prevControllerAnimation(plugin!.viewController.view,[:]);
+        };
+        animation(mainview,[:],onHidden);
     }
 
     func remove(){
         DispatchQueue.main.asyncAfter(deadline:.now()+0.025,execute:{
-            let plugin=self.plugin!;
+            guard let plugin=self.plugin else { return };
             self.hide({_ in
+                self.willMove(toParent:nil);
                 self.view.removeFromSuperview();
                 self.removeFromParent();
             });
-            let showCommand:CDVInvokedUrlCommand?=plugin.showCommand;
-            if(showCommand != nil){
-                let data:[AnyHashable:Any]=[
-                    "message":self.message ?? "",
-                    "store":Webview.store.toObject(),
-                ];
-                plugin.success(showCommand!,data);
-            }
+            guard let showCommand=plugin.showCommand else { return };
+            let data:[AnyHashable:Any]=[
+                "message":self.message ?? "",
+                "store":Webview.store.toObject(),
+            ];
+            plugin.success(showCommand,data);
         });
     };
 }

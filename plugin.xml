@@ -63,6 +63,7 @@
             </feature>
         </config-file>
         <source-file src="src/ios/Store.swift"/>
+        <source-file src="src/ios/RootController.swift"/>
         <source-file src="src/ios/WebViewController.swift"/>
         <source-file src="src/ios/ModalController.swift"/>
         <source-file src="src/ios/WebView.swift"/>

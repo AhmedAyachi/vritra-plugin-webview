@@ -3,9 +3,7 @@ import AVFAudio;
 
 class ModalController:WebViewController {
 
-    override var isModal:Bool {
-        get {return true}
-    };
+    override var isModal:Bool { get { return true; } };
     lazy var style:[String:Any]=[:];
     let bgview=UIView();
 
@@ -26,40 +24,46 @@ class ModalController:WebViewController {
         self.setSilent();
         self.setDismissible();
     }
-
+    
+    
     override func viewDidLayoutSubviews(){
         super.viewDidLayoutSubviews();
         self.setViewBounds();
+        if let lastView=self.view.subviews.last {
+            lastView.backgroundColor = .clear;
+        }
     }
     
     override func show(){
-        let duration=0.25;
-        ShowAnimation.fadeIn(self.view,duration);
-        ShowAnimation.slideUp(self.webView!,duration);
+        ShowAnimation.fadeIn(view:self.view);
+        ShowAnimation.modal(view:self.webView!);
     }
 
     override func hide(_ onHidden:((Bool)->Void)?){
         let duration=0.15;
-        HideAnimation.slideDown(self.webView!,[
-            "duration":duration,
-            "onFinish":onHidden as Any,
-        ]);
-        HideAnimation.fadeOut(self.bgview,["duration":duration]);
+        HideAnimation.modal(
+            view:self.webView!,
+            options:["duration":duration],
+            onFinish:onHidden
+        );
+        HideAnimation.fadeOut(
+            view:self.bgview,
+            options:["duration":duration]
+        );
     }
 
     var audioPlayer:AVAudioPlayer?=nil;
     private func setSilent(){
         let silent:Bool=style["silent"] as? Bool ?? true;
         if(!silent){
-            if let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3"){
-                do{
-                    try AVAudioSession.sharedInstance().setCategory(.playback,options:.mixWithOthers);
-                    audioPlayer=try AVAudioPlayer(contentsOf:audioURL);
-                    audioPlayer?.volume=0.1;
-                    audioPlayer?.play();
-                }
-                catch{}
-            };
+            guard let audioURL=Bundle.main.url(forResource:"modal_shown",withExtension:"mp3") else { return };
+            do{
+                try AVAudioSession.sharedInstance().setCategory(.playback,options:.mixWithOthers);
+                audioPlayer=try AVAudioPlayer(contentsOf:audioURL);
+                audioPlayer?.volume=0.1;
+                audioPlayer?.play();
+            }
+            catch{}
         }
     }
     
@@ -74,30 +78,33 @@ class ModalController:WebViewController {
             setupGestureRecognizer();
         }
     }
-    @objc func onBgViewTap(sender:UITapGestureRecognizer){
+    
+    @objc
+    func onBgViewTap(sender:UITapGestureRecognizer){
         self.remove();
     }
+    
     private func setupGestureRecognizer(){
-        
         let panGesture=UIPanGestureRecognizer(target:self,action:#selector(self.onPanGesture));
         self.webView?.addGestureRecognizer(panGesture);
     }
+    
     private func setNotch(){
+        guard let webview=self.webView else { return };
         let notch=UIView();
-        if let webview=self.webView {
-            let notchColor=style["notchColor"] as? String;
-            let width=webview.frame.width;
-            let fraction=0.1;
-            notch.frame=CGRect(
-                x:(1-fraction)*width/2.0,y:7.5,
-                width:fraction*width,
-                height:4
-            );
-            notch.layer.cornerRadius=3;
-            notch.backgroundColor=notchColor==nil ? UIColor(displayP3Red:0,green:0,blue:0,alpha:0.1) : getUIColorFromHex(notchColor!);
-            webview.addSubview(notch);
-        }
+        let notchColor=style["notchColor"] as? String;
+        let width=webview.frame.width;
+        let fraction=0.1;
+        notch.frame=CGRect(
+            x:(1-fraction)*width/2.0,y:7.5,
+            width:fraction*width,
+            height:4
+        );
+        notch.layer.cornerRadius=3;
+        notch.backgroundColor=notchColor==nil ? UIColor(displayP3Red:0,green:0,blue:0,alpha:0.1) : getUIColorFromHex(notchColor!);
+        webview.addSubview(notch);
     }
+    
     var startY=CGFloat(),originY=CGFloat();
     var dragging=false;
     @objc func onPanGesture(gesture:UIPanGestureRecognizer){
@@ -112,33 +119,32 @@ class ModalController:WebViewController {
             }
         }
         else if(dragging){
-            if let webview=self.webView {
-                let dy=y-startY;
-                if(state==UIGestureRecognizer.State.ended){
-                    dragging=false;
-                    let threshold=0.6*webview.frame.height;
-                    let speedY=gesture.velocity(in:self.view).y;
-                    if((speedY>1000)||(dy>threshold)){self.remove()}
-                    else{
-                        UIView.animate(
-                            withDuration:0.25,
-                            delay:0,
-                            options:.curveEaseOut,
-                            animations:{
-                                webview.frame.origin.y=self.originY;
-                            }
-                        );
-                    };
-                }
-                else if(dy>0){
-                    webview.frame.origin.y=originY+dy;
-                }
+            guard let webview=self.webView else { return };
+            let dy=y-startY;
+            if(state==UIGestureRecognizer.State.ended){
+                dragging=false;
+                let threshold=0.6*webview.frame.height;
+                let speedY=gesture.velocity(in:self.view).y;
+                if((speedY>1000)||(dy>threshold)){self.remove()}
+                else{
+                    UIView.animate(
+                        withDuration:0.25,
+                        delay:0,
+                        options:.curveEaseOut,
+                        animations:{
+                            webview.frame.origin.y=self.originY;
+                        }
+                    );
+                };
+            }
+            else if(dy>0){
+                webview.frame.origin.y=originY+dy;
             }
         }
     }
     
     private func setViewBounds(){
-        let webview=self.webView!;
+        guard let webview=self.webView else { return };
         self.setCorners(webview);
         webview.layer.masksToBounds=true;
         webview.layer.isOpaque=true;
@@ -204,10 +210,9 @@ class ModalController:WebViewController {
     }
     
     private func setBGView(){
-        let mainview=self.view!;
+        guard let mainview=self.view else { return };
         self.bgview.frame=mainview.frame;
         bgview.backgroundColor=UIColor(red:0,green:0,blue:0,alpha:0.35);
         mainview.insertSubview(bgview,belowSubview:self.webView!);
-        
     }
 }
