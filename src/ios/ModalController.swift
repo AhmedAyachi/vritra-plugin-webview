@@ -25,13 +25,13 @@ class ModalController:WebViewController {
         self.setDismissible();
     }
     
+    override var statusBarTranslucent:Bool {
+        return true;
+    }
     
     override func viewDidLayoutSubviews(){
         super.viewDidLayoutSubviews();
         self.setViewBounds();
-        if let lastView=self.view.subviews.last {
-            lastView.backgroundColor = .clear;
-        }
     }
     
     override func show(){
@@ -152,7 +152,7 @@ class ModalController:WebViewController {
         let screenWidth=availableSize.width;
         let screenHeight=availableSize.height;
         let width=self.getDimension("width")*screenWidth;
-        let height=self.getDimension("height",0.85)*(screenHeight-(isStatusBarTranslucent() ? 0 : UIApplication.shared.statusBarFrame.height));
+        let height=self.getDimension("height",0.85)*(screenHeight-(self.statusBarTranslucent ? 0 : UIApplication.shared.statusBarFrame.height));
         let marginLeft=self.getMargin("Left")*screenWidth;
         var marginTop=self.getMargin("Top")*screenHeight;
         let verticalAlign=self.getVerticalAlign();

@@ -10,9 +10,6 @@ class RootController:UIViewController {
         guard let childView=viewController.view else { return };
         self.addChild(viewController);
         self.view.addSubview(childView);
-        childView.frame=self.view.bounds;
-        if let webviewController=viewController as? WebViewController {
-            webviewController.show();
-        }        
+        childView.frame=self.view.bounds;     
     }
 }

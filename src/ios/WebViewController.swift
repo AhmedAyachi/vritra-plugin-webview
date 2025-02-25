@@ -24,16 +24,22 @@ class WebViewController:CDVViewController {
     override var prefersStatusBarHidden:Bool{
         return false;
     }
-
+    
     override func viewDidLoad(){
         super.viewDidLoad();
-        setNeedsStatusBarAppearanceUpdate();
         self.setBackgroundColor();
+    }
+    
+    override func viewWillAppear(_ animated:Bool){
+        self.show();
     }
 
     override func viewWillDisappear(_ animated:Bool){
         super.viewWillDisappear(animated);
     }
+
+    var statusBarTranslucent:Bool { return options["statusBarTranslucent"] as? Bool ?? false };
+    var navigationBarTranslucent:Bool { return options["navigationBarTranslucent"] as? Bool ?? true };
 
     func setUrl(){
         var url=options["file"] as? String;
@@ -46,29 +52,71 @@ class WebViewController:CDVViewController {
         }
         self.startPage=url ?? "";
     }
-
+    
+    
     func setBackgroundColor(){
-        let webview=self.webView!;
+        guard let webview=self.webView else { return };
         self.view.clipsToBounds=false;
-        let backgroundColor=options["backgroundColor"] as? String;
-        let color=backgroundColor==nil ? UIColor.white : getUIColorFromHex(backgroundColor!);
-        webview.isOpaque=false;
-        webview.backgroundColor=color;
+        if let backgroundColor=options["backgroundColor"] as? String {
+            webview.isOpaque=false;
+            webview.backgroundColor=getUIColorFromHex(backgroundColor);
+        };
     }
-        
-    func isStatusBarTranslucent()->Bool{
-        return options["statusBarTranslucent"] as? Bool ?? false;
+    
+    override func viewDidLayoutSubviews(){
+        super.viewDidLayoutSubviews();
+        self.setLayoutEdges();
+    }
+    
+    private var needsToSetEdges=true;
+    func setLayoutEdges(){
+        guard needsToSetEdges else { return };
+        guard let statusbarView=self.view.subviews.last,statusbarView.subviews.count<1 else { return };
+        self.needsToSetEdges=false;
+        guard let webView=self.webView else { return };
+        if(self.statusBarTranslucent){
+            self.view.backgroundColor = isModal ? .clear : .black;
+            statusbarView.isHidden=true;
+            if(self.navigationBarTranslucent){
+                webView.frame=self.view.frame;
+            }
+        }
+        else{
+            let statusBarColor=options["statusBarColor"] as? String ?? "white";
+            statusbarView.backgroundColor=getUIColorFromHex(statusBarColor);
+            statusbarView.translatesAutoresizingMaskIntoConstraints=false;
+            NSLayoutConstraint.activate([
+                statusbarView.topAnchor.constraint(equalTo:view.topAnchor),
+                statusbarView.leftAnchor.constraint(equalTo:view.leftAnchor),
+                statusbarView.rightAnchor.constraint(equalTo:view.rightAnchor),
+                statusbarView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.topAnchor)
+            ]);
+        }
+        if(!navigationBarTranslucent){
+            webView.translatesAutoresizingMaskIntoConstraints=false;
+            NSLayoutConstraint.activate([
+                webView.topAnchor.constraint(equalTo:statusBarTranslucent ? view.topAnchor : view.safeAreaLayoutGuide.topAnchor),
+                webView.leftAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leftAnchor),
+                webView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor),
+                webView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor)
+            ]);
+            let navigationbarView=UIView();
+            navigationbarView.translatesAutoresizingMaskIntoConstraints=false;
+            view.addSubview(navigationbarView);
+            NSLayoutConstraint.activate([
+                navigationbarView.topAnchor.constraint(equalTo:webView.bottomAnchor),
+                navigationbarView.leftAnchor.constraint(equalTo:webView.leftAnchor),
+                navigationbarView.rightAnchor.constraint(equalTo:webView.rightAnchor),
+                navigationbarView.bottomAnchor.constraint(equalTo:view.bottomAnchor),
+            ])
+            let navigationBarColor=options["navigationBarColor"] as? String ?? "black";
+            navigationbarView.backgroundColor=getUIColorFromHex(navigationBarColor);
+        }
     }
     
     func show(){
         guard let mainview=self.view else { return };
         let animationId=options["showAnimation"] as? String;
-        if(!isStatusBarTranslucent()){
-            let statusBarColor=options["statusBarColor"] as? String ?? "white";
-            let scrollView=mainview.subviews.first!;
-            scrollView.backgroundColor=getUIColorFromHex(statusBarColor);
-            scrollView.frame.size.height=UIApplication.shared.statusBarFrame.height;
-        }
         let animation=({
             switch(animationId){
                 case "fadeIn": return ShowAnimation.fadeIn;

@@ -173,19 +173,23 @@ type WebViewProps={
     */
     url?:string,
     /** 
-    * if True, the statusbar and the keybaord will overlay the webview.
-    * 
-    * Android only. 
-    * 
-    * For ios, use cordova-plugin-statusbar instead.
     * @default false
     */
     statusBarTranslucent?:boolean,
+    /**
+     * @default true
+     */
+    navigationBarTranslucent?:boolean,
     /**
      * Only applied when statusBarTranslucent false
      * @default "white" on ios, "black" on android
      */
     statusBarColor?:WebViewColor,
+     /**
+     * Only applied when navigationBarTranslucent false
+     * @default "black"
+     */
+    navigationBarColor?:WebViewColor;
     /** 
     * The webview background color before loading the html file.
     * @default "white"

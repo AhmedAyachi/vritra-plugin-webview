@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.animation.ObjectAnimator;
+import android.util.Log;
 
 
 public class ModalActivity extends WebViewActivity {
@@ -60,6 +61,11 @@ public class ModalActivity extends WebViewActivity {
             try{style.put("silent",true);}
             catch(Exception exception){}
         }
+    }
+
+    @Override
+    protected Boolean isNavigationBarTranslucent(){
+        return true;
     }
 
     @Override
@@ -205,6 +211,7 @@ public class ModalActivity extends WebViewActivity {
         if((y>=-1)&&(y<=1)){
             y=y*metrics.heightPixels;
         }
+        y+=getNavigationBarHeight();
         return (int)y;
     }
     private void setVerticalAlign(View view){
@@ -248,10 +255,22 @@ public class ModalActivity extends WebViewActivity {
                     statusbarHeight=WebView.resources.getDimensionPixelSize(resourceId);
                 }
             }
-            height=height*(metrics.heightPixels-statusbarHeight);
+            
+            height=height*(metrics.heightPixels+getNavigationBarHeight()-statusbarHeight);
             this.webViewHeight=(int)height;
         }
         return this.webViewHeight;
+    }
+
+    private int navigationBarHeight=0;
+    private int getNavigationBarHeight(){
+        if(navigationBarHeight<=0){
+            final int resourceId=WebView.resources.getIdentifier("navigation_bar_height","dimen","android");
+            if(resourceId>0){
+                this.navigationBarHeight=WebView.resources.getDimensionPixelSize(resourceId);
+            }
+        }
+        return this.navigationBarHeight;
     }
 
     private void setCorners(){

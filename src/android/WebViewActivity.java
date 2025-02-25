@@ -2,9 +2,10 @@ package com.vritra.webview;
 
 import org.apache.cordova.*;
 import android.os.Bundle;
-import android.view.Window;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.content.Intent;
 import java.lang.Runnable;
 import android.util.Log;
@@ -89,18 +90,33 @@ public class WebViewActivity extends CordovaActivity {
         final String backgroundColor=intent.getStringExtra("backgroundColor");
         webView.setBackgroundColor(WebView.getColor(backgroundColor));
         final Boolean statusBarTranslucent=this.isStatusBarTranslucent();
+        final Boolean navigationBarTranslucent=this.isNavigationBarTranslucent();
         final int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
+        final int navigationBarColor=WebView.getColor(navigationBarTranslucent?"transparent":intent.getStringExtra("navigationBarColor"));
         final Window window=getWindow();
-        if(statusBarTranslucent){
+        if(statusBarTranslucent||navigationBarTranslucent){
             final View decorview=window.getDecorView();
             decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
+        if(navigationBarTranslucent){
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            );
+            window.setNavigationBarContrastEnforced(false);
+        }
         window.setStatusBarColor(statusBarColor);
+        window.setNavigationBarColor(navigationBarColor);
     }
 
     protected Boolean isStatusBarTranslucent(){
         Boolean statusBarTranslucent=intent.getBooleanExtra("statusBarTranslucent",false);
         return statusBarTranslucent;
+    }
+
+    protected Boolean isNavigationBarTranslucent(){
+        Boolean navigationBarTranslucent=intent.getBooleanExtra("navigationBarTranslucent",true);
+        return navigationBarTranslucent;
     }
 
     @Override

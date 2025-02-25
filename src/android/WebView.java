@@ -292,6 +292,13 @@ public class WebView extends VritraPlugin {
             intent.putExtra("statusBarColor",statusBarColor);
         }
 
+        Boolean navigationBarTranslucent=props.optBoolean("navigationBarTranslucent",true);
+        intent.putExtra("navigationBarTranslucent",navigationBarTranslucent);
+        if(!navigationBarTranslucent){
+            String navigationBarColor=props.optString("navigationBarColor","black");
+            intent.putExtra("navigationBarColor",navigationBarColor);
+        }
+
         Boolean dismissible=props.optBoolean("dismissible",true);
         intent.putExtra("dismissible",dismissible);
 
