@@ -94,18 +94,25 @@ public class WebViewActivity extends CordovaActivity {
         final int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
         final int navigationBarColor=WebView.getColor(navigationBarTranslucent?"transparent":intent.getStringExtra("navigationBarColor"));
         final Window window=getWindow();
-        if(statusBarTranslucent||navigationBarTranslucent){
-            final View decorview=window.getDecorView();
-            decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
-        if(navigationBarTranslucent){
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        final View decorView=window.getDecorView();
+        if(statusBarTranslucent){
+            decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE|
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             );
-            window.setNavigationBarContrastEnforced(false);
         }
         window.setStatusBarColor(statusBarColor);
+        if(navigationBarTranslucent){
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            if(!statusBarTranslucent){
+                decorView.setBackgroundColor(statusBarColor);
+                decorView.setOnApplyWindowInsetsListener((view,insets)->{
+                    decorView.setPadding(0,insets.getSystemWindowInsetTop(),0,0);
+                    return insets.consumeSystemWindowInsets();
+                });
+            }
+            window.setNavigationBarContrastEnforced(false);
+        }
         window.setNavigationBarColor(navigationBarColor);
     }
 
