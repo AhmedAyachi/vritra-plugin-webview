@@ -74,7 +74,9 @@ class Store {
         keys.forEach({key in
             path+=(key.hasSuffix("]") ? "[":".")+key;
         });
-        path=String(path[path.index(after:path.startIndex)...]);
+        if(!path.isEmpty){
+            path=String(path[path.index(after:path.startIndex)...]);
+        }
         return path;
     }
     
