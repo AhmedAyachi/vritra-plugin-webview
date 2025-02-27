@@ -96,8 +96,8 @@ class WebViewController:CDVViewController {
             webView.translatesAutoresizingMaskIntoConstraints=false;
             NSLayoutConstraint.activate([
                 webView.topAnchor.constraint(equalTo:statusBarTranslucent ? view.topAnchor : view.safeAreaLayoutGuide.topAnchor),
-                webView.leftAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leftAnchor),
-                webView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor),
+                webView.leftAnchor.constraint(equalTo:view.leftAnchor),
+                webView.rightAnchor.constraint(equalTo:view.rightAnchor),
                 webView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor)
             ]);
             let navigationbarView=UIView();
