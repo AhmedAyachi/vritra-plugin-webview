@@ -122,7 +122,7 @@ const setProperty=(data,key,value)=>{
                 case "unshift": data.unshift(value);break;
                 default: 
                     const int=parseInt(index);
-                    if(int>=0) data[i]=value;
+                    if(int>=0) data[int]=value;
                     else throw UnrecognizedSymbol(index);
                 break;
             }

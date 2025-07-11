@@ -16,7 +16,7 @@ interface WebView {
         /**
          * The target webview's id. 
          * 
-         * More prioritized then url prop, less prioritized than file prop.
+         * More prioritized than url prop, less prioritized than file prop.
          */
         id?:string,
         /**
