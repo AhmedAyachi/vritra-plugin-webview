@@ -65,12 +65,8 @@ const mutate=(data,path,value)=>{
             }
         }
         for(const object of objects){
-            if(value===undefined){
-                deleteProperty(object,target);
-            }
-            else{
-                setProperty(object,target,value);
-            }
+            if(value===undefined) deleteProperty(object,target);
+            else setProperty(object,target,value);
         }
     }
     else throw new Error("invalid key");

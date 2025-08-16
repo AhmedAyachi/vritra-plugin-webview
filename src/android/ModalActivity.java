@@ -211,7 +211,7 @@ public class ModalActivity extends WebViewActivity {
         if((y>=-1)&&(y<=1)){
             y=y*metrics.heightPixels;
         }
-        y+=getNavigationBarHeight();
+        y+=getModalNavigationBarHeight();
         return (int)y;
     }
     private void setVerticalAlign(View view){
@@ -248,27 +248,17 @@ public class ModalActivity extends WebViewActivity {
             if((height<0)||(height>1)){
                 height=1;
             }
-            int statusbarHeight=0;
-            if(!this.isStatusBarTranslucent()){
-                final int resourceId=WebView.resources.getIdentifier("status_bar_height","dimen","android");
-                if(resourceId>0){
-                    statusbarHeight=WebView.resources.getDimensionPixelSize(resourceId);
-                }
-            }
-            
-            height=height*(metrics.heightPixels+getNavigationBarHeight()-statusbarHeight);
+            final int statusbarHeight=this.isStatusBarTranslucent()?0:ModalActivity.getStatusBarHeight();
+            height=height*(metrics.heightPixels+getModalNavigationBarHeight()-statusbarHeight);
             this.webViewHeight=(int)height;
         }
         return this.webViewHeight;
     }
 
     private int navigationBarHeight=0;
-    private int getNavigationBarHeight(){
+    private int getModalNavigationBarHeight(){
         if(navigationBarHeight<=0){
-            final int resourceId=WebView.resources.getIdentifier("navigation_bar_height","dimen","android");
-            if(resourceId>0){
-                this.navigationBarHeight=WebView.resources.getDimensionPixelSize(resourceId);
-            }
+            this.navigationBarHeight=ModalActivity.getNavigationBarHeight();
         }
         return this.navigationBarHeight;
     }

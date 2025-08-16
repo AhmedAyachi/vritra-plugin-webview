@@ -1,6 +1,8 @@
 const Store=cordova.require("vritra-plugin-webview.Store");
 const timeout=40;
 const data=[];
+
+if(!frameElement) localStorage.setItem("store","{}");
     
 module.exports={
     defineWebViews:(webviews=[],fallback)=>{setTimeout(()=>{
