@@ -24,11 +24,10 @@ module.exports={
         const webviews=frameElement?frameElement.parentNode.querySelector("iframe").webviews:data;
         if(id){
             props=webviews.find(webview=>webview.id===id);
-            Object.assign(props,options);
+            if(props) Object.assign(props,options);
+            else throw new Error("unknown webview id");
         }
-        else{
-            props=options;
-        }
+        else props=options;
         const {file=options.url,message,backgroundColor,onClose}=props;
         if(file){
             const iframe=document.createElement("iframe");
