@@ -8,20 +8,28 @@ import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.view.ViewOutlineProvider;
-import android.view.WindowManager;
-import android.util.DisplayMetrics;
+import android.graphics.Rect;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.animation.ObjectAnimator;
-import android.util.Log;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.graphics.Insets;
+import androidx.window.layout.WindowMetricsCalculator;
+//import android.util.Log;
 
 
 public class ModalActivity extends WebViewActivity {
     
     private JSONObject style=null;
+    private final ModalActivity self=this;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -42,6 +50,21 @@ public class ModalActivity extends WebViewActivity {
         this.setSilent();
     }
 
+    @Override
+    public void finish(){
+        final Window window=getWindow();
+        this.runOnUiThread(new Runnable(){
+            @Override
+            public void run(){
+                window.setStatusBarColor(WebView.getColor("transparent"));
+                if(self.statusBarView!=null){
+                    ((ViewGroup)self.statusBarView.getParent()).removeView(self.statusBarView);
+                }
+            }
+        });
+        super.finish();
+    }
+
     private void setSilent(){
         final Boolean silent=style.optBoolean("silent",true);
         if(!silent){
@@ -57,15 +80,12 @@ public class ModalActivity extends WebViewActivity {
                     }
                 });
                 mediaplayer.start();
+            } 
+            try { 
+                style.put("silent",true); 
             }
-            try{style.put("silent",true);}
             catch(Exception exception){}
         }
-    }
-
-    @Override
-    protected Boolean isNavigationBarTranslucent(){
-        return true;
     }
 
     @Override
@@ -86,23 +106,37 @@ public class ModalActivity extends WebViewActivity {
         return 0;
     }
 
+    private Rect windowBounds=null;
+    private Insets windowInsets=null;
+
     @Override
     protected void setStyle(){
         super.setStyle();
-        this.setLayout();
         final int transparentColor=WebView.getColor("transparent");
         final Window window=getWindow();
+        WindowCompat.setDecorFitsSystemWindows(window,false);
         window.setBackgroundDrawable(new ColorDrawable(transparentColor));
         final View decorView=window.getDecorView();
         decorView.setBackgroundColor(transparentColor);
         decorView.setClipToOutline(true);
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        this.setCorners();
-        if(this.dismissible){
-            this.setDismissible();
-        }
-    }
 
+        final View webView=this.appView.getView();
+        ViewCompat.setOnApplyWindowInsetsListener(webView,new OnApplyWindowInsetsListener(){
+            boolean once=false;
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View view,WindowInsetsCompat insets){
+                self.windowBounds=WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(self).getBounds();
+                self.windowInsets=ViewCompat.getRootWindowInsets(view).getInsets(WindowInsetsCompat.Type.systemBars());
+                self.setLayout();
+                if(!once){
+                    once=true;
+                    self.setCorners();
+                    if(self.dismissible) self.setDismissible();
+                }
+                return insets;
+            }
+        });
+    }
     private void setDismissible(){
         final View webView=this.appView.getView();
         this.setNotch(webView);
@@ -110,7 +144,6 @@ public class ModalActivity extends WebViewActivity {
         this.setupGestureRecognizer(webView);
     }
     public void setOutSlideClick(View view){  
-        final ModalActivity self=this;
         final View rootView=view.getRootView();
         rootView.setOnTouchListener(new View.OnTouchListener(){
             @Override
@@ -138,7 +171,6 @@ public class ModalActivity extends WebViewActivity {
         notch.setY(20);
     }
     private void setupGestureRecognizer(View view){
-        final ModalActivity self=this;
         final float viewY=view.getY();
         final int threshold=(int)(0.6*this.getWebViewHeight());
         view.setOnTouchListener(new View.OnTouchListener(){
@@ -179,88 +211,92 @@ public class ModalActivity extends WebViewActivity {
         });
     }
 
-    private DisplayMetrics metrics=null;
     private void setLayout(){
         final Window window=this.getWindow();
-        this.metrics=new DisplayMetrics();
-        WebView.context.getDisplay().getMetrics(this.metrics);
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         if(this.style!=null){
             final View webView=this.appView.getView();
-            final ViewGroup.LayoutParams layoutParams=webView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams=webView.getLayoutParams();
+            if(webView.getParent() instanceof FrameLayout){
+                ((FrameLayout.LayoutParams)layoutParams).gravity=0;
+            }
+            else if(webView.getParent() instanceof LinearLayout){
+                ((LinearLayout.LayoutParams)layoutParams).weight=0;
+            }
             layoutParams.width=this.getWebViewWidth();
             layoutParams.height=this.getWebViewHeight();
-            webView.setX(this.getX());
-            webView.setY(this.getY());
+            webView.setLayoutParams(layoutParams);
+            this.setWebViewX(webView);
+            this.setWebViewY(webView);
+            this.setVerticalAlign(webView);
             webView.setAlpha(this.getAlpha());
-            setVerticalAlign(webView);
         }
     }
     private float getAlpha(){
         return (float)style.optDouble("opacity",1);
     }
-    private int getX(){
+    private void setWebViewX(View view){
         double x=style.optDouble("marginLeft",0);
-        if((x>=-1)&&(x<=1)){
-            x=x*metrics.widthPixels;
-        }
-        return (int)x;
+        if((x>=-1)&&(x<=1)) x=Math.round(x*windowBounds.width());
+        if(!this.isNavigationBarTranslucent()) x+=this.windowInsets.left;
+        view.setX((int)x);
     }
-    private int getY(){
+    private void setWebViewY(View view){
         double y=style.optDouble("marginTop",0);
-        if((y>=-1)&&(y<=1)){
-            y=y*metrics.heightPixels;
-        }
-        y+=getModalNavigationBarHeight();
-        return (int)y;
+        if((y>=-1)&&(y<=1)) y=Math.round(y*windowBounds.height());
+        if(!this.isStatusBarTranslucent()) y+=this.windowInsets.top;
+        view.setY((int)y);
     }
     private void setVerticalAlign(View view){
         String verticalAlign=style.optString("verticalAlign","bottom");
+        int offsetY=(int)view.getY();
         if(!verticalAlign.equals("top")){
-            final float viewY=view.getY();
-            final float offset=metrics.heightPixels-this.getWebViewHeight();
-            if(verticalAlign.equals("bottom")){
-                view.setY(viewY+offset);
-            }
-            else{
-                view.setY(viewY+offset/2);
-            }
+            int freeSpace=this.getAvailableHeight()-this.getWebViewHeight();
+            if(verticalAlign.equals("middle")) freeSpace/=2;
+            offsetY+=freeSpace;
         }
+        view.setY(offsetY);
     }
 
     int webViewWidth=-1;
     private int getWebViewWidth(){
         if(this.webViewWidth<0){
             double width=style.optDouble("width",1); 
-            if((width<0)||(width>1)){
-                width=1;
-            }
-            width=width*metrics.widthPixels;
-            this.webViewWidth=(int)width;
+            if(width<=0) width=1;
+            width=width*getAvailableWidth();
+            this.webViewWidth=(int)Math.round(width);
         }
         return this.webViewWidth;
     }
 
-    int webViewHeight=-1;
+    private int webViewHeight=-1;
     private int getWebViewHeight(){
         if(this.webViewHeight<0){
             double height=style.optDouble("height",0.85); 
-            if((height<0)||(height>1)){
-                height=1;
-            }
-            final int statusbarHeight=this.isStatusBarTranslucent()?0:ModalActivity.getStatusBarHeight();
-            height=height*(metrics.heightPixels+getModalNavigationBarHeight()-statusbarHeight);
-            this.webViewHeight=(int)height;
+            if(height<=0) height=1;
+            height=height*this.getAvailableHeight();
+            this.webViewHeight=(int)Math.round(height);
         }
         return this.webViewHeight;
     }
 
-    private int navigationBarHeight=0;
-    private int getModalNavigationBarHeight(){
-        if(navigationBarHeight<=0){
-            this.navigationBarHeight=ModalActivity.getNavigationBarHeight();
+    private int getAvailableWidth(){
+        int maxWidth=windowBounds.width();
+        if(!this.isNavigationBarTranslucent()){
+            maxWidth-=this.windowInsets.left+this.windowInsets.right;
         }
-        return this.navigationBarHeight;
+        return maxWidth;
+    }
+
+    private int getAvailableHeight(){
+        int maxHeight=windowBounds.height();
+        if(!this.isStatusBarTranslucent()){
+            maxHeight-=this.windowInsets.top;
+        }
+        if(!this.isNavigationBarTranslucent()){
+            maxHeight-=this.windowInsets.bottom;
+        }
+        return maxHeight;
     }
 
     private void setCorners(){

@@ -177,7 +177,8 @@ type WebViewProps={
     */
     statusBarTranslucent?:boolean,
     /**
-     * @default true
+     * @default 
+     * true for Modals false for webviews 
      */
     navigationBarTranslucent?:boolean,
     /**

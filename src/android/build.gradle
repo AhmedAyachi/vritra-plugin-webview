@@ -1,0 +1,6 @@
+
+
+dependencies {
+    implementation "androidx.core:core:1.9.0";
+    implementation "androidx.window:window:1.4.0";
+}

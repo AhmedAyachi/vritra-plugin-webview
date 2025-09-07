@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="WebViewTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="WebViewTheme" parent="Theme.App.SplashScreen">
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowAnimationStyle">@style/WebViewAnimation</item>
+        <item name="windowSplashScreenBackground">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
     </style>
     <style name="WebViewAnimation">
         <item name="android:windowBackground">@android:color/transparent</item>

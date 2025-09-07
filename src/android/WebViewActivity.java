@@ -1,19 +1,13 @@
 package com.vritra.webview;
 
 import org.apache.cordova.*;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
-import android.view.Gravity;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowManager;
 import android.content.Intent;
-import android.graphics.Insets;
-import android.widget.FrameLayout;
 import java.lang.Runnable;
-import android.util.Log;
+//import android.util.Log;
 
 
 public class WebViewActivity extends CordovaActivity {
@@ -22,6 +16,7 @@ public class WebViewActivity extends CordovaActivity {
     protected String message="";
     protected Intent intent=null;
     protected Boolean dismissible=null;
+    protected View statusBarView;
     private final WebViewActivity self=this;
 
     @Override
@@ -60,7 +55,7 @@ public class WebViewActivity extends CordovaActivity {
 
     protected int getShowAnimation(){
         final String animationId=intent.getStringExtra("showAnimation");
-        return WebView.getResourceId("anim","showanim_"+WebViewActivity.camelToSnakeCased(animationId));
+        return WebView.getResourceId("anim","showanim_"+WebView.camelToSnakeCased(animationId));
     }
     protected int getPreActivityCloseAnimation(){
         final String animationId=intent.getStringExtra("showAnimation");
@@ -76,7 +71,7 @@ public class WebViewActivity extends CordovaActivity {
 
     protected int getCloseAnimation(){
         final String animationId=intent.getStringExtra("closeAnimation");
-        return WebView.getResourceId("anim","hideanim_"+WebViewActivity.camelToSnakeCased(animationId));
+        return WebView.getResourceId("anim","hideanim_"+WebView.camelToSnakeCased(animationId));
     }
     protected int getPreActivityShowAnimation(){
         final String animationId=intent.getStringExtra("closeAnimation");
@@ -97,69 +92,40 @@ public class WebViewActivity extends CordovaActivity {
 
         final Boolean statusBarTranslucent=this.isStatusBarTranslucent();
         final Boolean navigationBarTranslucent=this.isNavigationBarTranslucent();
-        final int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":intent.getStringExtra("statusBarColor"));
+        final int statusBarColor=WebView.getColor(statusBarTranslucent?"transparent":this.getStatusBarColor());
         final int navigationBarColor=WebView.getColor(navigationBarTranslucent?"transparent":intent.getStringExtra("navigationBarColor"));
         final Window window=getWindow();
+
         final View decorView=window.getDecorView();
-        final Boolean isAPI35AndAbove=Build.VERSION.SDK_INT>=Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
-        if(!isAPI35AndAbove){
-            if(statusBarTranslucent||navigationBarTranslucent){
-                decorView.setOnApplyWindowInsetsListener((view,insets)->{
-                    final int paddingTop=statusBarTranslucent?0:insets.getSystemWindowInsetTop();
-                    final int paddingBottom=navigationBarTranslucent?0:insets.getSystemWindowInsetBottom();
-                    view.setPadding(0,paddingTop,0,paddingBottom);
-                    return insets.consumeSystemWindowInsets();
-                });
-            }
-        }
-        webView.setOnApplyWindowInsetsListener((view,insets)->{
-            if(isAPI35AndAbove){
-                FrameLayout.LayoutParams params=new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                );
-                if(statusBarTranslucent) params.topMargin=0;
-                else{
-                    final Insets statusBarInsets=insets.getInsets(WindowInsets.Type.statusBars());
-                    params.topMargin=statusBarInsets.top;
-                }
-                if(!navigationBarTranslucent){
-                    final Insets navigationBarInsets=insets.getInsets(WindowInsets.Type.navigationBars());
-                    params.leftMargin=navigationBarInsets.left;
-                    params.rightMargin=navigationBarInsets.right;
-                    params.bottomMargin=navigationBarInsets.bottom;  
-                }
-                view.setLayoutParams(params);
-            } else {
-                final int paddingTop=statusBarTranslucent?0:insets.getSystemWindowInsetTop();
-                final int paddingBottom=navigationBarTranslucent?0:insets.getSystemWindowInsetBottom();
-                view.setPadding(0,paddingTop,0,paddingBottom);
-            }
-            return insets.consumeSystemWindowInsets();
-        });
         if(statusBarTranslucent){
             decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE|
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             );
-        } else {
-            if(navigationBarTranslucent) decorView.setBackgroundColor(statusBarColor);
-            else if(isAPI35AndAbove){
-                WebViewActivity.renderStatusBar(this,statusBarColor);
-            }
-        }
+        } 
+        else if(navigationBarTranslucent) decorView.setBackgroundColor(statusBarColor);
         window.setStatusBarColor(statusBarColor);
+
         if(navigationBarTranslucent){
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE|
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            );
             window.setNavigationBarContrastEnforced(false);
-        } else {
-            if(isAPI35AndAbove){
-                decorView.setBackgroundColor(navigationBarColor);
-                //WebViewActivity.renderNavigationBar(this,navigationBarColor);
-            }
-            else if(statusBarTranslucent) decorView.setBackgroundColor(navigationBarColor);
-        }
+        } 
+        else if(statusBarTranslucent) decorView.setBackgroundColor(navigationBarColor);
         window.setNavigationBarColor(navigationBarColor);
+
+        webView.setOnApplyWindowInsetsListener((view,insets)->{
+            final int insetTop=statusBarTranslucent?0:insets.getSystemWindowInsetTop();
+            final int insetBottom=navigationBarTranslucent?0:insets.getSystemWindowInsetBottom();
+            final ViewGroup.MarginLayoutParams layoutParams=(ViewGroup.MarginLayoutParams)view.getLayoutParams();
+            layoutParams.topMargin=insetTop;
+            layoutParams.bottomMargin=insetBottom;
+            view.setLayoutParams(layoutParams);
+            return insets.consumeSystemWindowInsets();
+        });
     }
 
     protected Boolean isStatusBarTranslucent(){
@@ -168,8 +134,14 @@ public class WebViewActivity extends CordovaActivity {
     }
 
     protected Boolean isNavigationBarTranslucent(){
-        Boolean navigationBarTranslucent=intent.getBooleanExtra("navigationBarTranslucent",true);
+        Boolean navigationBarTranslucent=intent.getBooleanExtra("navigationBarTranslucent",false);
         return navigationBarTranslucent;
+    }
+
+    protected String getStatusBarColor(){
+        String color=intent.getStringExtra("statusBarColor");
+        if(color==null) color="black";
+        return color;
     }
 
     @Override
@@ -201,64 +173,5 @@ public class WebViewActivity extends CordovaActivity {
     public void setMessage(String str){
         this.message=str;
         intent.putExtra("message",str);
-    }
-
-    public static String camelToSnakeCased(String camelCased){
-        String snakeCased="";
-        final int charCount=camelCased.length();
-        for(int i=0;i<charCount;i++){
-            final Character c=camelCased.charAt(i);
-            if(Character.isUpperCase(c)){
-                snakeCased+="_"+Character.toLowerCase(c);
-            }
-            else{
-                snakeCased+=c;
-            }
-        }
-        return snakeCased;
-    }
-
-    private static void renderStatusBar(WebViewActivity activity,int statusBarColor){
-        final View view=new View(activity);
-        FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            WebViewActivity.getStatusBarHeight()
-        );
-        layoutParams.topMargin=0;
-        layoutParams.leftMargin=0;
-        view.setLayoutParams(layoutParams);
-        view.setBackgroundColor(statusBarColor);
-        ((ViewGroup)activity.getWindow().getDecorView()).addView(view);
-    }
-
-    private static void renderNavigationBar(WebViewActivity activity,int navigationBarColor){
-        final View view=new View(activity);
-        FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            WebViewActivity.getNavigationBarHeight(),
-            Gravity.BOTTOM
-        );
-        layoutParams.bottomMargin=0;
-        layoutParams.leftMargin=0;
-        view.setLayoutParams(layoutParams);
-        view.setBackgroundColor(navigationBarColor);
-        ((ViewGroup)activity.getWindow().getDecorView()).addView(view);
-    }
-
-    protected static int getStatusBarHeight(){
-        int height=0;
-        final int resourceId=WebView.resources.getIdentifier("status_bar_height","dimen","android");
-        if(resourceId>0){
-            height=WebView.resources.getDimensionPixelSize(resourceId);
-        }
-        return height;
-    }
-    protected static int getNavigationBarHeight(){
-        int height=0;
-        final int resourceId=WebView.resources.getIdentifier("navigation_bar_height","dimen","android");
-        if(resourceId>0){
-            height=WebView.resources.getDimensionPixelSize(resourceId);
-        }
-        return height;
     }
 }

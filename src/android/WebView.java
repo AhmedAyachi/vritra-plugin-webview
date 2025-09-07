@@ -7,16 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.util.Random;
-import java.util.Objects;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.lang.Runnable;
 import android.content.Intent;
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
+//import android.util.Log;
 
 
 public class WebView extends VritraPlugin {
@@ -277,7 +273,7 @@ public class WebView extends VritraPlugin {
             intent.putExtra("message",message);
         }
         
-        Boolean asModal=props.optBoolean("asModal");
+        Boolean asModal=props.optBoolean("asModal",false);
         if(asModal){
             final JSONObject modalStyle=props.optJSONObject("modalStyle");
             if(modalStyle!=null){
@@ -288,11 +284,11 @@ public class WebView extends VritraPlugin {
         Boolean statusBarTranslucent=props.optBoolean("statusBarTranslucent",false);
         intent.putExtra("statusBarTranslucent",statusBarTranslucent);
         if(!statusBarTranslucent){
-            String statusBarColor=props.optString("statusBarColor","black");
+            String statusBarColor=props.optString("statusBarColor",asModal?"transparent":"black");
             intent.putExtra("statusBarColor",statusBarColor);
         }
 
-        Boolean navigationBarTranslucent=props.optBoolean("navigationBarTranslucent",true);
+        Boolean navigationBarTranslucent=props.optBoolean("navigationBarTranslucent",asModal);
         intent.putExtra("navigationBarTranslucent",navigationBarTranslucent);
         if(!navigationBarTranslucent){
             String navigationBarColor=props.optString("navigationBarColor","black");
@@ -310,5 +306,19 @@ public class WebView extends VritraPlugin {
 
         final String closeAnimation=props.optString("closeAnimation","slideRight");
         intent.putExtra("closeAnimation",closeAnimation);
+    }
+    public static String camelToSnakeCased(String camelCased){
+        String snakeCased="";
+        final int charCount=camelCased.length();
+        for(int i=0;i<charCount;i++){
+            final Character c=camelCased.charAt(i);
+            if(Character.isUpperCase(c)){
+                snakeCased+="_"+Character.toLowerCase(c);
+            }
+            else{
+                snakeCased+=c;
+            }
+        }
+        return snakeCased;
     }
 }
