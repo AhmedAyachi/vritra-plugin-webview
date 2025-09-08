@@ -144,6 +144,19 @@ public class WebViewActivity extends CordovaActivity {
         return color;
     }
 
+    public void setStatusBarColor(String color){
+        if(!isStatusBarTranslucent()){
+            final Window window=getWindow();
+            window.setStatusBarColor(WebView.getColor(color));
+        }
+    }
+    public void setNavigationBarColor(String color){
+        if(!isNavigationBarTranslucent()){
+            final Window window=getWindow();
+            window.setNavigationBarColor(WebView.getColor(color));
+        }
+    }
+
     @Override
     public void onDestroy(){
         final CordovaWebView appView=this.appView;

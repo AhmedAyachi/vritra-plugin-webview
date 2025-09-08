@@ -5,6 +5,7 @@ module.exports={
     defineWebViews:(webviews,fallback)=>{
         exec(null,fallback,"WebView","defineWebViews",[webviews]);
     },
+
     show:(options)=>{
         const {onClose,message}=options;
         if((message!==undefined)&&(typeof(message)!=="string")){
@@ -12,9 +13,11 @@ module.exports={
         }
         exec(onClose,null,"WebView","show",[options]);
     },
+
     initiateStore:(state,callback)=>{
         exec(callback,null,"WebView","initiateStore",[state]);
     },
+
     useStore:(path,callback,fallback)=>{
         if(typeof(path)==="function"){
             fallback=callback;
@@ -28,6 +31,7 @@ module.exports={
             else{callback(values)}
         }),fallback,"WebView","useStore",[path]);
     },
+
     setStore:(path,value,callback,fallback)=>{
         const multiSetting=Array.isArray(path);
         const deletables=[];
@@ -57,14 +61,24 @@ module.exports={
         }
         exec(callback,fallback,"WebView","setStore",[path,value,multiSetting,deletables]);
     },
+
     useMessage:(callback)=>{
         exec(callback,null,"WebView","useMessage",[]);
     },
+
     setMessage:(message)=>{
         exec(null,null,"WebView","setMessage",[stringify(message)]);
     },
+
     close:(message)=>{
         exec(null,null,"WebView","close",[stringify(message),message===undefined]);
+    },
+
+    set statusBarColor(color){
+        exec(null,null,"WebView","setStatusBarColor",[color]);
+    },
+    set navigationBarColor(color){
+        exec(null,null,"WebView","setNavigationBarColor",[color]);
     },
 }
 

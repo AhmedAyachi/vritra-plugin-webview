@@ -151,6 +151,15 @@ interface WebView {
     * @notice if called in the main webview, the app is minimized.
     */
     close(message:string):void,
+
+    /**
+     * Updates the statusBar color if the webview is not statusBarTranslucent
+     */
+    set statusBarColor(color:WebViewColor);
+    /**
+     * Updates the navigationBar color if the webview is not navigationBarTranslucent
+     */
+    set navigationBarColor(color:WebViewColor);
 }
 
 type WebViewProps={
@@ -178,7 +187,7 @@ type WebViewProps={
     statusBarTranslucent?:boolean,
     /**
      * @default 
-     * true for Modals false for webviews 
+     * true for Modals false for Webviews 
      */
     navigationBarTranslucent?:boolean,
     /**

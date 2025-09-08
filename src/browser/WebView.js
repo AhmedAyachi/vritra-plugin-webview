@@ -5,6 +5,12 @@ const data=[];
 if(!frameElement) localStorage.setItem("store","{}");
     
 module.exports={
+    set statusBarColor(color){
+        console.warn("if the webview is not statusBarTranslucent, the statusBarColor will change to",color);
+    },
+    set navigationBarColor(color){
+        console.warn("if the webview is not navigationBarTranslucent, the navigationBarColor will change to",color);
+    },
     defineWebViews:(webviews=[],fallback)=>{setTimeout(()=>{
         try{
             webviews.forEach(webview=>{

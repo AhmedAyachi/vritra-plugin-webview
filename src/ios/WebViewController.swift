@@ -5,9 +5,9 @@ class WebViewController:CDVViewController {
     var plugin:Webview?;
     var options:[String:Any]=[:];
     var message:String?;
-    var isModal:Bool {
-        get { return false }
-    };
+    var isModal:Bool { get { return false }};
+    internal var statusbarView:UIView?;
+    internal var navigationbarView:UIView?;
 
     init(_ options:[String:Any],_ plugin:Webview?){
         super.init(nibName:nil,bundle:nil);
@@ -38,8 +38,12 @@ class WebViewController:CDVViewController {
         super.viewWillDisappear(animated);
     }
 
-    var statusBarTranslucent:Bool { return options["statusBarTranslucent"] as? Bool ?? false };
-    var navigationBarTranslucent:Bool { return options["navigationBarTranslucent"] as? Bool ?? true };
+    var statusBarTranslucent:Bool {
+        return options["statusBarTranslucent"] as? Bool ?? false;
+    };
+    var navigationBarTranslucent:Bool {
+        return options["navigationBarTranslucent"] as? Bool ?? false;
+    };
 
     func setUrl(){
         var url=options["file"] as? String;
@@ -82,7 +86,7 @@ class WebViewController:CDVViewController {
             }
         }
         else{
-            let statusBarColor=options["statusBarColor"] as? String ?? "white";
+            let statusBarColor=options["statusBarColor"] as? String ?? ( isModal ? "transparent" : "white");
             statusbarView.backgroundColor=getUIColorFromHex(statusBarColor);
             statusbarView.translatesAutoresizingMaskIntoConstraints=false;
             NSLayoutConstraint.activate([
@@ -91,6 +95,7 @@ class WebViewController:CDVViewController {
                 statusbarView.rightAnchor.constraint(equalTo:view.rightAnchor),
                 statusbarView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.topAnchor)
             ]);
+            self.statusbarView=statusbarView;
         }
         if(!navigationBarTranslucent){
             webView.translatesAutoresizingMaskIntoConstraints=false;
@@ -101,6 +106,7 @@ class WebViewController:CDVViewController {
                 webView.bottomAnchor.constraint(equalTo:view.safeAreaLayoutGuide.bottomAnchor)
             ]);
             let navigationbarView=UIView();
+            self.navigationbarView=navigationbarView;
             navigationbarView.translatesAutoresizingMaskIntoConstraints=false;
             view.addSubview(navigationbarView);
             NSLayoutConstraint.activate([
@@ -186,4 +192,16 @@ class WebViewController:CDVViewController {
             plugin.success(showCommand,data);
         });
     };
+
+    func setStatusBarColor(_ color:String){
+        if let statusbarView=self.statusbarView {
+            statusbarView.backgroundColor=getUIColorFromHex(color);
+        }
+    }
+
+    func setNavigationBarColor(_ color:String){
+        if let navigationbarView=self.navigationbarView {
+            navigationbarView.backgroundColor=getUIColorFromHex(color);
+        }
+    }
 }

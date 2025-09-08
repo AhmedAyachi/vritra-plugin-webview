@@ -52,9 +52,13 @@ public class WebView extends VritraPlugin {
         else if(action.equals("close")){
             this.close(args);
         }
-        else{
-            result=false;
+        else if(action.equals("setStatusBarColor")){
+            this.setWebViewStatusBarColor(args);
         }
+        else if(action.equals("setNavigationBarColor")){
+            this.setWebViewNavigationBarColor(args);
+        }
+        else result=false;
         return result;
     }
 
@@ -224,6 +228,22 @@ public class WebView extends VritraPlugin {
 			intent.addCategory(Intent.CATEGORY_HOME);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			activity.startActivity(intent);
+        }
+    }
+
+    private void setWebViewStatusBarColor(JSONArray args){
+        final String color=args.optString(0);
+        if(!color.isEmpty()){
+            final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+            wvactivity.setStatusBarColor(color);
+        }
+    }
+
+    private void setWebViewNavigationBarColor(JSONArray args){
+        final String color=args.optString(0);
+        if(!color.isEmpty()){
+            final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
+            wvactivity.setNavigationBarColor(color);
         }
     }
 

@@ -141,14 +141,30 @@ class Webview:VritraPlugin {
 
     @objc(close:)
     func close(command:CDVInvokedUrlCommand){
-        if let viewcontroller=self.viewController as? WebViewController {
+        if let viewController=self.viewController as? WebViewController {
             let isUndefined=command.arguments[1] as! Bool;
             if(!isUndefined){ self.setMessage(command:command); };
-            viewcontroller.remove();
+            viewController.remove();
         }
         else{
             UIControl().sendAction(#selector(URLSessionTask.suspend),to:UIApplication.shared,for:nil);
         }
+    }
+
+    @objc(setStatusBarColor:)
+    func setWebViewStatusBarColor(command:CDVInvokedUrlCommand){
+        if let color=command.arguments[0] as? String,
+            let viewController=self.viewController as? WebViewController {
+            viewController.setStatusBarColor(color);
+        };
+    }
+
+    @objc(setNavigationBarColor:)
+    func setWebViewNavigationBarColor(command:CDVInvokedUrlCommand){
+        if let color=command.arguments[0] as? String,
+            let viewController=self.viewController as? WebViewController {
+            viewController.setNavigationBarColor(color);
+        };
     }
     
     static func mergeObjects(_ object1:[String:Any],_ object2:[String:Any])->[String:Any]{

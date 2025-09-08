@@ -3,13 +3,12 @@ import AVFAudio;
 
 class ModalController:WebViewController {
 
-    override var isModal:Bool { get { return true; } };
+    override var isModal:Bool { get { return true }};
     lazy var style:[String:Any]=[:];
     let bgview=UIView();
 
     override init(_ options:[String:Any],_ plugin:Webview?){
         super.init(options,plugin);
-        setBGView();
         if let modalStyle=options["modalStyle"] as? [String:Any] {
             self.style=modalStyle;
         }
@@ -22,16 +21,19 @@ class ModalController:WebViewController {
     override func viewDidAppear(_ animated:Bool){
         super.viewDidAppear(animated);
         self.setSilent();
-        self.setDismissible();
+        
     }
     
-    override var statusBarTranslucent:Bool {
-        return true;
-    }
+    override var navigationBarTranslucent:Bool {
+        return options["navigationBarTranslucent"] as? Bool ?? true;
+    };
+
     
     override func viewDidLayoutSubviews(){
         super.viewDidLayoutSubviews();
         self.setViewBounds();
+        self.setBGView();
+        self.setDismissible();
     }
     
     override func show(){
@@ -84,14 +86,23 @@ class ModalController:WebViewController {
         self.remove();
     }
     
+    private var webviewPanGesture:UIPanGestureRecognizer?;
     private func setupGestureRecognizer(){
+        guard let webview=self.webView else { return };
+        if let oldPanGesture=self.webviewPanGesture {
+            webview.removeGestureRecognizer(oldPanGesture);
+        }
         let panGesture=UIPanGestureRecognizer(target:self,action:#selector(self.onPanGesture));
-        self.webView?.addGestureRecognizer(panGesture);
+        self.webviewPanGesture=panGesture;
+        webview.addGestureRecognizer(panGesture);
     }
     
+    private var notch:UIView?;
     private func setNotch(){
         guard let webview=self.webView else { return };
+        notch?.removeFromSuperview();
         let notch=UIView();
+        self.notch=notch;
         let notchColor=style["notchColor"] as? String;
         let width=webview.frame.width;
         let fraction=0.1;
@@ -148,13 +159,15 @@ class ModalController:WebViewController {
         self.setCorners(webview);
         webview.layer.masksToBounds=true;
         webview.layer.isOpaque=true;
+        let insetTop=statusbarView?.frame.height ?? 0;
+        let insetBottom=navigationbarView?.frame.height ?? 0;
         let availableSize=webview.superview!.frame;
         let screenWidth=availableSize.width;
-        let screenHeight=availableSize.height;
+        let screenHeight=availableSize.height-insetTop-insetBottom;
         let width=self.getDimension("width")*screenWidth;
-        let height=self.getDimension("height",0.85)*(screenHeight-(self.statusBarTranslucent ? 0 : UIApplication.shared.statusBarFrame.height));
+        let height=self.getDimension("height",0.85)*screenHeight;
         let marginLeft=self.getMargin("Left")*screenWidth;
-        var marginTop=self.getMargin("Top")*screenHeight;
+        var marginTop=self.getMargin("Top")*screenHeight+insetTop;
         let verticalAlign=self.getVerticalAlign();
         switch(verticalAlign){
             case "bottom":marginTop+=screenHeight-height;break;
