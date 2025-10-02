@@ -153,18 +153,30 @@ class Webview:VritraPlugin {
 
     @objc(setStatusBarColor:)
     func setWebViewStatusBarColor(command:CDVInvokedUrlCommand){
-        if let color=command.arguments[0] as? String,
-            let viewController=self.viewController as? WebViewController {
+        guard let color=command.arguments[0] as? String else { return };
+        if let viewController=self.viewController as? WebViewController {
             viewController.setStatusBarColor(color);
-        };
+        }
+        else if let statusbarView=self.viewController.view.subviews.last,
+                statusbarView.subviews.count<1 {
+            statusbarView.backgroundColor=getUIColorFromHex(color);
+        }
     }
 
     @objc(setNavigationBarColor:)
     func setWebViewNavigationBarColor(command:CDVInvokedUrlCommand){
-        if let color=command.arguments[0] as? String,
-            let viewController=self.viewController as? WebViewController {
+        guard let color=command.arguments[0] as? String else { return };
+        if let viewController=self.viewController as? WebViewController {
             viewController.setNavigationBarColor(color);
-        };
+        }
+        else if #available(iOS 13.0,*){
+            let appearance=UINavigationBarAppearance();
+            appearance.backgroundColor=getUIColorFromHex(color);
+            let navigationItem=self.viewController.navigationItem;
+            navigationItem.standardAppearance=appearance;
+            navigationItem.scrollEdgeAppearance=appearance;
+            navigationItem.compactAppearance=appearance;
+        }
     }
     
     static func mergeObjects(_ object1:[String:Any],_ object2:[String:Any])->[String:Any]{

@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.lang.Runnable;
+import android.view.Window;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 //import android.util.Log;
@@ -234,16 +235,38 @@ public class WebView extends VritraPlugin {
     private void setWebViewStatusBarColor(JSONArray args){
         final String color=args.optString(0);
         if(!color.isEmpty()){
-            final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-            wvactivity.setStatusBarColor(color);
+            final AppCompatActivity activity=this.cordova.getActivity();
+            if(activity instanceof WebViewActivity){
+                ((WebViewActivity)activity).setStatusBarColor(color);
+            }
+            else{
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Window window=activity.getWindow();
+                        window.setStatusBarColor(WebView.getColor(color));
+                    }
+                });
+            }
         }
     }
 
     private void setWebViewNavigationBarColor(JSONArray args){
         final String color=args.optString(0);
         if(!color.isEmpty()){
-            final WebViewActivity wvactivity=(WebViewActivity)this.cordova.getActivity();
-            wvactivity.setNavigationBarColor(color);
+            final AppCompatActivity activity=this.cordova.getActivity();
+            if(activity instanceof WebViewActivity){
+                ((WebViewActivity)activity).setNavigationBarColor(color);
+            }
+            else{
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Window window=activity.getWindow();
+                        window.setNavigationBarColor(WebView.getColor(color));
+                    }
+                });
+            }
         }
     }
 
