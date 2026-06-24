@@ -48,11 +48,10 @@ class WebViewController:CDVViewController {
     func setUrl(){
         var url=options["file"] as? String;
         if(url==nil){
-            self.wwwFolderName="";
+            self.webContentFolderName="";
             url=options["url"] as? String;
-        }
-        else{
-            self.wwwFolderName="www";
+        } else {
+            self.webContentFolderName="www";
         }
         self.startPage=url ?? "";
     }
@@ -84,8 +83,7 @@ class WebViewController:CDVViewController {
             if(self.navigationBarTranslucent){
                 webView.frame=self.view.frame;
             }
-        }
-        else{
+        } else {
             let statusBarColor=options["statusBarColor"] as? String ?? ( isModal ? "transparent" : "white");
             statusbarView.backgroundColor=getUIColorFromHex(statusBarColor);
             statusbarView.translatesAutoresizingMaskIntoConstraints=false;

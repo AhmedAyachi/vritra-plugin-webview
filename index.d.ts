@@ -12,7 +12,7 @@ interface WebView {
     * The shown webview will have access to all cordova plugins.
     * @notice Overwrites defined webview props
     */
-    show(options:WebViewProps&{
+    show(options:Omit<WebViewProps,"id">&{
         /**
          * The target webview's id. 
          * 
@@ -30,7 +30,7 @@ interface WebView {
         /**
         * Called when the new webview is closed. 
         */
-        onClose(data:{
+        onClose?(data:{
             /**
             * A message from the new webview.
             * If the new webview did not send a message, this value is the same
@@ -203,7 +203,7 @@ type WebViewProps={
     /** 
     * The webview background color before loading the html file.
     * @default "white"
-    * @notice "transparent" is only apllied for modals
+    * @notice "transparent" is only applied for modals
     */
     backgroundColor?:WebViewColor,
     /**

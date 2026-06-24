@@ -71,8 +71,8 @@ module.exports={
            callback&&callback(Store.get(path));
         }
         catch(error){
-            console.error(error);
-            fallback&&fallback(error);
+            if(typeof(fallback)==="function") fallback(error);
+            else console.error(error);
         }
     },timeout)},
     setStore:(path,value,callback,fallback)=>{setTimeout(()=>{
@@ -90,8 +90,8 @@ module.exports={
             callback&&callback(store);
         }
         catch(error){
-            console.error(error);
-            fallback&&fallback(error);
+            if(typeof(fallback)==="function") fallback(error);
+            else console.error(error);
         }
     },timeout)},
     useMessage:(callback)=>{setTimeout(()=>{
@@ -113,8 +113,7 @@ module.exports={
                     onClose({message:message===undefined?iframe.message:stringify(message),store});
                     resolve();
                 }):resolve();
-            }).
-            then(()=>{
+            }).then(()=>{
                 setTimeout(()=>{iframe.remove()},timeout);
             });
         }
