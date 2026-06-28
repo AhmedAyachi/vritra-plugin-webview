@@ -14,6 +14,7 @@ class WebViewController:CDVViewController {
         self.options=options;
         self.plugin=plugin;
         self.message=options["message"] as? String;
+        self.showInitialSplashScreen=false;
         self.setUrl();
     }
 
